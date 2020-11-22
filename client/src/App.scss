@@ -1,12 +1,26 @@
+@import "assets/css/html_template_style/main";
 @import "assets/css/clone";
-@import "assets/css/blog";
-@import "assets/css/editor";
-@import "assets/css/index.css";
+@import "assets/css/function";
 @import '~antd/dist/antd.css';
 
+@import "assets/css/blog";
+@import "assets/css/index";
+@import "assets/css/footer";
+@import "assets/css/post_card";
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,600");
 
+/*  Profile  */
+@import "assets/css/profile";
+
+/* App style function */
 :root {
   --primaryColor: #98713c;
+  --primaryDarkcolor: #222624;
+  --pirmaryBorderDarkColor: #4b5655;
+  --pirmaryBorderLightColor: #5d5f5f;
+  --primaryHoverColor: #05babe;
+  --primaryColorFade: #e3dbdba8;
+  --primaryInputDarkBgColor: rgba(24, 26, 27, 0.75);
   --mainWhite: #fff;
   --offWhite: #f7f7f7;
   --mainBlack: #222;
@@ -19,110 +33,21 @@
   --darkShadow: 4px 10px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
-.letter-space-1 {
-  letter-spacing: 0.01rem;
+/* !App style function */
+
+/* Widget Function */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+  "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #24292e;
 }
 
-.letter-space-2 {
-  letter-spacing: 0.025rem;
-}
-
-.letter-space-3 {
-  letter-spacing: 0.05rem;
-}
-
-.letter-space-4 {
-  letter-spacing: 0.075rem;
-}
-
-.letter-space-5 {
-  letter-spacing: 0.1rem;
-}
-
-.background-sand {
-  background-color: rgb(50, 46, 22)
-}
-
-.opacity-0 {
-  opacity: 0 !important;
-}
-
-.opacity-1 {
-  opacity: 0.2 !important;
-}
-
-.opacity-2 {
-  opacity: 0.4 !important;
-}
-
-.opacity-3 {
-  opacity: 0.6 !important;
-}
-
-.opacity-4 {
-  opacity: .8 !important;
-}
-
-.opacity-5 {
-  opacity: 1 !important;
-}
-
-/* Maybe even support hover opacity shifts */
-.opacity-0h5 {
-  opacity: 0 !important;
-  transition: opacity .25s ease-in-out !important;
-  -moz-transition: opacity .25s ease-in-out !important;
-  -webkit-transition: opacity .25s ease-in-out !important;
-}
-
-.opacity-0h5:hover {
-  opacity: 1 !important;
-}
-
-.fs-1 {
-  font-size: 1.2rem;
-}
-
-.fs-1-2 {
-  font-size: 1.4rem;
-}
-
-.fs-2 {
-  font-size: 1.6rem;
-}
-
-
-.fs-3 {
-  font-size: 2rem !important;
-}
-
-.fs-4 {
-  font-size: 2.4rem;
-}
-
-.fs-5 {
-  font-size: 2.8rem;
-}
-
-.fs-6 {
-  font-size: 3.2rem;
-}
-
-.fw-5 {
-  font-weight: 500;
-}
-
-.fw-6 {
-  font-weight: 600;
-}
-
-.fw-7 {
-  font-weight: 700;
-}
-
-.fw-8 {
-  font-weight: 800;
-}
 
 p {
   font-size: 1.25rem;
@@ -132,247 +57,117 @@ p {
 a {
   color: #c7a84e;
   text-decoration: none !important;
+  border: none;
 }
 
 
-.app-header {
-  transition: .6s;
-  position: relative;
-  min-height: 680px;
-  max-height: 80vh;
+input.error {
+  border-color: red;
 }
 
-#header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: .4;
-  z-index: 0;
-  object-fit: contain;
-  background-size: cover;
-  background: url("assets/smachno_18.jpg") fixed;
+/* !Widget Function */
+
+/* Common Class */
+.app {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.welcome-header-text {
-  h2 {
-    font-size: 3rem;
-    letter-spacing: 0.05rem;
+.input-feedback {
+  color: red;
+  height: 5px;
+  margin-top: 0;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.d-flex {
+  display: -ms-flexbox !important;
+  display: flex !important;
+}
+
+.ck-editor__editable {
+  min-height: 24rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.color-gray {
+  color: gray;
+}
+
+.color-gray-light {
+  color: #b3a4a4;
+}
+
+/* !Common Class */
+
+
+//#root {
+//  background-color: #222624;
+//}
+
+//svg path {
+//  fill: var(--primaryDarkcolor) !important;
+//}
+
+//.ck-button__label {
+//  color: var(--primaryDarkcolor) !important;
+//}
+
+.dark-theme-editor {
+  .ck-editor__editable,
+  .ck-sticky-panel__content,
+  .ck-toolbar,
+  .ck-toolbar_grouping,
+  .ck-list__item,
+  .ck-reset .ck-dropdown__panel,
+  .ck-dropdown__panel_ne,
+  .ck-dropdown__panel-visible {
+    background-color: var(--primaryDarkcolor) !important;
   }
 
-  text-transform: uppercase;
-  position: absolute;
-  letter-spacing: 0.02rem;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  .ck-editor__editable,
+  .ck-toolbar,
+  .my-border {
+    border: 2px solid #4b4e4c !important;
+  }
+
+  .my-border-b {
+    border-bottom: 2px solid #4b4e4c !important;
+  }
+
+  .ck-toolbar,
+  {
+    border-bottom-width: 0 !important;
+  }
+
+  input {
+    background-color: #1c1d1d !important;
+  }
+
+  .ck.ck-button:not(.ck-disabled):hover, a.ck.ck-button:not(.ck-disabled):hover {
+    background: #383b3a !important;
+  }
 }
 
-.header-description {
-  margin-top: 2rem;
-  font-weight: bold;
-  text-transform: none;
+.custom-label {
+  label, .ant-form-item-required {
+    color: white;
+    font-size: 1.5rem;
+    height: 100%;
+    margin: 0 !important;
+    align-self: center;
+    padding-bottom: 10px;
+    font-weight: bold;
+  }
 }
 
-.btn-custom {
-  display: inline-block;
-  letter-spacing: var(--smallSpacing);
-  background: transparent;
-  transition: var(--mainTransition);
-  text-transform: uppercase;
-  cursor: pointer;
-  color: white;
-  text-decoration: none;
-
-  border: 3px solid;
-  border-radius: 1px;
-  font-size: 0.79rem;
-  font-weight: bold;
-  padding: 0.87em 1.45em;
-  vertical-align: bottom;
-}
-
-.btn-custom:hover {
-  background: transparent;
-  color: var(--primaryColor);
-  text-decoration: none;
-
-}
-
-.nav-btn {
-  background: transparent;
-  cursor: pointer;
-  outline: none;
-  text-decoration: none;
-  border: 3px solid #af9a7d;
-
-}
-
-a:hover, a:focus {
-  color: white;
-  background-color: transparent;
-}
-
-.navbar {
-  transition: .6s;
-  padding: 1.5rem;
-
-}
-
-
-//Sticky
-.sticky {
-  background: rgba(24, 26, 27, 0.95);
-  border-bottom: 1px solid rgba(0, 0, 0, .1);
-  padding-bottom: 1rem;
-  padding-top: 1rem;
-  transition: .6s;
-  z-index: 2;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-
-.text-decor-none {
-  text-decoration: none;
-}
-
-.text-decor-none:hover {
-  text-decoration: none;
-}
-
-.break {
-  height: 1px;
-  background-color: gray;
-  width: 12rem !important;
-}
-
-.entry-sub-title {
-  color: rgb(166, 158, 146);
-  font-style: italic;
-  font-size: 1.2rem;
-}
-
-.content-entry {
-  position: relative;
-  margin: 4rem auto 0 auto;
-}
-
-.content-entry::before {
-  content: "";
-  position: absolute;
-  top: -2rem;
-  left: 0;
-  height: 1px;
-  background-color: gray;
-  width: 12rem !important;
-}
-
-// End Sticky
-
-.fit-content {
-  height: fit-content;
-  object-fit: cover;
-}
-
-.entry-section {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.entry-content {
-  position: relative;
-  margin-top: 4rem;
-  font-size: 1.2rem;
-  font-weight: 400;
-}
-
-.entry-content::before {
-  position: absolute;
-  top: -2rem;
-  left: 50%;
-  content: "";
-  height: 0.5px;
-  background-color: gray;
-  width: 25%;
-  transform: translate(-50%, 0);
-}
-
-
-.article-border-right {
-  position: relative;
-}
-
-.article-border-right::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  height: 90%;
-  top: 0;
-  width: 0.5px;
-  background-color: gray;
-}
-
-
-.social li a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.social li {
-  margin: .5rem;
-}
-
-.social li a {
-  -ms-flex-align: center;
-  -webkit-box-align: center;
-  align-items: center;
-  border: 2px solid;
-  border-radius: 50%;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  height: 42px;
-  line-height: 38px;
-  width: 42px;
-}
-
-.social li a:hover {
-  background-color: #c7a84e;
-  background-color: var(--color-accent-base);
-  border-color: #c7a84e;
-  border-color: var(--color-accent-base);
-  color: #ffffff;
-  color: var(--color-white);
-}
-
-.social li a:hover {
-  background-color: rgb(145, 120, 46);
-  border-color: rgb(131, 108, 41);
-  color: rgb(232, 230, 227);
-}
-
-
-.social li a {
-  -webkit-box-align: center;
-  align-items: center;
-  border: 3px solid;
-  border-radius: 50%;
-  display: flex;
-  height: 60px;
-  line-height: 38px;
-  width: 60px;
-}
-
-.social li svg {
-  margin: auto;
-}
-
-
-#header-nav .site-title {
-  transition: 1s;
-  text-align: start;
-  margin: 0 2rem;
-}

@@ -6,7 +6,8 @@ const moment = require("moment")
 const postSchema = mongoose.Schema({
     title: {
         type: String,
-        minlength: 5
+        minlength: 5,
+        required: true
     },
     author: {
         type: mongoose.Types.ObjectId,

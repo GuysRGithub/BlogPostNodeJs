@@ -1,12 +1,11 @@
-import AlloyEditor from 'alloyeditor'
-
 window.addEventListener("scroll", function () {
 
-    let header = document.querySelector("#header")
-    if (window !== null) {
-        header.classList.toggle("stick", window.screenY > 0)
+    let header = document.querySelector("#header-nav")
+    if (header == null) return
+    if (window.pageYOffset > header.offsetTop) {
+        header.classList.add("sticky")
+    } else {
+        header.classList.remove("sticky")
     }
 
 })
-
-AlloyEditor.editable('post-editor');

@@ -3,15 +3,15 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export default function () {
-    return (<div>
+    return (<div className="dark-theme">
             <Header/>
             <br/>
 
             <section className="row fit-content container-fluid my-5 mx-auto justify-content-center">
                 <div className="col-6">
                     <div className="px-4">
-                        <img height="396px" className="my-auto card-img"
-                             src="https://appetitedemo.files.wordpress.com/2015/07/smachno_19.jpg"/>
+                        <img className="my-auto card-img img-post-banner"
+                             src={require("../../../assets/images/posts/sunrise-1014710_1920.jpg")}/>
                     </div>
 
                 </div>
@@ -44,7 +44,7 @@ export default function () {
                         <p className="mt-lg-5">
                             <a
                                 href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
-                                className="btn-custom">Read More</a>
+                                className="custom-btn-primary my-2">Read More</a>
                         </p>
                     </div>
                 </div>
@@ -83,15 +83,16 @@ export default function () {
                         <p className="mt-lg-5">
                             <a
                                 href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
-                                className="btn-custom">Read More</a>
+                                className="custom-btn-primary my-2">Read More</a>
                         </p>
                     </div>
                 </div>
 
                 <div className="col-6 my-auto">
                     <div className="px-4">
-                        <img height="396px" className="my-auto card-img"
-                             src="https://appetitedemo.files.wordpress.com/2015/07/smachno_20.jpg"/>
+                        <img
+                             className="my-auto card-img img-post-banner"
+                             src={require("../../../assets/images/posts/RzaDRA3Stct09BOROS6C-TE5.jpg")}/>
                     </div>
 
                 </div>
@@ -104,7 +105,7 @@ export default function () {
             <section className="entry-section">
 
                 <div className="pb-5">
-                    <h1 className="text-center">THE STAFF</h1>
+                    <h1 className="text-center title">THE STAFF</h1>
                 </div>
 
 
@@ -114,11 +115,11 @@ export default function () {
                         className="col-4 lg:th-px-lg text-center">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_33.jpg?w=800&amp;h=480&amp;crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/photographer-865295_1920.jpg")}/>
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">Jonatan
                                 Doe</a>
@@ -137,9 +138,8 @@ export default function () {
                                 from
                                 an institution, as well as by apprenticing with an experienced chef.</p>
 
-
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary my-2">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -150,11 +150,12 @@ export default function () {
                         className="col-4 lg:th-px-lg text-center">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_35.jpg?w=300&h=180&crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/traveller-1149973_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">Jonatan Doe</a>
                             </h3>
@@ -174,7 +175,7 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -185,11 +186,12 @@ export default function () {
                         className="col-4 lg:th-px-lg text-center">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_34.jpg?w=768&h=461&crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/women-3051614_1920.jpg")}
+                                     />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">JIMMY COLE</a>
                             </h3>
@@ -209,7 +211,7 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -228,7 +230,7 @@ export default function () {
 
 
                 <div>
-                    <h1 className="text-center">RECENT NEWS</h1>
+                    <h1 className="text-center title">RECENT NEWS</h1>
                 </div>
 
 
@@ -239,10 +241,11 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_33.jpg?w=800&amp;h=480&amp;crop=1"/>
+                                     src={require("../../../assets/images/posts/man-1246233_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">HOW TO MAKE SUSHI AT HOME</a>
                             </h3>
@@ -260,7 +263,7 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -272,10 +275,11 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_35.jpg?w=300&h=180&crop=1"/>
+                                     src={require("../../../assets/images/posts/chromehill-4724725_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</a>
                             </h3>
@@ -292,7 +296,7 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -304,10 +308,11 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_34.jpg?w=768&h=461&crop=1"/>
+                                     src={require("../../../assets/images/posts/freedom-4782870_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">EVERYTHING YOU WANT TO KNOW ABOUT PIZZA</a>
                             </h3>
@@ -324,7 +329,7 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -340,11 +345,12 @@ export default function () {
                     <div className="col-4 lg:th-px-lg text-center article-border-right">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_33.jpg?w=800&amp;h=480&amp;crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/men-1245982_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">HOW TO MAKE SUSHI AT HOME</a>
                             </h3>
@@ -362,7 +368,7 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -373,11 +379,12 @@ export default function () {
                         className="col-4 lg:th-px-lg text-center article-border-right">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_35.jpg?w=300&h=180&crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/old-1130731_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</a>
                             </h3>
@@ -394,7 +401,7 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -405,11 +412,12 @@ export default function () {
                         className="col-4 lg:th-px-lg text-center article-border-right">
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
-                                <img width="800" height="480"
-                                     src="https://appetitedemo.files.wordpress.com/2015/07/smachno_34.jpg?w=768&h=461&crop=1"/>
+                                <img className="img-post-category"
+                                     src={require("../../../assets/images/posts/beach-1867881_1920.jpg")}
+                                />
                             </a>
 
-                            <h3 className="entry-title mt-lg-5"><a
+                            <h3 className="title mt-lg-5"><a
                                 href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" rel="bookmark"
                                 className="h3 text-uppercase">EVERYTHING YOU WANT TO KNOW ABOUT PIZZA</a>
                             </h3>
@@ -426,7 +434,7 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="btn-custom">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -441,7 +449,7 @@ export default function () {
 
             {/*  */}
             <div className="container text-center my-5 ">
-                <h2 className="entry-title th-text-3xlth-uppercase th-mb-2xl">
+                <h2 className="title th-text-3xlth-uppercase th-mb-2xl">
                     Testimonials </h2>
 
                 <div id="testimonials-slider" className="th-testimonial-slider th-siema th-mx-auto th-siema-fade"

@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 function Navbar() {
     return (
@@ -17,13 +18,17 @@ function Navbar() {
                 <ul className="menu th-flex th-flex-wrap th-justify-end">
                     <li
                         className="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-43">
-                        <a href="https://appetitedemo.wordpress.com/" aria-current="page">Home</a></li>
+                        <Link to="/">Home</Link>
+                    </li>
                     <li
-                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-124"><a
-                        href="https://appetitedemo.wordpress.com/our-menu/">Menu</a></li>
+                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-124">
+                        <a
+                        href="https://appetitedemo.wordpress.com/our-menu/">Menu</a>
+                    </li>
                     <li
-                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-99"><a
-                        href="https://appetitedemo.wordpress.com/blog/">Blog</a></li>
+                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-99">
+                        <Link to="/blogs/posts/index">Blog</Link>
+                    </li>
                     <li
                         className="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-46">
                         <a href="#">Features</a><span className="arrow-icon" aria-hidden="true"></span>

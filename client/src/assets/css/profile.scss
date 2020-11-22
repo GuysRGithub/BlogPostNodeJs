@@ -1,0 +1,9 @@
+.dark-theme {
+  .item header {
+    background-color: var(--primaryInputDarkBgColor);
+  }
+
+  form input[type="text"], form input[type="email"], form input[type="password"], form select, form textarea {
+    background-color: var(--primaryInputDarkBgColor);
+  }
+}

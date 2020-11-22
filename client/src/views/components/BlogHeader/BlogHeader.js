@@ -3,7 +3,7 @@ import "./BlogHeaderStyle.css";
 import { NavLink } from "react-router-dom";
 const BlogHeader = (props) => {
   return (
-    <header className="header">
+    <header className="header m-0 p-0 dark-theme">
       <nav className="headerMenu">
         <a href="#">Home</a>
         <a href="#">About</a>

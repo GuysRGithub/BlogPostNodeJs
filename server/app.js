@@ -1,20 +1,29 @@
-const express = require("express");
-const app = express();
-const path = require("path");
+require("dotenv").config({
+    path: './config/config.env'
+})
 const cors = require('cors')
-
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const authRouter = require("./routes/auth_router")
+
+const app = express();
 const config = require("./config/config");
 
 let mode = "Localhost"
 
 if (mode === "Localhost") {
-// Connection URL
+    // Connection URL
     let url = 'mongodb://127.0.0.1:27017/BlogFullStack';
-// Use connect method to connect to the Server
-    mongoose.connect(url, {useNewUrlParser: true}, () => {
+    // Use connect method to connect to the Server
+    mongoose.connect(url, {
+        useNewUrlParser: true, useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+    }, () => {
         console.log("Connected correctly to mongo server");
     });
     mongoose.connection.on('error', err => {
@@ -26,8 +35,10 @@ if (mode === "Localhost") {
 } else {
     const connect = mongoose.connect(config.mongoURI,
         {
-            useNewUrlParser: true, useUnifiedTopology: true,
-            useCreateIndex: true, useFindAndModify: false
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
         })
         .then(() => console.log('MongoDB Connected...'))
         .catch(err => console.log(err));
@@ -57,6 +68,7 @@ app.use(cookieParser());
 app.use('/api/users', require('./routes/users'));
 app.use("/api/blogs", require("./routes/blogs"))
 app.use("/api/uploads", require("./routes/uploads"))
+app.use("/api", authRouter)
 
 
 //use this to show the image you have in node js server to client (react js)

@@ -1,0 +1,672 @@
+.letter-space-1 {
+  letter-spacing: 0.01rem !important;
+}
+
+.letter-space-2 {
+  letter-spacing: 0.025rem !important;
+}
+
+.letter-space-3 {
+  letter-spacing: 0.05rem !important;
+}
+
+.letter-space-4 {
+  letter-spacing: 0.075rem !important;
+}
+
+.letter-space-5 {
+  letter-spacing: 0.1rem !important;
+}
+
+
+.letter-space-6 {
+  letter-spacing: 0.125rem !important;
+}
+
+
+.letter-space-7 {
+  letter-spacing: 0.15rem !important;
+}
+
+
+.letter-space-8 {
+  letter-spacing: 0.175rem !important;
+}
+
+
+.letter-space-9 {
+  letter-spacing: 0.2rem !important;
+}
+
+
+.letter-space-10 {
+  letter-spacing: 0.225rem !important;
+}
+
+.background-sand {
+  background-color: rgb(50, 46, 22) !important;
+}
+
+.background-dark {
+  background-color: var(--primaryDarkcolor) !important;
+}
+
+.background-none {
+  background-color: #00000000 !important;
+}
+
+.dark-theme {
+  background-color: var(--primaryDarkcolor);
+  color: var(--mainWhite);
+  //section, div, article {
+  //  background-color: var(--primaryDarkcolor);
+  //  color: var(--mainWhite);
+  //}
+  p, h1, h2, h3, h4, h5, h6, span {
+    color: var(--mainWhite);
+  }
+}
+
+
+.opacity-0 {
+  opacity: 0 !important;
+}
+
+.opacity-1 {
+  opacity: 0.2 !important;
+}
+
+.opacity-2 {
+  opacity: 0.4 !important;
+}
+
+.opacity-3 {
+  opacity: 0.6 !important;
+}
+
+.opacity-4 {
+  opacity: .8 !important;
+}
+
+.opacity-5 {
+  opacity: 1 !important;
+}
+
+/* Maybe even support hover opacity shifts */
+.opacity-0h5 {
+  opacity: 0 !important;
+  transition: opacity .25s ease-in-out !important;
+  -moz-transition: opacity .25s ease-in-out !important;
+  -webkit-transition: opacity .25s ease-in-out !important;
+}
+
+.opacity-0h5:hover {
+  opacity: 1 !important;
+}
+
+.fs-sm-1 {
+  font-size: .75rem !important;
+}
+
+.fs-sm-2 {
+  font-size: 1rem !important;
+}
+
+.fs-1 {
+  font-size: 1.2rem !important;
+}
+
+.fs-1-2 {
+  font-size: 1.4rem !important;
+}
+
+.fs-2 {
+  font-size: 1.6rem !important;
+}
+
+.fs-3 {
+  font-size: 2rem !important;
+}
+
+.fs-4 {
+  font-size: 2.4rem !important;
+}
+
+.fs-5 {
+  font-size: 2.8rem !important;
+}
+
+.fs-6 {
+  font-size: 3.2rem !important;
+}
+
+.fw-3 {
+  font-weight: 300 !important;
+}
+
+.fw-4 {
+  font-weight: 400 !important;
+}
+
+.fw-5 {
+  font-weight: 500 !important;
+}
+
+.fw-6 {
+  font-weight: 600 !important;
+}
+
+.fw-7 {
+  font-weight: 700 !important;
+}
+
+.fw-8 {
+  font-weight: 800;
+}
+
+.fw-9 {
+  font-weight: 900;
+}
+
+.fw-10 {
+  font-weight: 1000;
+}
+
+
+.mtl-6 {
+  margin-top: 3rem !important;
+}
+
+.mtl-7 {
+  margin-top: 3.5rem !important;
+}
+
+.mtl-8 {
+  margin-top: 4rem !important;
+}
+
+.mtl-9 {
+  margin-top: 4.5rem !important;
+}
+
+.mtl-10 {
+  margin-top: 5rem !important;
+}
+
+
+.mbl-6 {
+  margin-bottom: 3rem !important;
+}
+
+.mbl-7 {
+  margin-bottom: 3.5rem !important;
+}
+
+.mbl-8 {
+  margin-bottom: 4rem !important;
+}
+
+.mbl-9 {
+  margin-bottom: 4.5rem !important;
+}
+
+.mbl-10 {
+  margin-bottom: 5rem !important;
+}
+
+.mxl-6 {
+  margin-left: 3rem !important;
+  margin-right: 3rem !important;
+}
+
+.mxl-7 {
+  margin-left: 3.5rem !important;
+  margin-right: 3.5rem !important;
+}
+
+.mxl-8 {
+  margin-left: 4rem !important;
+  margin-right: 4rem !important;
+}
+
+.mxl-9 {
+  margin-left: 4.5rem !important;
+  margin-right: 4.5rem !important;
+}
+
+.mxl-10 {
+  margin-left: 5rem !important;
+  margin-right: 5rem !important;
+}
+
+.myl-6 {
+  margin-top: 3rem !important;
+  margin-bottom: 3rem !important;
+}
+
+.myl-7 {
+  margin-top: 3.5rem !important;
+  margin-bottom: 3.5rem !important;
+}
+
+.myl-8 {
+  margin-top: 4rem !important;
+  margin-bottom: 4rem !important;
+}
+
+.myl-9 {
+  margin-top: 4.5rem !important;
+  margin-bottom: 4.5rem !important;
+}
+
+.myl-10 {
+  margin-top: 5rem !important;
+  margin-bottom: 5rem !important;
+}
+
+
+.p-0-imp {
+  padding: 0 !important;
+}
+
+.p-1-imp {
+  padding: 0.5rem !important;
+}
+
+.p-2-imp {
+  padding: 1rem !important;
+}
+
+.m-0-ipm {
+  margin: 0 !important;
+}
+
+.px-3-imp {
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
+.pxl-6 {
+  padding-left: 3rem !important;
+  padding-right: 3rem !important;
+}
+
+.pxl-7 {
+  padding-left: 3.5rem !important;
+  padding-right: 3.5rem !important;
+}
+
+.pxl-8 {
+  padding-left: 4rem !important;
+  padding-right: 4rem !important;
+}
+
+.pxl-9 {
+  padding-left: 4.5rem !important;
+  padding-right: 4.5rem !important;
+}
+
+.pxl-10 {
+  padding-left: 5rem !important;
+  padding-right: 5rem !important;
+}
+
+
+.myl-6 {
+  margin-top: 3rem !important;
+  margin-bottom: 3rem !important;
+}
+
+.myl-7 {
+  margin-top: 3.5rem !important;
+  margin-bottom: 3.5rem !important;
+}
+
+.myl-8 {
+  margin-top: 4rem !important;
+  margin-bottom: 4rem !important;
+}
+
+.myl-9 {
+  margin-top: 4.5rem !important;
+  margin-bottom: 4.5rem !important;
+}
+
+.myl-10 {
+  margin-top: 5rem !important;
+  margin-bottom: 5rem !important;
+}
+
+.line-height-1 {
+  line-height: 1rem;
+}
+
+.line-height-2 {
+  line-height: 1.5rem;
+}
+
+.line-height-3 {
+  line-height: 2rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.border-dark-gray {
+  border: 1 pxl solid var(--pirmaryBorderDarkColor);
+}
+
+.border-bottom-dark-gray {
+  border-bottom: 1 pxl solid var(--pirmaryBorderDarkColor);
+}
+
+.border-top-dark-gray {
+  border-top: 1 pxl solid var(--pirmaryBorderDarkColor)
+}
+
+.border-right-dark-gray {
+  border-right: 1 pxl solid var(--pirmaryBorderDarkColor)
+}
+
+.border-left-dark-gray {
+  border-left: 1 pxl solid var(--pirmaryBorderDarkColor)
+}
+
+.font-ubuntu {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.font-pt-serif {
+  font-family: 'PT Serif', serif;
+}
+
+.font-lobster {
+  font-family: 'Lobster', cursive;
+}
+
+.p-p1 {
+  p {
+    padding: .5rem;
+  }
+}
+
+.p-pxl1 {
+  p {
+    padding-left: .5rem !important;
+    padding-right: .5rem !important;
+  }
+}
+
+.p-py1 {
+  p {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+  }
+}
+
+
+.p-p2 {
+  p {
+    padding: 1rem;
+  }
+}
+
+.p-pxl2 {
+  p {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+.p-py2 {
+  p {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}
+
+.color-fade {
+  color: var(--primaryColorFade) !important;
+}
+
+
+/* Function From Bootstrap */
+.relative {
+  position: relative !important;
+}
+
+.all-center {
+  text-align: center !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.min-h-100 {
+  min-height: 100vh;
+}
+
+.mx-auto {
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+.rounded-circle {
+  border-radius: 50% !important;
+}
+
+.editor-icon {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #c2c2c2;
+  margin-left: 0.25rem;
+}
+
+
+.img-hover-blur {
+  cursor: pointer;
+  position: relative;
+}
+
+.img-hover-blur::after {
+  transition: .5s;
+}
+
+.img-hover-blur:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-shadow: inset 0 0 200px #2f2f2f;
+}
+
+.img-hover-blur::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hover-color-white:hover {
+  color: white !important;
+}
+
+.hover-color-primary:hover {
+  color: var(--primaryColor) !important;
+}
+
+*[class*='child-mx-2'] > * {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+*[class*='child-mx-1'] > * {
+  margin-left: .5rem;
+  margin-right: .5rem;
+}
+
+*[class*='child-px-2'] > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+*[class*='child-px-5'] > * {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+[class*='child-mx'][class$='not-first'] > *:first-child {
+  margin-left: 0;
+}
+
+
+.center-element-inner {
+  position: relative;
+
+  * {
+    text-transform: uppercase;
+    position: absolute;
+    letter-spacing: 0.02rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+
+.justify-content-start {
+  -ms-flex-pack: start !important;
+  justify-content: flex-start !important;
+}
+
+.justify-content-end {
+  -ms-flex-pack: end !important;
+  justify-content: flex-end !important;
+}
+
+.justify-content-center {
+  -ms-flex-pack: center !important;
+  justify-content: center !important;
+}
+
+
+.justify-content-between {
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important;
+}
+
+.justify-content-around {
+  -ms-flex-pack: distribute !important;
+  justify-content: space-around !important;
+}
+
+.align-items-start {
+  -ms-flex-align: start !important;
+  align-items: flex-start !important;
+}
+
+.align-items-end {
+  -ms-flex-align: end !important;
+  align-items: flex-end !important;
+}
+
+.align-items-center {
+  -ms-flex-align: center !important;
+  align-items: center !important;
+}
+
+.align-items-baseline {
+  -ms-flex-align: baseline !important;
+  align-items: baseline !important;
+}
+
+.align-items-stretch {
+  -ms-flex-align: stretch !important;
+  align-items: stretch !important;
+}
+
+.align-content-start {
+  -ms-flex-line-pack: start !important;
+  align-content: flex-start !important;
+}
+
+.align-content-end {
+  -ms-flex-line-pack: end !important;
+  align-content: flex-end !important;
+}
+
+.align-content-center {
+  -ms-flex-line-pack: center !important;
+  align-content: center !important;
+}
+
+.align-content-between {
+  -ms-flex-line-pack: justify !important;
+  align-content: space-between !important;
+}
+
+.align-content-around {
+  -ms-flex-line-pack: distribute !important;
+  align-content: space-around !important;
+}
+
+.align-content-stretch {
+  -ms-flex-line-pack: stretch !important;
+  align-content: stretch !important;
+}
+
+.align-self-auto {
+  -ms-flex-item-align: auto !important;
+  align-self: auto !important;
+}
+
+.align-self-start {
+  -ms-flex-item-align: start !important;
+  align-self: flex-start !important;
+}
+
+.align-self-end {
+  -ms-flex-item-align: end !important;
+  align-self: flex-end !important;
+}
+
+.align-self-center {
+  -ms-flex-item-align: center !important;
+  align-self: center !important;
+}
+
+.align-self-baseline {
+  -ms-flex-item-align: baseline !important;
+  align-self: baseline !important;
+}
+
+.align-self-stretch {
+  -ms-flex-item-align: stretch !important;
+  align-self: stretch !important;
+}
+
+.color-primary {
+  color: var(--primaryColor);
+}
+
+.dark-theme {
+  .border {
+    border: 2px solid;
+    border-color: var(--pirmaryBorderLightColor);
+  }
+
+  .border-bottom {
+    border-bottom: 2px solid;
+    border-color: var(--pirmaryBorderLightColor);
+  }
+}

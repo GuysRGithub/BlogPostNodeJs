@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 const saltRounds = 10
 const moment = require("moment")
 const secretKey = require("../config/config").key
+const crypto = require("crypto");
 
 const userSchema = mongoose.Schema({
     name: {
@@ -15,10 +16,10 @@ const userSchema = mongoose.Schema({
         trim: true,
         unique: true
     },
-    password: {
-        type: String,
-        minlength: 5
-    },
+    // password: {
+    //     type: String,
+    //     minlength: 5
+    // },
     lastname: {
         type: String,
         maxlength: 50,
@@ -32,6 +33,16 @@ const userSchema = mongoose.Schema({
     role: {
         type: Number,
         default: 0
+    },
+    hashed_password: {
+        type: String,
+        trim: true,
+        required: true,
+    },
+    salt: String,
+    resetPasswordLink: {
+        type: String,
+        default: "",
     },
     image: String,
     token: String,
@@ -85,6 +96,42 @@ userSchema.methods.findByToken = function (token, cb) {
         })
     })
 }
+
+
+/**/
+userSchema
+    .virtual("password")
+    .set(function (password) {
+        // Use normal, not arrow function to access this
+        this._password = password;
+        this.salt = this.makeSalt();
+        this.hashed_password = this.encryptPassword(password);
+    })
+    .get(function () {
+        return this._password;
+    });
+
+userSchema.methods = {
+    makeSalt: function () {
+        return Math.round(new Date().valueOf() * Math.random()) + "";
+    },
+
+    encryptPassword: function (password) {
+        if (!password) return "";
+        try {
+            return crypto
+                .createHash("sha1", this.salt)
+                .update(password)
+                .digest("hex");
+        } catch (err) {
+            return "";
+        }
+    },
+
+    authenticate: function (plainPassword) {
+        return this.encryptPassword(plainPassword) === this.hashed_password;
+    },
+};
 
 const AuthorUser = mongoose.model("Author", userSchema)
 

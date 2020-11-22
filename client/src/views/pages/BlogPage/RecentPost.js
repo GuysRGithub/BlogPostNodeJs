@@ -1,5 +1,5 @@
 import Card from "../../components/UI/Card";
-import "../../../assets/css/RecentPostStyle.css";
+import "../../../assets/css/recent_post_style.scss";
 import blogPost from "../../../data/blog.json";
 
 import React, { Component } from 'react'

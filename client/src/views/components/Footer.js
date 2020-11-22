@@ -6,22 +6,23 @@ function Footer() {
             <div className="mx-auto fs-1 row justify-content-center" style={{width: "90%"}}>
 
                 <div
-                    className="row justify-content-center align-items-center">
+                    className="row justify-content-center justify-center align-items-center">
                     <aside className="col-4">
                         <h3 className="text-uppercase font-weight-bold my-3">Opening Hours</h3>
                         <div itemScope="" itemType="http://schema.org/LocalBusiness">
-                            <div className="confit-hours justify-content-between" itemProp="openingHours">Weekdays: 08:00am - 22:00pm
-                                <br/>Saturday: 09:00am - 02:00am
-                                <br/>Sunday: 08:00am - 10:00pm
-                                <br/>Holidays: 10:00am - 10:00pm
-                                <br/>Happy Hours: 8:00pm - 11:00pm
+                            <div className="justify-content-between" itemProp="openingHours">
+                                <p className="letter-space-4">Weekdays: 08:00am - 22:00pm</p>
+                                <p className="letter-space-4">Saturday: 09:00am - 02:00am</p>
+                                <p className="letter-space-4">Sunday: 08:00am - 10:00pm</p>
+                                <p className="letter-space-4">Holidays: 10:00am - 10:00pm</p>
+                                <p className="letter-space-4">Happy Hours: 8:00pm - 11:00pm</p>
                             </div>
                         </div>
                     </aside>
 
                     <aside className="col-4">
                         <h3 className="text-uppercase font-weight-bold my-3">Recent Posts</h3>
-                        <ul style={{listStyle: "none", margin: "0"}}>
+                        <ul className="footer-list">
                             <li>
                                 <a href="https://appetitedemo.wordpress.com/2015/07/08/how-to-make-sushi-at-home/">How
                                     to Make Sushi at&nbsp;Home</a>
@@ -49,10 +50,10 @@ function Footer() {
                 </div>
 
 
-                <div className="text-center container mt-5">
+                <div className="text-center all-center container mt-5">
 
                     <nav className="mt-5 social" aria-label="Social Links Menu">
-                        <ul className="d-flex justify-content-center w-50 mx-auto"
+                        <ul className="d-flex flex justify-content-center justify-center w-50 mx-auto"
                         style={{listStyle: "none"}}>
                             <li className=""><a
                                 href="http://facebook.com/"><span className="screen-reader-text social-meta">Facebook</span>
