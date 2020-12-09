@@ -72,3 +72,7 @@
 .dark-shadow {
   box-shadow: 0 0 5px 5px #1c1c1c;
 }
+
+.disabled {
+  pointer-events: none;
+}

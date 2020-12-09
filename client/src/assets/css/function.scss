@@ -466,8 +466,51 @@
   height: 36px;
   border: 2px solid #c2c2c2;
   margin-left: 0.25rem;
+  cursor: pointer;
 }
 
+.editor-icon:hover {
+  color: #5d6260;
+}
+
+.editor-icon.active {
+  color: var(--primaryHoverColor);
+  border-color: var(--primaryHoverColor);
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip .tooltip-text {
+  width: 120px;
+  top: 120%;
+  left: 50%;
+  margin-left: -60px;
+
+  font-size: 16px;
+  font-family: 'Ubuntu', sans-serif;
+
+  visibility: hidden;
+  background-color: #5d6260;
+  color: #fff;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute !important;
+  z-index: 1;
+  transform: none;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+}
+
+//.tooltip::after {
+//  content: '';
+//}
 
 .img-hover-blur {
   cursor: pointer;

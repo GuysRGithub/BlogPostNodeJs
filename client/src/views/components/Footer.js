@@ -11,11 +11,11 @@ function Footer() {
                         <h3 className="text-uppercase font-weight-bold my-3">Opening Hours</h3>
                         <div itemScope="" itemType="http://schema.org/LocalBusiness">
                             <div className="justify-content-between" itemProp="openingHours">
-                                <p className="letter-space-4">Weekdays: 08:00am - 22:00pm</p>
-                                <p className="letter-space-4">Saturday: 09:00am - 02:00am</p>
-                                <p className="letter-space-4">Sunday: 08:00am - 10:00pm</p>
-                                <p className="letter-space-4">Holidays: 10:00am - 10:00pm</p>
-                                <p className="letter-space-4">Happy Hours: 8:00pm - 11:00pm</p>
+                                <p className="letter-space-4 my-1">Weekdays: 08:00am - 22:00pm</p>
+                                <p className="letter-space-4 my-1">Saturday: 09:00am - 02:00am</p>
+                                <p className="letter-space-4 my-1">Sunday: 08:00am - 10:00pm</p>
+                                <p className="letter-space-4 my-1">Holidays: 10:00am - 10:00pm</p>
+                                <p className="letter-space-4 my-1">Happy Hours: 8:00pm - 11:00pm</p>
                             </div>
                         </div>
                     </aside>

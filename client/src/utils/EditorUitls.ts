@@ -28,7 +28,7 @@ export async function alignJustifySelection() {
     await styleElement('text-align', 'justify')
 }
 
-async function styleElement(style: string, value: string) {
+export async function styleElement(style: string, value: string) {
     let action: ExecCommandStyle = {
         style: style,
         value: value,

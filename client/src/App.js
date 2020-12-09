@@ -2,7 +2,8 @@ import React, {Suspense} from 'react';
 import {Route, Switch} from "react-router-dom"
 import './App.scss';
 import "react-toastify/dist/ReactToastify.css"
-import "../src/assets/js/home"
+// import "../src/assets/js/home"
+import "../src/assets/js/index"
 import Auth from "./hocs/auth.js"
 import HomePage from "./views/pages/HomePage/HomePage";
 import Home from "./views/pages/BlogPage/Home";
@@ -40,7 +41,7 @@ function App() {
                     <Route exact path={"/blogs/posts/index"} component={BlogPostIndex}/>
                     <Route exact path={"/blogs/posts/new"} component={NewPost}/>
                     <Route exact path={"/blogs/posts/:postId"} component={ShowPost}/>
-                    <Route exact path={"/test"} component={NewTestCK}/>
+                    <Route exact path={"/test"} component={NewPostTest}/>
 
                 </Switch>
             </div>

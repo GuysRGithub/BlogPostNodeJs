@@ -179,8 +179,55 @@ async function replaceSelection(container: HTMLElement,
                                 selection: Selection,
                                 containers: string) {
     const range: Range = selection.getRangeAt(0);
-
     const fragment: DocumentFragment = range.extractContents();
+
+    console.log('range', range)
+    const startSelection = range.startOffset
+    const endSelection = range.endOffset
+
+    if (startSelection == endSelection) {
+        const bodyText = textField.document.getElementsByTagName("body")[0].innerText
+        const bodyHtml = textField.document.getElementsByTagName("body")[0].innerHTML
+        console.log("True", bodyHtml != bodyText)
+
+        if (bodyText != bodyHtml) {
+            if (container.style['text-decoration'] === "underline") {
+                container.style['text-decoration'] = "inherit"
+            } else {
+                container.style['text-decoration'] = "underline"
+            }
+            console.log("Container After", container)
+        } else {
+            console.log("True Fuck")
+
+            const div = document.createElement("div")
+            const style = await getStyleValue(container, action, containers)
+            console.log("styl", style)
+            div.style[action.style] = style
+            console.log("div", div)
+            div.setAttribute("contentEditable", "true")
+            // @ts-ignore
+            div.innerText = selection.anchorNode?.data
+            div.appendChild(fragment)
+            range.insertNode(div)
+
+            const newRange = document.createRange()
+            // var sel = window.getSelection()
+            // @ts-ignore
+            newRange.setStart(div.childNodes[0], 2)
+            newRange.collapse(true)
+
+            selection.removeAllRanges()
+            selection.addRange(newRange)
+
+            setTimeout(function() {
+                textField.focus();
+            }, 0);
+        }
+
+        return
+    }
+
     console.log("fragment", fragment)
     const span: HTMLElement =
         await createSpan(container, action, containers);
