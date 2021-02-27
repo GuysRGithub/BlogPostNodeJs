@@ -224,7 +224,7 @@ var Application = function() {
 					// DOM7011: The code on this page disabled back and forward caching.
 
 					// In Brave (Chrome) error when on the server
-					// index.js:221 HEAD https://www.example.com/ net::ERR_INSUFFICIENT_RESOURCES
+					// index.jsx:221 HEAD https://www.example.com/ net::ERR_INSUFFICIENT_RESOURCES
 					// self.refreshRequest.send(null);
 
 				}

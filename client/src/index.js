@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+// import './index.css';
 import * as serviceWorker from './serviceWorker';
+import ReactDOM from 'react-dom';
 import {Provider} from "react-redux";
-import {applyMiddleware, createStore} from "redux";
 import promiseMiddleware from "redux-promise"
+import {BrowserRouter} from "react-router-dom";
+import App from './App';
+import {applyMiddleware, createStore} from "redux";
 import ReduxThunk from "redux-thunk"
 import Reducer from "./_reducers/index"
-import {BrowserRouter} from "react-router-dom";
+import React from 'react';
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
 
 ReactDOM.render(

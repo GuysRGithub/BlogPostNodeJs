@@ -8,7 +8,6 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const authRouter = require("./routes/auth_router")
 
 const app = express();
 const config = require("./config/config");
@@ -65,10 +64,10 @@ app.use(cookieParser());
 // app.use(express.static('public'))
 
 
-app.use('/api/users', require('./routes/users'));
-app.use("/api/blogs", require("./routes/blogs"))
+app.use('/api/users', require('./routes/author_users'));
+app.use("/api/blogs", require("./routes/blog_posts"))
 app.use("/api/uploads", require("./routes/uploads"))
-app.use("/api", authRouter)
+app.use("/api/users", require("./routes/auth_router"))
 
 
 //use this to show the image you have in node js server to client (react js)

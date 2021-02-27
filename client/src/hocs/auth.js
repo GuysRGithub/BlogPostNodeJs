@@ -3,6 +3,10 @@ import {useDispatch, useSelector} from "react-redux"
 import React, {useEffect} from "react";
 import {auth} from "../_actions/user_actions";
 
+
+// null   Anyone Can go inside
+// true   only logged in user can go inside
+// false  logged in user can't go inside
 export default function (SpecificComponent, option, adminRoute=null) {
     function AuthenticationCheck(props) {
         let user = useSelector(state => state.user)

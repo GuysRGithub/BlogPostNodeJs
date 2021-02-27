@@ -1,12 +1,17 @@
 @import "assets/css/html_template_style/main";
 @import "assets/css/clone";
-@import "assets/css/function";
+@import "assets/css/react_html_main";
+
 @import '~antd/dist/antd.css';
+
+@import "assets/css/function";
 
 @import "assets/css/blog";
 @import "assets/css/index";
 @import "assets/css/footer";
 @import "assets/css/post_card";
+@import "assets/css/dropdown";
+
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,600");
 
 /*  Profile  */
@@ -169,5 +174,17 @@ input.error {
     padding-bottom: 10px;
     font-weight: bold;
   }
+}
+
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="text"],
+input[type="tel"],
+textarea
+{
+  box-shadow: inset 0 0 10px 0 rgba(255, 255, 255, 0.56);
+  border: 1px solid #cccccc;
+  padding: 2px 8px;
 }
 

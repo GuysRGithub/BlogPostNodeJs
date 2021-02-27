@@ -2,25 +2,28 @@ import React, {Suspense} from 'react';
 import {Route, Switch} from "react-router-dom"
 import './App.scss';
 import "react-toastify/dist/ReactToastify.css"
-// import "../src/assets/js/home"
-import "../src/assets/js/index"
+
 import Auth from "./hocs/auth.js"
-import HomePage from "./views/pages/HomePage/HomePage";
-import Home from "./views/pages/BlogPage/Home";
-import NewPost from "./views/pages/BlogPage/Post/NewPost";
-import BlogPostIndex from "./views/pages/BlogPage/Post/BlogPostIndex";
-import ShowPost from "./views/pages/BlogPage/Post/ShowPost";
-import {Profile} from "./views/react_html_up/Profile";
-import PostCard from "./views/components/PostCard";
-import {Register} from "./views/pages/Auth/Register";
-import {Login} from "./views/pages/Auth/Login";
-import Activate from "./views/pages/Auth/Activate";
-import {ForgetPassword} from "./views/pages/Auth/ForgetPassword";
-import ResetPassword from "./views/pages/Auth/Reset";
+import HomePage from "./views/pages/HomePage/HomePage.jsx";
+import NewPost from "./views/pages/BlogPage/Post/NewPost.jsx";
+import BlogPostIndex from "./views/pages/BlogPage/Post/BlogPostIndex.jsx";
+import ShowPost from "./views/pages/BlogPage/Post/ShowPost.jsx";
+import {Profile} from "./views/react_html_up/Profile.jsx";
+import PostCard from "./views/components/Shared/PostCard.jsx";
+import {Register} from "./views/pages/Auth/Register.jsx";
+import {Login} from "./views/pages/Auth/Login.jsx";
+import Activate from "./views/pages/Auth/Activate.jsx";
+import {ForgetPassword} from "./views/pages/Auth/ForgetPassword.jsx";
+import ResetPassword from "./views/pages/Auth/Reset.jsx";
 import NewPostTest from "./views/pages/Test/TestNewPost";
-import Test from "./views/pages/Test/test";
 import TestNewPost from "./views/pages/Test/TestNewPost";
 import NewTestCK from "./views/pages/Test/TestCK";
+import Upload from "./views/pages/Test/Upload";
+import MediaLibrary from "./views/components/Upload/MediaLibrary.jsx";
+
+// Javascript script
+import "../src/assets/js/index"
+
 
 function App() {
     return (
@@ -42,6 +45,7 @@ function App() {
                     <Route exact path={"/blogs/posts/new"} component={NewPost}/>
                     <Route exact path={"/blogs/posts/:postId"} component={ShowPost}/>
                     <Route exact path={"/test"} component={NewPostTest}/>
+                    <Route exact path={"/dev"} component={Auth(MediaLibrary, true)}/>
 
                 </Switch>
             </div>

@@ -1,7 +1,7 @@
 const Profile = require("../models/Profile");
-
 const User = require("../models/AuthorUser");
-const expressJwt = require("express-jwt");
+const UserMediaLibrary = require("../models/UserMediaLibrary.js")
+
 const {OAuth2Client} = require("google-auth-library");
 const fetch = require("node-fetch");
 const {validationResult} = require("express-validator");
@@ -9,7 +9,6 @@ const jwt = require("jsonwebtoken");
 const {errorHandler} = require("../helpers/dbErrorHandling");
 // Send email using sendgrid
 const sgMail = require("@sendgrid/mail");
-const {response} = require("express");
 const _ = require("lodash")
 sgMail.setApiKey(process.env.MAIL_KEY);
 
@@ -95,7 +94,7 @@ exports.activationController = async (req, res) => {
             if (err) {
                 console.log("Error Activate", err);
                 return res.status(401).json({
-                    error: "Expired Token, Please Sign Un Again",
+                    error: "Expired Token, Please Sign Up Again",
                 });
             } else {
                 const {name, email, password} = jwt.decode(token);
@@ -107,6 +106,10 @@ exports.activationController = async (req, res) => {
                 });
 
                 const profile = new Profile({
+                    author: user._id
+                })
+
+                const userMediaLibrary = new UserMediaLibrary({
                     author: user._id
                 })
 
@@ -135,11 +138,19 @@ exports.activationController = async (req, res) => {
                                     error: errorHandler(err),
                                 });
                             } else {
-                                return res.json({
-                                    success: true,
-                                    message: "Account Activate Successfully! You Can Login Now.",
-                                    user,
-                                });
+                                userMediaLibrary.save((err, _) => {
+                                    if (err) {
+                                        return res.json({
+                                            error: errorHandler(err)
+                                        })
+                                    } else {
+                                        return res.json({
+                                            success: true,
+                                            message: "Account Activate Successfully! You Can Login Now.",
+                                            user,
+                                        });
+                                    }
+                                })
                             }
                         })
 
@@ -149,7 +160,7 @@ exports.activationController = async (req, res) => {
         });
     } else {
         return res.json({
-            message: "error happening please try again",
+            message: "Error happening please try again",
         });
     }
 };
@@ -168,13 +179,14 @@ exports.loginController = (req, res) => {
         User.findOne({
             email,
         }).exec((err, user) => {
-            if (err | !user) {
+            if (err || !user) {
                 return res.status(400).json({
                     error: "User with that email does not exits. Please sign up.",
                 });
             }
 
             console.log(user.authenticate(password));
+
             if (!user.authenticate(password)) {
                 return res.status(400).json({
                     error: "Email or Password does not match",
@@ -192,6 +204,7 @@ exports.loginController = (req, res) => {
             );
 
             const {_id, name, email, role} = user;
+
             return res.json({
                 token,
                 user: {

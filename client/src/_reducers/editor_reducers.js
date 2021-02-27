@@ -1,14 +1,24 @@
-import {TOGGLE_BOLD_EDITOR, TOGGLE_ITALIC_EDITOR, TOGGLE_UNDERLINE_EDITOR, STYLE_CHANGE_EDITOR, STYLE_NOT_CHANGE_EDITOR} from "../_actions/types";
+import {
+    TOGGLE_BOLD_EDITOR,
+    TOGGLE_ITALIC_EDITOR,
+    TOGGLE_UNDERLINE_EDITOR,
+    STYLE_CHANGE_EDITOR,
+    STYLE_NOT_CHANGE_EDITOR,
+    TOGGLE_ALIGN_LEFT_EDITOR, TOGGLE_ALIGN_CENTER_EDITOR, TOGGLE_ALIGN_RIGHT_EDITOR, CHANGE_TAG_NEW_ELEMENT_EDITOR
+} from "../_actions/types";
 
 const defaultState = {
     boldEnable: false,
     italicEnable: false,
     underlineEnable: false,
-    isStyleChanged: false
+    isStyleChanged: false,
+    isAlignLeft: false,
+    isAlignCenter: false,
+    isAlignRight: false,
+    tagNewElement: "p",
 }
 
-export default function (state = {}, action) {
-    console.log("FUck Update STate", !state.underlineEnable)
+export default function (state = defaultState, action) {
     switch (action.type) {
         case TOGGLE_BOLD_EDITOR:
             return {...state, boldEnable: !state.boldEnable}
@@ -20,6 +30,14 @@ export default function (state = {}, action) {
             return {...state, isStyleChanged: true}
         case STYLE_NOT_CHANGE_EDITOR:
             return {...state, isStyleChanged: false}
+        case TOGGLE_ALIGN_LEFT_EDITOR:
+            return {...state, isAlignLeft: !state.isAlignLeft}
+        case TOGGLE_ALIGN_CENTER_EDITOR:
+            return {...state, isAlignCenter: !state.isAlignCenter}
+        case TOGGLE_ALIGN_RIGHT_EDITOR:
+            return {...state, isAlignRight: !state.isAlignRight}
+        case CHANGE_TAG_NEW_ELEMENT_EDITOR:
+            return {...state, tagNewElement: action.value}
         default:
             return state
     }

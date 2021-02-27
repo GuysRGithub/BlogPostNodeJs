@@ -1,9 +1,15 @@
 import Axios from "axios";
-import {USER_SERVER_URL, BLOG_SERVER_URL} from "../config/Config";
+import {USER_SERVER_URL, BLOG_SERVER_URL} from "../config/config.js";
 import {AUTH_USER, LOGIN_USER, LOGOUT_USER, REGISTER_USER, SAVE_POST} from "./types";
+import {
+    USER_AUTHENTICATE_SERVER_URL,
+    USER_LOGIN_SERVER_URL,
+    USER_LOGOUT_SERVER_URL,
+    USER_REGISTER_SERVER_URL
+} from "../config/router_path";
 
 export function registerUser(data) {
-    const request = Axios.post(`${USER_SERVER_URL}/register`, data)
+    const request = Axios.post(`${USER_REGISTER_SERVER_URL}`, data)
         .then(response => response.data)
 
     console.log("Request Register: ", request)
@@ -14,7 +20,7 @@ export function registerUser(data) {
 }
 
 export function loginUser(data) {
-    const request = Axios.post(`${USER_SERVER_URL}/login`, data)
+    const request = Axios.post(`${USER_LOGIN_SERVER_URL}`, data)
         .then(response => response.data)
 
     console.log("Request Login: ", request)
@@ -25,7 +31,7 @@ export function loginUser(data) {
 }
 
 export function logoutUser(data) {
-    const request = Axios.post(`${USER_SERVER_URL}/logout`, data)
+    const request = Axios.post(`${USER_LOGOUT_SERVER_URL}`, data)
         .then(response => response.data)
 
     console.log("Request Logout: ", request)
@@ -36,7 +42,7 @@ export function logoutUser(data) {
 }
 
 export function auth(data) {
-    const request = Axios.post(`${USER_SERVER_URL}/auth`, data)
+    const request = Axios.post(`${USER_AUTHENTICATE_SERVER_URL}`, data)
         .then(response => response.data)
 
     console.log("Request Auth: ", request)

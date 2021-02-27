@@ -20,8 +20,8 @@ const {
 router.post("/register", validRegister, registerController);
 router.post("/activation", activationController);
 router.post("/login", validLogin, loginController);
-router.put("/passwords/forget", forgotPasswordValidator, forgetController);
-router.put("/passwords/reset", resetPasswordValidator, resetController);
+router.put("/password/forget", forgotPasswordValidator, forgetController);
+router.put("/password/reset", resetPasswordValidator, resetController);
 router.post('/google/login', googleLoginController)
 
 router.post('/facebook/login', facebookLoginController)
