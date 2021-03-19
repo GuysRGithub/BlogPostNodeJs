@@ -42,14 +42,14 @@ const ShowPost = (props) => {
             <Header/>
             <section className="container w-100 dark-theme">
                 <div className="w-50 mx-auto my-10">
-                    <h1 className="title font-ubuntu">{Post.title}</h1>
+                    <h1 className="title font-rubik">{Post.title}</h1>
                     <div className="flex justify-content-between">
                         <div className="flex w-100">
                             <img className="img-avatar text-center"
                                  src={require("../../../../assets/images/others/EHD_Merit.jpg")}/>
                             <div className="w-100">
                                 <h4 className="m-0 p-0 ml-3 col-8 title fs-1 color-gray line-height-1 font-italic">Guys Robot</h4>
-                                <h6 className="m-0 p-0 ml-3 col-8 color-gray-light line-height-3 font-weight-lighter font-italic font-ubuntu">posted
+                                <h6 className="m-0 p-0 ml-3 col-8 color-gray-light line-height-3 font-weight-lighter font-italic font-rubik">posted
                                     on {Post.createdAt}: 13 min read</h6>
                             </div>
                         </div>

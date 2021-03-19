@@ -7,10 +7,11 @@ export default (props) => {
     return (<div id="header" className="app-header w-100 text-center position-relative all-center relative">
         <Navbar/>
 
-        <div className="welcome-header-text font-weight-bold font-bold background-none">
-            <h2>Welcome to our Restaurant</h2>
+        <div className="welcome-header-text background-none">
+            <h2 className="font-jose-sans font-bold">Welcome to our Restaurant</h2>
             <div className="header-description">
-                <p>Restaurants range from inexpensive and informal lunching or dining places catering to people working
+                <p className="font-jose-sans font-normal">
+                    Restaurants range from inexpensive and informal lunching or dining places catering to people working
                     nearby, with modest food served in simple settings at low prices, to expensive establishments
                     serving
                     refined food and fine wines in a formal setting. In the former case, customers usually wear casual

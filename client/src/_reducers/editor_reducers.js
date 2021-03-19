@@ -4,7 +4,11 @@ import {
     TOGGLE_UNDERLINE_EDITOR,
     STYLE_CHANGE_EDITOR,
     STYLE_NOT_CHANGE_EDITOR,
-    TOGGLE_ALIGN_LEFT_EDITOR, TOGGLE_ALIGN_CENTER_EDITOR, TOGGLE_ALIGN_RIGHT_EDITOR, CHANGE_TAG_NEW_ELEMENT_EDITOR
+    TOGGLE_ALIGN_LEFT_EDITOR,
+    TOGGLE_ALIGN_CENTER_EDITOR,
+    TOGGLE_ALIGN_RIGHT_EDITOR,
+    CHANGE_TAG_NEW_ELEMENT_EDITOR,
+    CHANGE_FONT_SIZE_ELEMENT_EDITOR, CHANGE_FONT_FAMILY_ELEMENT_EDITOR
 } from "../_actions/types";
 
 const defaultState = {
@@ -16,6 +20,8 @@ const defaultState = {
     isAlignCenter: false,
     isAlignRight: false,
     tagNewElement: "p",
+    fontSize: 16,
+    fontFamily: "",
 }
 
 export default function (state = defaultState, action) {
@@ -38,6 +44,10 @@ export default function (state = defaultState, action) {
             return {...state, isAlignRight: !state.isAlignRight}
         case CHANGE_TAG_NEW_ELEMENT_EDITOR:
             return {...state, tagNewElement: action.value}
+        case CHANGE_FONT_SIZE_ELEMENT_EDITOR:
+            return {...state, fontSize: action.value}
+        case CHANGE_FONT_FAMILY_ELEMENT_EDITOR:
+            return {...state, fontFamily: action.value}
         default:
             return state
     }

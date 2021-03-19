@@ -53,6 +53,21 @@ export function getFirstParentWithTag(tag: string, child: HTMLElement | null) {
     return selectionNode
 }
 
+export function getFirstParentOfSpan(child: HTMLElement | null) {
+    // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+    return getFirstParentWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
+}
+
+export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | null) {
+    // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+    let selectionNode: HTMLElement | null = child
+    while (selectionNode != null && !tag.includes(selectionNode.tagName?.toLowerCase())) {
+        selectionNode = selectionNode.parentNode as HTMLElement | null
+    }
+    return selectionNode
+}
+
+
 export function getFirstParentNotWithTag(tag: string, child: HTMLElement | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child

@@ -18,7 +18,7 @@ const PostCardGrid = ({postViewSeparate = {title: "Title", "createdAt": "Today",
                     <div className="fs-sm-2 color-fade">
                         <a className="fw-3">FOOD</a> - <span className="fw-3 color-fade">July 8 2020</span>
                     </div>
-                    <h5 className="font-ubuntu fw-8 fs-2 hover-color-primary cursor-pointer duration-500">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</h5>
+                    <h5 className="font-rubik fw-8 fs-2 hover-color-primary cursor-pointer duration-500">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</h5>
                     <div className="flex d-flex fs-1 mt-2">
                     </div>
                     <div className="mt-1">

@@ -1,8 +1,10 @@
 import React, {Component, useState} from 'react'
 import {execCommandStyle, ExecCommandStyle} from "../../../assets/ts/editor";
-import {getFirstParentWithTag, styleElement} from "../../../utils/editor_utils";
+import {getFirstParentOfSpan, getFirstParentWithTag, styleElement} from "../../../utils/editor_utils";
 import {connect, useSelector} from "react-redux"
 import setStyleNotChangeEditor, {
+    changeFontFamilyElement,
+    changeFontSizeElement,
     changeTagNewElement,
     setStyleChangeEditor, toggleAlignCenter, toggleAlignJustify, toggleAlignLeft, toggleAlignRight,
     toggleBold,
@@ -11,17 +13,18 @@ import setStyleNotChangeEditor, {
 } from "../../../_actions/editor_actions";
 import {State} from "react-toastify/dist/hooks/toastContainerReducer";
 import {Login} from "../Auth/Login";
-import {instanceOf} from "prop-types";
+import {elementType, instanceOf} from "prop-types";
 import MediaLibrary from "../../components/Upload/MediaLibrary";
 // import store from '../reducers/store';
 
 
 declare var textField: Window
 
+const FONT_FAMILY_KEY = "FONT_FAMILY_KEY_EDITOR"
+const FONT_SIZE_KEY = "FONT_SIZE_KEY_EDITOR"
+const TAG_KEY = "TAG_KEY_EDITOR"
 
 class TestNewPost extends Component {
-
-    // editorState: Object = {}
 
     constructor(props: Object) {
         super(props);
@@ -41,21 +44,20 @@ class TestNewPost extends Component {
 
     handleIframeKeyPress(evt: KeyboardEvent) {
 
-        let charCode = evt.key;
+        const charCode = evt.key;
 
         // @ts-ignore
-        let editorState = this.props.state;
+        const editorState = this.props.state;
         // @ts-ignore
-        let dispatch = this.props.dispatch;
+        const dispatch = this.props.dispatch;
 
-        let selection = textField.window.getSelection()
+        const selection = textField.window.getSelection()
         if (selection == null) return;
 
         const range = selection.getRangeAt(0)
-
         if (range == null) return;
 
-        let rootSelection = selection?.anchorNode
+        let rootSelection = selection.anchorNode
         console.log("Root Selection", rootSelection)
         console.log("range", range.commonAncestorContainer.textContent?.slice(range.startOffset))
 
@@ -83,10 +85,11 @@ class TestNewPost extends Component {
 
             rootSelection.appendChild(element)
 
-            element.style['white-space'] = 'pre'
+            ////////////////////////////////          CAREFULLY            ////////////////////////////////
+            element.style['white-space'] = 'normal'
             // element.classList.add("fs-1", "font-medium")
 
-            span.style['white-space'] = 'pre'
+            span.style['white-space'] = 'normal'
 
             const startNode = element.childNodes[0]
             // const endNode = element.childNodes[0]
@@ -151,7 +154,9 @@ class TestNewPost extends Component {
 
                 this.applyEditorStyleElement(span, true);
 
+                /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
                 span.innerHTML = '<br>'
+                /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
                 if (remainStr) {
                     span.innerText += remainStr
                     let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
@@ -219,7 +224,7 @@ class TestNewPost extends Component {
             }
 
             // Keep white space to can set start selection in this node
-            element.style['white-space'] = 'pre'
+            element.style['white-space'] = 'normal'
 
             const startNode = element.childNodes[0]
             // const endNode = element.childNodes[0]
@@ -247,28 +252,23 @@ class TestNewPost extends Component {
 
         if (selection == null) return
 
+        // const selectionNode = selection.anchorNode as HTMLElement | null
         // Get parent node of selection node
         // Because the selection is always the text node so need to get parent twice to get
         // the actual parent of the select element
         let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
         console.log("Selection Node Handle...", selectionNode)
-        // console.log("Selection Node", selectionNode)
         if (selectionNode == null) return;
 
-        // console.log("Has bold", selectionNode.style['font-weight'] === 'bold')
-        this.toggleActiveBold(selectionNode)
-        this.toggleActiveItalic(selectionNode)
-        this.toggleActiveUnderline(selectionNode)
-        this.toggleActiveAlignLeft(selectionNode)
-        this.toggleActiveAlignRight(selectionNode)
-        this.toggleActiveAlignCenter(selectionNode)
-        this.toggleActiveAlignJustify(selectionNode)
+        this.handleUpdateUI(selectionNode)
 
     }
 
     toggleActiveBold(element: HTMLElement) {
         let iconBold = document.getElementById("editor-icon-bold")
         if (iconBold == null) return;
+
+        if (element.style == null) return;
 
         if (element.style['font-weight'] === 'bold') {
             if (iconBold.classList.contains("active")) return;
@@ -294,6 +294,8 @@ class TestNewPost extends Component {
         let iconItalic = document.getElementById("editor-icon-italic")
         if (iconItalic == null) return;
 
+        if (element.style == null) return;
+
         if (element.style['font-style'] === 'italic') {
             if (iconItalic.classList.contains("active")) return;
             iconItalic.classList.toggle("active")
@@ -317,6 +319,7 @@ class TestNewPost extends Component {
 
         let iconUnderline = document.getElementById("editor-icon-underline")
         if (iconUnderline == null) return;
+        if (element.style == null) return;
 
         if (element.style['text-decoration'] === 'underline') {
             if (iconUnderline.classList.contains("active")) return;
@@ -342,9 +345,13 @@ class TestNewPost extends Component {
     toggleActiveAlignLeft(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-left")
-        if (iconAlignLeft == null) return;
+        const elementAlign = getFirstParentOfSpan(element)
 
-        if (element.style['text-align'] === 'left') {
+        if (elementAlign == null) return;
+        if (iconAlignLeft == null) return;
+        if (elementAlign.style == null) return;
+
+        if (elementAlign.style['text-align'] === 'left') {
             if (iconAlignLeft.classList.contains("active")) return;
             iconAlignLeft.classList.toggle("active")
         } else {
@@ -353,18 +360,17 @@ class TestNewPost extends Component {
             }
         }
 
-
-        let parentElement = element.parentNode as HTMLElement
-        while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-
-            if (!parentElement.style) return;
-            if (parentElement.style['text-align'] === 'left') {
-                if (iconAlignLeft.classList.contains("active")) return;
-                iconAlignLeft.classList.toggle("active")
-            }
-
-            parentElement = parentElement.parentNode as HTMLElement
-        }
+        // let parentElement = element.parentNode as HTMLElement
+        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+        //
+        //     if (!parentElement.style) return;
+        //     if (parentElement.style['text-align'] === 'left') {
+        //         if (iconAlignLeft.classList.contains("active")) return;
+        //         iconAlignLeft.classList.toggle("active")
+        //     }
+        //
+        //     parentElement = parentElement.parentNode as HTMLElement
+        // }
         // for (let i = 0; i < element.children.length; i++) {
         //     if (!(element.children[i] instanceof HTMLElement)) return;
         //     let child = element.children[i] as HTMLElement
@@ -379,9 +385,12 @@ class TestNewPost extends Component {
     toggleActiveAlignRight(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-right")
+        const elementAlign = getFirstParentOfSpan(element)
         if (iconAlignLeft == null) return;
+        if (elementAlign == null) return;
+        if (elementAlign.style == null) return;
 
-        if (element.style['text-align'] === 'right') {
+        if (elementAlign.style['text-align'] === 'right') {
             if (iconAlignLeft.classList.contains("active")) return;
             iconAlignLeft.classList.toggle("active")
         } else {
@@ -390,27 +399,29 @@ class TestNewPost extends Component {
             }
         }
 
-
-        let parentElement = element.parentNode as HTMLElement
-        while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-
-            if (!parentElement.style) return;
-            if (parentElement.style['text-align'] === 'right') {
-                if (iconAlignLeft.classList.contains("active")) return;
-                iconAlignLeft.classList.toggle("active")
-            }
-
-            parentElement = parentElement.parentNode as HTMLElement
-        }
+        // let parentElement = element.parentNode as HTMLElement
+        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+        //
+        //     if (!parentElement.style) return;
+        //     if (parentElement.style['text-align'] === 'right') {
+        //         if (iconAlignLeft.classList.contains("active")) return;
+        //         iconAlignLeft.classList.toggle("active")
+        //     }
+        //
+        //     parentElement = parentElement.parentNode as HTMLElement
+        // }
 
     }
 
     toggleActiveAlignCenter(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-center")
+        const elementAlign = getFirstParentOfSpan(element)
         if (iconAlignLeft == null) return;
+        if (elementAlign == null) return;
+        if (elementAlign.style == null) return;
 
-        if (element.style['text-align'] === 'center') {
+        if (elementAlign.style['text-align'] === 'center') {
             if (iconAlignLeft.classList.contains("active")) return;
             iconAlignLeft.classList.toggle("active")
         } else {
@@ -419,47 +430,50 @@ class TestNewPost extends Component {
             }
         }
 
-
-        let parentElement = element.parentNode as HTMLElement
-        while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-
-            if (!parentElement.style) return;
-            if (parentElement.style['text-align'] === 'center') {
-                if (iconAlignLeft.classList.contains("active")) return;
-                iconAlignLeft.classList.toggle("active")
-            }
-
-            parentElement = parentElement.parentNode as HTMLElement
-        }
+        // let parentElement = element.parentNode as HTMLElement
+        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+        //
+        //     if (!parentElement.style) return;
+        //     if (parentElement.style['text-align'] === 'center') {
+        //         if (iconAlignLeft.classList.contains("active")) return;
+        //         iconAlignLeft.classList.toggle("active")
+        //     }
+        //
+        //     parentElement = parentElement.parentNode as HTMLElement
+        // }
 
     }
 
     toggleActiveAlignJustify(element: HTMLElement) {
 
-        let iconAlignLeft = document.getElementById("editor-icon-align-justify")
-        if (iconAlignLeft == null) return;
+        let iconAlignJustify = document.getElementById("editor-icon-align-justify")
+        const elementAlign = getFirstParentOfSpan(element)
 
-        if (element.style['text-align'] === 'justify') {
-            if (iconAlignLeft.classList.contains("active")) return;
-            iconAlignLeft.classList.toggle("active")
+        if (iconAlignJustify == null) return;
+        if (elementAlign == null) return;
+        if (elementAlign.style == null) return;
+
+        if (elementAlign.style['text-align'] === 'justify') {
+            if (iconAlignJustify.classList.contains("active")) return;
+            iconAlignJustify.classList.toggle("active")
         } else {
-            if (iconAlignLeft.classList.contains("active")) {
-                iconAlignLeft.classList.toggle("active")
+            if (iconAlignJustify.classList.contains("active")) {
+                iconAlignJustify.classList.toggle("active")
             }
         }
 
 
-        let parentElement = element.parentNode as HTMLElement
-        while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-
-            if (!parentElement.style) return;
-            if (parentElement.style['text-align'] === 'justify') {
-                if (iconAlignLeft.classList.contains("active")) return;
-                iconAlignLeft.classList.toggle("active")
-            }
-
-            parentElement = parentElement.parentNode as HTMLElement
-        }
+        // let parentElement = element.parentNode as HTMLElement
+        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+        //
+        //     if (!parentElement.style) return;
+        //     if (parentElement.style['text-align'] === 'justify') {
+        //         if (iconAlignLeft.classList.contains("active")) return;
+        //         iconAlignLeft.classList.toggle("active")
+        //     }
+        //
+        //     parentElement = parentElement.parentNode as HTMLElement
+        // }
     }
 
     applyEditorStyleElement(element: HTMLElement, forceApply: boolean = false) {
@@ -476,9 +490,9 @@ class TestNewPost extends Component {
             if (editorState.underlineEnable) {
                 element.style["text-decoration"] = "underline"
             }
-            if (editorState.isAlignLeft) {
-                element.style["text-align"] = "left"
-            }
+            // if (editorState.isAlignLeft) {
+            //     element.style["text-align"] = "left"
+            // }
         }
     }
 
@@ -506,149 +520,10 @@ class TestNewPost extends Component {
     componentDidMount() {
 
         // @ts-ignore
-        // let state = this.props
-
-        // super.componentDidMount();
-        // let iconEditors = document.getElementsByClassName('editor-icon');
-        // for (let i = 0; i < iconEditors.length; i++) {
-        //     let item = iconEditors[i]
-        //     if (item.attributes['data-cmd-style'] && item.attributes['data-cmd-value']) {
-        //         let cmd = item.attributes['data-cmd-style'].value;
-        //         let value = item.attributes['data-cmd-value'].value;
-        //         item.addEventListener("click", function () {
-        //             console.log("Icon Clicked")
-        //             onIconEditorClicked()
-        // item.classList.toggle("active")
-        // })
-        // }
-        // console.log("item.attributes['data-cmd']", item.attributes['data-cmd'].value)
-        //
-        // }
-
-        // this.handleIframeKeyPress.bind(this);
-
-        // function handleIframeKeyPress(evt: KeyboardEvent) {
-        //     console.log("Event", evt)
-        //
-        //     let charCode = evt.key;
-        //     console.log("sTate", state)
-        //
-        //
-        //     if (charCode === ' ') {
-        //         evt.preventDefault()
-        //         // @ts-ignore
-        //
-        //         let selection = textField.window.getSelection()
-        //
-        //         if (selection == null) return
-        //         // textField.document.body.innerText = ""
-        //         // textField.document.body.innerText = charCode
-        //
-        //         // setTimeout(function () {
-        //         //     textField.document.body.innerText = charCode
-        //         // }, 1000)
-        //         const range = selection.getRangeAt(0)
-        //
-        //         const div = document.createElement("span")
-        //
-        //         // if (state.isStyleChanged) {
-        //         //     if (state.boldEnable) {
-        //         //         div.style["font-weight"] = "bold"
-        //         //     }
-        //         //     if (state.italicEnable) {
-        //         //         div.style["font-style"] = "italic"
-        //         //     }
-        //         //
-        //         //     if (state.underlineEnable) {
-        //         //         div.style["text-decoration"] = "underline"
-        //         //     }
-        //         // }
-        //
-        //         // div.setAttribute("contentEditable", "true")
-        //         // @ts-ignore
-        //         // div.innerText = selection.anchorNode?.data
-        //         div.innerText = " "
-        //         div.style['white-space'] = 'pre'
-        //         const startNode = div.childNodes[0]
-        //         const endNode = div.childNodes[0]
-        //         // div.appendChild(fragment)
-        //         range.insertNode(div)
-        //
-        //         const newRange = document.createRange()
-        //         // var sel = window.getSelection()
-        //         // @ts-ignore
-        //         newRange.setStart(startNode, 1)
-        //         // newRange.setEnd(endNode, 1)
-        //         newRange.collapse(true)
-        //
-        //         selection.removeAllRanges()
-        //         selection.addRange(newRange)
-        //
-        //         // dispatch(setStyleNotChangeEditor())
-        //         setTimeout(function () {
-        //             // textField.focus();
-        //         }, 500);
-        //     }
-        //
-        //
-        // }
-
-        // function handleIframeKeyUp(evt: KeyboardEvent) {
-        //     console.log("Event", evt)
-        //     let charCode = evt.key;
-        //
-        //     if (charCode === ' ') {
-        //         // textField.document.body.innerText = textField.document.body.innerText.trim()
-        //
-        //         let selection = textField.window.getSelection()
-        //
-        //         if (selection == null) return
-        //         // textField.document.body.innerText = ""
-        //         // textField.document.body.innerText = charCode
-        //
-        //         // setTimeout(function () {
-        //         //     textField.document.body.innerText = charCode
-        //         // }, 1000)
-        //         const range = selection.getRangeAt(0)
-        //
-        //         const div = document.createElement("span")
-        //         div.style["font-weight"] = "bold"
-        //         div.setAttribute("contentEditable", "true")
-        //         // @ts-ignore
-        //         // div.innerText = selection.anchorNode?.data
-        //         div.innerText = " "
-        //         div.style['white-space'] = 'pre'
-        //         const startNode = div.childNodes[0]
-        //         const endNode = div.childNodes[0]
-        //         // div.appendChild(fragment)
-        //         range.insertNode(div)
-        //
-        //         const newRange = document.createRange()
-        //         // var sel = window.getSelection()
-        //         // @ts-ignore
-        //         newRange.setStart(startNode, 1)
-        //         // newRange.setEnd(endNode, 1)
-        //         newRange.collapse(true)
-        //
-        //         selection.removeAllRanges()
-        //         selection.addRange(newRange)
-        //
-        //         setTimeout(function() {
-        //             // textField.focus();
-        //         }, 500);
-        //     }
-        //
-        //
-        //     // if (charCode === ' ') {
-        //     //     console.log("Inner TExt", textField.document.body.innerText)
-        //     //     textField.document.body.innerText = textField.document.body.innerText.trim()
-        //     // }
-        //
-        // }
-
-        let dispatch = this.props.dispatch
-
+        let dispatch = this.props.dispatch;
         let textFieldDoc = textField.document;
+
+        const scope = this;
 
         if (textFieldDoc.addEventListener) {
             textFieldDoc.addEventListener("keypress", this.handleIframeKeyPress, false);
@@ -670,50 +545,213 @@ class TestNewPost extends Component {
             textFieldDoc.onkeypress = this.handleIframeKeyPress;
         }
 
-        const optionsList = document.getElementById("options")?.children
+        const options = document.getElementsByClassName("options")
 
-        if (optionsList == null) return
+        for (let i = 0; i < options.length; i++) {
 
-        for (let i = 0; i < optionsList.length; i++) {
-            const option = optionsList[i] as HTMLElement
-            console.log("Options List", option.innerText)
-            option.addEventListener("click", function () {
-                console.log("Option list Clicked", option.getAttribute("data-value"))
-                const tag = option.getAttribute("data-value") ?? "p"
-                const input = document.getElementById("input-select-tag-new-element") as HTMLElement
-                dispatch(changeTagNewElement(tag))
-                if (input == null) return
-                input.innerText = option.innerText
+            // const optionsList = document.getElementById("options")?.children
+            const optionsList = options[i].children
 
-                /************************************************************************************************
-                 * CHANGE THE TAG OF CURRENT SELECT ELEMENT
-                 ************************************************************************************************/
-                let selection = textField.window.getSelection()
-                if (selection == null) return
+            if (optionsList == null) return
 
-                let selectionNode = selection.anchorNode as HTMLElement | null
-                const pElement = getFirstParentWithTag("span", selectionNode)
+            for (let i = 0; i < optionsList.length; i++) {
+                const option = optionsList[i] as HTMLElement
+                console.log("Options List", option.innerText)
 
-                if (pElement == null || pElement.parentElement == null) return;
-                let d = document.createElement(tag);
-                d.innerHTML = pElement.parentElement.innerHTML;
-                pElement.parentElement.parentElement?.replaceChild(d, pElement.parentElement);
+                option.addEventListener("click", function () {
+                    console.log("Option list Clicked", option.getAttribute("data-value"))
+                    const key = option.getAttribute("data-key")
+                    const value = option.getAttribute("data-value") ?? "p"
+                    if (key === TAG_KEY) {
+                        dispatch(changeTagNewElement(value))
+                        scope.handleTagOptionClicked(value)
+                        const input = document.getElementById("input-select-tag-new-element") as HTMLElement
+                        if (input == null) return
+                        input.innerText = option.innerText
 
-                /************************************************************************************************
-                 *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
-                 ************************************************************************************************/
-            })
+                    } else if (key === FONT_SIZE_KEY) {
+                        dispatch(changeFontSizeElement(value))
+                        scope.handleFontSizeClicked(value)
+                        const input = document.getElementById("input-select-font-size") as HTMLElement
+                        if (input == null) return
+                        input.style['font-size'] = `${value}px`
+                        input.innerText = option.innerText
+
+                    } else if (key === FONT_FAMILY_KEY) {
+                        dispatch(changeFontFamilyElement(value))
+                        scope.handleFontFamilyClicked(value)
+
+                        const input = document.getElementById("input-select-font-family") as HTMLElement
+                        if (input == null) return
+                        input.style['font-family'] = value
+                        input.innerText = option.innerText
+                    }
+
+
+                })
+            }
         }
     }
 
+    handleTagOptionClicked(value: string) {
+        /************************************************************************************************
+         * CHANGE THE TAG OF CURRENT SELECT ELEMENT
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        const pElement = getFirstParentOfSpan(selectionNode)
+
+        if (pElement == null || pElement.parentElement == null) return;
+        let d = document.createElement(value);
+        d.innerHTML = pElement.parentElement.innerHTML;
+        pElement.parentElement.parentElement?.replaceChild(d, pElement.parentElement);
+
+        /************************************************************************************************
+         *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
+         ************************************************************************************************/
+    }
+
+    handleFontFamilyClicked(value: string) {
+
+        /************************************************************************************************
+         * CHANGE FONT FAMILY OF SPAN ELEMENT
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        const pElement = getFirstParentOfSpan(selectionNode)
+
+        if (pElement == null) return;
+
+        pElement.style['font-family'] = value
+    }
+
+    handleFontSizeClicked(value: string) {
+        /************************************************************************************************
+         * CHANGE FONT FAMILY OF SPAN ELEMENT
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        const pElement = getFirstParentWithTag("span", selectionNode)
+
+        if (pElement == null) return;
+
+        pElement.style['font-size'] = `${value}px`
+    }
+
+    handleIconToggleSelection(style: string, value: string, tag: string = "span", useParent: boolean = false) {
+        /************************************************************************************************
+         * CHANGE FONT WEIGHT OF SPAN ELEMENT
+         ************************************************************************************************/
+
+
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+        let selectionStyle = selection.anchorNode as HTMLElement | null
+
+        console.log("Selection count", selection.anchorNode)
+
+        /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
+        // const range = selection.getRangeAt(0)
+        // let currentContent = range.commonAncestorContainer.textContent
+        // // Get the string after cursor of element
+        // let remainStr = currentContent?.slice(range.startOffset).toString().trim();
+        // if (remainStr?.length === 0) {
+        //     if (tag === "span") {
+        //         const span = document.createElement(tag)
+        //         span.style['white-space'] = 'pre'
+        //         span.innerHTML = "<br>"
+        //         const parent = getFirstParentOfSpan(selectionStyle)
+        //         parent?.appendChild(span)
+        //         span.style[style] = value
+        //         console.log("Span style.............ssssss", span)
+        //         return;
+        //     }
+        // }
+
+        // const spanSelected = getFirstParentWithTag(tag, selectionStyle)
+
+        const range = selection.getRangeAt(0)
+        let startSelected = range.startOffset
+        let endSelected = range.endOffset
+
+        if (startSelected !== endSelected) {
+            const textContent = range.commonAncestorContainer.textContent
+            if (textContent == null) return;
+            const selectText = textContent?.slice(startSelected, endSelected).toString();
+            const remainText = textContent.slice(endSelected).toString()
+            if (selectText == null) return;
+
+            let span = document.createElement("span")
+            span.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
+            span.innerText = selectText
+            span.style[style] = value
+            getFirstParentOfSpan(selectionStyle)?.appendChild(span)
+
+            console.log("Span Selected", span)
+            range.commonAncestorContainer.textContent = textContent.replace(selectText, "")
+
+            /************************************************************************************************
+             * IF HAS REMAIN STRING ADD NEW SPAN FOR REMAIN STR
+             ************************************************************************************************/
+            if (remainText.length === 0) return;
+
+            range.commonAncestorContainer.textContent = textContent.replace(remainText, "").replace(selectText, "")
+            let spanRemain = document.createElement("span")
+            spanRemain.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
+            spanRemain.innerText = remainText
+            getFirstParentOfSpan(selectionStyle)?.appendChild(spanRemain)
+            return;
+        }
+
+        if (useParent) {
+            selectionStyle = getFirstParentOfSpan(selectionStyle)
+        } else {
+            selectionStyle = getFirstParentWithTag(tag, selectionStyle)
+        }
+
+        console.log("Fucking selection", selectionStyle)
+        if (selectionStyle == null || selectionStyle.style == null) return;
+
+        if (selectionStyle.style[style] === value) {
+            selectionStyle.style[style] = ``
+        } else {
+            selectionStyle.style[style] = value
+        }
+
+        this.handleUpdateUI(selectionStyle)
+    }
+
+    handleUpdateUI(selectElement: HTMLElement) {
+
+        this.toggleActiveBold(selectElement)
+        this.toggleActiveItalic(selectElement)
+        this.toggleActiveUnderline(selectElement)
+        this.toggleActiveAlignLeft(selectElement)
+        this.toggleActiveAlignRight(selectElement)
+        this.toggleActiveAlignCenter(selectElement)
+        this.toggleActiveAlignJustify(selectElement)
+        this.toggleActiveAlignJustify(selectElement)
+    }
+
+    /************************************************************************************************
+     * MOVE FROM RENDER
+     ************************************************************************************************/
+    load() {
+        textField.document.designMode = "On";
+    }
+
+
     render() {
 
+        const scope = this;
         // @ts-ignore
         let dispatch = this.props.dispatch
-
-        function load() {
-            textField.document.designMode = "On";
-        }
 
         function onIconEditorClicked(event: React.MouseEvent<HTMLElement> | null = null) {
             dispatch(setStyleChangeEditor())
@@ -731,12 +769,16 @@ class TestNewPost extends Component {
             // await styleElement('font-weight', 'bold')
             onIconEditorClicked(event)
             dispatch(toggleBold())
+
+            scope.handleIconToggleSelection('font-weight', 'bold')
+
         }
 
         async function italicSelection(event: React.MouseEvent<HTMLElement>) {
             // await styleElement('font-style', 'italic')
             onIconEditorClicked(event)
             dispatch(toggleItalic())
+            scope.handleIconToggleSelection('font-style', 'italic')
 
         }
 
@@ -745,6 +787,8 @@ class TestNewPost extends Component {
             onIconEditorClicked(event)
             dispatch(toggleUnderline())
 
+            scope.handleIconToggleSelection('text-decoration', 'underline')
+
         }
 
         async function alignLeftSelection(event: React.MouseEvent<HTMLElement>) {
@@ -752,20 +796,7 @@ class TestNewPost extends Component {
             onIconEditorClicked(event)
             dispatch(toggleAlignLeft())
 
-            let selection = textField.window.getSelection()
-
-            if (selection == null) return
-
-            // Get parent node of selection node
-            // Because the selection is always the text node so need to get parent twice to get
-            // the actual parent of the select element
-            let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-            while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                selectionNode = selectionNode.parentNode as HTMLElement | null
-            }
-            if (selectionNode == null) return;
-
-            selectionNode.style['text-align'] = 'left'
+            scope.handleIconToggleSelection('text-align', 'left', "p", true)
         }
 
         async function alignRightSelection(event: React.MouseEvent<HTMLElement>) {
@@ -773,43 +804,15 @@ class TestNewPost extends Component {
             onIconEditorClicked(event)
             dispatch(toggleAlignRight())
 
-            let selection = textField.window.getSelection()
+            scope.handleIconToggleSelection('text-align', 'right', "p", true)
 
-            if (selection == null) return
-
-            // Get parent node of selection node
-            // Because the selection is always the text node so need to get parent twice to get
-            // the actual parent of the select element
-            let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-            while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                selectionNode = selectionNode.parentNode as HTMLElement | null
-            }
-            if (selectionNode == null) return;
-
-            selectionNode.style['text-align'] = 'right'
         }
 
         async function alignCenterSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('text-align', 'center')
-
-            let selection = textField.window.getSelection()
-
-            if (selection == null) return
-
-            console.log("Fuck Selection", selection)
-            // Get parent node of selection node
-            // Because the selection is always the text node so need to get parent twice to get
-            // the actual parent of the select element
-            let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-            while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                selectionNode = selectionNode.parentNode as HTMLElement | null
-            }
-            if (selectionNode == null) return;
-            if (selectionNode.style == null) return;
-
-            selectionNode.style['text-align'] = 'center'
             onIconEditorClicked(event)
             dispatch(toggleAlignCenter())
+
+            scope.handleIconToggleSelection('text-align', 'center', "p", true)
         }
 
         async function alignJustifySelection(event: React.MouseEvent<HTMLElement>) {
@@ -818,20 +821,22 @@ class TestNewPost extends Component {
             onIconEditorClicked(event)
             dispatch(toggleAlignJustify())
 
-            let selection = textField.window.getSelection()
+            scope.handleIconToggleSelection("text-align", 'justify', "p", true)
 
-            if (selection == null) return
-
-            // Get parent node of selection node
-            // Because the selection is always the text node so need to get parent twice to get
-            // the actual parent of the select element
-            let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-            while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                selectionNode = selectionNode.parentNode as HTMLElement | null
-            }
-            if (selectionNode == null) return;
-
-            selectionNode.style['text-align'] = 'justify'
+            // let selection = textField.window.getSelection()
+            //
+            // if (selection == null) return
+            //
+            // // Get parent node of selection node
+            // // Because the selection is always the text node so need to get parent twice to get
+            // // the actual parent of the select element
+            // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+            // while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+            //     selectionNode = selectionNode.parentNode as HTMLElement | null
+            // }
+            // if (selectionNode == null) return;
+            //
+            // selectionNode.style['text-align'] = 'justify'
         }
 
         function pickImage() {
@@ -844,6 +849,23 @@ class TestNewPost extends Component {
                 }
             }
         }
+
+        const mapTag = [
+            {"key": "Normal Text", "value": "p"},
+            {"key": "Heading 1", "value": "h1"},
+            {"key": "Heading 2", "value": "h2"},
+            {"key": "Heading 3", "value": "h3"},
+            {"key": "Heading 4", "value": "h4"},
+            {"key": "Heading 5", "value": "h5"},
+            {"key": "Heading 6", "value": "h6"},
+        ]
+
+        const mapFontSize = [];
+
+        for (let i = 12; i <= 36; i += 2) {
+            mapFontSize.push(i);
+        }
+        const mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
 
         // @ts-ignore
         return (
@@ -881,26 +903,44 @@ class TestNewPost extends Component {
                     <div className="d-flex justify-between mx-3 mt-5 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
                          style={{backgroundColor: "#f7f7f7"}}>
                         {/*<div className="d-flex content-between">*/}
+
+                        <ul className="custom-dropdown" id="custom-dropdown">
+                            <p id="input-select-tag-new-element" className="pl-5">Normal text</p>
+
+                            <ul className="options" id="options">
+                                {mapTag.map(function (item) {
+                                    return <li data-value={item.value} data-key={TAG_KEY}><span
+                                        className={item.value}>{item.key}</span></li>
+                                })}
+                            </ul>
+                        </ul>
+
+                        <ul className="custom-dropdown" id="custom-dropdown">
+                            <p id="input-select-font-family" className="pl-5">Roboto</p>
+
+                            <ul className="options" id="options">
+                                {mapFont.map(function (item) {
+                                    return <li data-value={item} data-key={FONT_FAMILY_KEY}><span
+                                        className={`font-${item.toLowerCase()}`}>{item}</span>
+                                    </li>
+                                })}
+                            </ul>
+                        </ul>
+
+                        <ul className="custom-dropdown" id="custom-dropdown">
+                            <p id="input-select-font-size" className="pl-5">18</p>
+                            <ul className="options" id="options">
+                                {mapFontSize.map(function (item) {
+                                    return <li data-value={item} data-key={FONT_SIZE_KEY}><span
+                                        style={{fontSize: `${item}px`}}>{item}</span></li>
+                                })}
+                            </ul>
+                        </ul>
+
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-bold" data-cmd="bold"
                              onClick={boldSelection}>
                             <i className="fa fa-bold disabled"/>
                         </div>
-
-                        <ul className="dropdown" id="dropdown">
-                            <p id="input-select-tag-new-element" className="pl-5">Normal text</p>
-                            {/*type="text" value="Select Option" readOnly/>*/}
-                            {/*<li><p>Select Option</p></li>*/}
-
-                            <ul className="options" id="options">
-                                <li data-value="p"><p>Normal Text</p></li>
-                                <li data-value="h1"><h1>Heading 1</h1></li>
-                                <li data-value="h2"><h2>Heading 2</h2></li>
-                                <li data-value="h3"><h3>Heading 3</h3></li>
-                                <li data-value="h4"><h4>Heading 4</h4></li>
-                                <li data-value="h5"><h5>Heading 5</h5></li>
-                                <li data-value="h6"><h6>Heading 6</h6></li>
-                            </ul>
-                        </ul>
 
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-italic"
                              onClick={italicSelection}>
@@ -919,7 +959,8 @@ class TestNewPost extends Component {
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-right"
                              onClick={alignRightSelection}>
                             <i className="fa fa-align-right disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-justify">
+                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-justify"
+                             onClick={alignJustifySelection}>
                             <i className="fa fa-align-justify disabled"/></div>
                         {/*</div>*/}
 
@@ -978,7 +1019,7 @@ class TestNewPost extends Component {
                     </div>
 
                     <iframe name="textField" className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
-                            onLoad={load}
+                            onLoad={this.load}
                             style={{width: "80%", minHeight: "75vh"}}>
                         <style>
 

@@ -8,7 +8,10 @@ import {
     TOGGLE_ALIGN_LEFT_EDITOR,
     TOGGLE_ALIGN_CENTER_EDITOR,
     TOGGLE_ALIGN_RIGHT_EDITOR,
-    TOGGLE_ALIGN_JUSTIFY_EDITOR, CHANGE_TAG_NEW_ELEMENT_EDITOR
+    TOGGLE_ALIGN_JUSTIFY_EDITOR,
+    CHANGE_TAG_NEW_ELEMENT_EDITOR,
+    CHANGE_FONT_SIZE_ELEMENT_EDITOR,
+    CHANGE_FONT_FAMILY_ELEMENT_EDITOR
 } from "./types";
 
 export function toggleBold() {
@@ -66,6 +69,20 @@ export function changeTagNewElement(tag) {
     return {
         type: CHANGE_TAG_NEW_ELEMENT_EDITOR,
         value: tag
+    }
+}
+
+export function changeFontSizeElement(fontSize) {
+    return {
+        type: CHANGE_FONT_SIZE_ELEMENT_EDITOR,
+        value: fontSize
+    }
+}
+
+export function changeFontFamilyElement(fontFamily) {
+    return {
+        type: CHANGE_FONT_FAMILY_ELEMENT_EDITOR,
+        value: fontFamily
     }
 }
 

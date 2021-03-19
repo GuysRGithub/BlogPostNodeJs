@@ -9,7 +9,8 @@ function Navbar() {
                 className="site-branding th-stack--sm sm:th-text-align-unset th-text-center sm:th-mb-0 th-mb-base th-w-full">
                 <p className="site-title th-uppercase th-text-xl th-mb-0"><a href="https://appetitedemo.wordpress.com/"
                                                                              rel="home">Appetite</a></p>
-                <p className="site-description th-text-base th-font-normal th-hidden th-mb-0">Appetite is a clean,
+                <p className="site-description th-text-base th-font-normal th-hidden th-mb-0 font-jose-sans">
+                    Appetite is a clean,
                     flexible and fully responsive WordPress theme with special features for restaurants and cafes</p>
             </div>
 
@@ -91,7 +92,7 @@ function Navbar() {
                     type="button" aria-expanded="false">
                 <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
                      focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                      data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
                      >
                     <circle cx="11" cy="11" r="8"></circle>
@@ -100,7 +101,7 @@ function Navbar() {
                 <span className="screen-reader-text header-search">Search</span>
                 <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
                      focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                      data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
                      >
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -110,7 +111,7 @@ function Navbar() {
                 <span className="header-menu lg:th-hidden th-block">Menu</span>
                 <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
                      focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                      data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
                      >
                     <line x1="18" y1="6" x2="6" y2="18"></line>

@@ -11,27 +11,30 @@ export default function () {
                 <div className="col-6">
                     <div className="px-4">
                         <img className="my-auto card-img img-post-banner"
-                             src={require("../../../assets/images/posts/sunrise-1014710_1920.jpg")}/>
+                             src={require("../../../assets/images/posts/sunrise-1014710_1920.jpg").default}/>
                     </div>
 
                 </div>
 
                 <div className="col-6 my-auto">
                     <header className="mb-lg-4">
-                        <h2 className="text-uppercase font-weight-bold"><a className="text-white text-decor-none"
-                                                                           href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
-                                                                           rel="bookmark">We make food that offers
-                            variety
-                            of flavors and&nbsp;tastes</a></h2>
-                        <p
-                            className="my-3 h5">
+                        <h2 className="text-uppercase font-weight-bold">
+                            <a className="text-white text-decor-none font-jose-sans"
+                               href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
+                               rel="bookmark">We make food that offers
+                                variety
+                                of flavors and&nbsp;tastes</a>
+                        </h2>
+                        <p className="my-3 h5 font-jose-sans">
                             This is a featured image caption, and you can add any text you
-                            want. </p>
+                            want.
+                        </p>
                     </header>
 
                     <div className="content-entry">
 
-                        <p className="h5 my-4 font-weight-normal letter-space-2">Although the terms flavoring and
+                        <p className="h5 my-4 font-weight-normal letter-space-2 font-raleway">
+                            Although the terms flavoring and
                             flavorant
                             in common language denote the combined chemical
                             sensations of taste and smell, the same terms are used in the fragrance and flavors industry
@@ -57,21 +60,21 @@ export default function () {
 
                 <div className="col-6 my-auto">
                     <header className="mb-lg-4">
-                        <h2 className="text-uppercase font-weight-bold"><a className="text-white text-decor-none"
-                                                                           href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
-                                                                           rel="bookmark">We make food that offers
+                        <h2 className="text-uppercase font-weight-bold"><a
+                            className="text-white text-decor-none font-jose-sans"
+                            href="https://appetitedemo.wordpress.com/we-make-food-that-offers-variety-of-flavors-and-tastes/"
+                            rel="bookmark">We make food that offers
                             variety
                             of flavors and&nbsp;tastes</a></h2>
-                        <p
-                            className="my-3 h5">
-                            This is a featured image caption, and you can add any text you
-                            want. </p>
+                        <p className="my-3 h5 font-jose-sans">
+                            This is a featured image caption, and you can add any text you want.
+                        </p>
                     </header>
 
                     <div className="content-entry">
 
-                        <p className="h5 my-4 font-weight-normal letter-space-2">Although the terms flavoring and
-                            flavorant
+                        <p className="h5 my-4 font-weight-normal letter-space-2">
+                            Although the terms flavoring and flavorant
                             in common language denote the combined chemical
                             sensations of taste and smell, the same terms are used in the fragrance and flavors industry
                             to
@@ -91,8 +94,8 @@ export default function () {
                 <div className="col-6 my-auto">
                     <div className="px-4">
                         <img
-                             className="my-auto card-img img-post-banner"
-                             src={require("../../../assets/images/posts/RzaDRA3Stct09BOROS6C-TE5.jpg")}/>
+                            className="my-auto card-img img-post-banner"
+                            src={require("../../../assets/images/posts/RzaDRA3Stct09BOROS6C-TE5.jpg").default}/>
                     </div>
 
                 </div>
@@ -116,7 +119,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/photographer-865295_1920.jpg")}/>
+                                     src={require("../../../assets/images/posts/photographer-865295_1920.jpg").default}/>
                             </a>
 
                             <h3 className="title mt-lg-5"><a
@@ -139,7 +142,8 @@ export default function () {
                                 an institution, as well as by apprenticing with an experienced chef.</p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary my-2">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary my-2">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -151,7 +155,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/traveller-1149973_1920.jpg")}
+                                     src={require("../../../assets/images/posts/traveller-1149973_1920.jpg").default}
                                 />
                             </a>
 
@@ -175,7 +179,8 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -187,8 +192,8 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/women-3051614_1920.jpg")}
-                                     />
+                                     src={require("../../../assets/images/posts/women-3051614_1920.jpg").default}
+                                />
                             </a>
 
                             <h3 className="title mt-lg-5"><a
@@ -211,7 +216,8 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -227,8 +233,6 @@ export default function () {
 
 
             <section className="entry-section background-sand">
-
-
                 <div>
                     <h1 className="text-center title">RECENT NEWS</h1>
                 </div>
@@ -241,7 +245,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src={require("../../../assets/images/posts/man-1246233_1920.jpg")}
+                                     src={require("../../../assets/images/posts/man-1246233_1920.jpg").default}
                                 />
                             </a>
 
@@ -263,7 +267,8 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -275,7 +280,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src={require("../../../assets/images/posts/chromehill-4724725_1920.jpg")}
+                                     src={require("../../../assets/images/posts/chromehill-4724725_1920.jpg").default}
                                 />
                             </a>
 
@@ -296,7 +301,8 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -308,7 +314,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img width="800" height="480"
-                                     src={require("../../../assets/images/posts/freedom-4782870_1920.jpg")}
+                                     src={require("../../../assets/images/posts/freedom-4782870_1920.jpg").default}
                                 />
                             </a>
 
@@ -329,7 +335,8 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -346,7 +353,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/men-1245982_1920.jpg")}
+                                     src={require("../../../assets/images/posts/men-1245982_1920.jpg").default}
                                 />
                             </a>
 
@@ -368,7 +375,8 @@ export default function () {
 
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -380,7 +388,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/old-1130731_1920.jpg")}
+                                     src={require("../../../assets/images/posts/old-1130731_1920.jpg").default}
                                 />
                             </a>
 
@@ -401,7 +409,8 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>
@@ -413,7 +422,7 @@ export default function () {
                         <header className="entry-header my-4">
                             <a href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="thumb-link">
                                 <img className="img-post-category"
-                                     src={require("../../../assets/images/posts/beach-1867881_1920.jpg")}
+                                     src={require("../../../assets/images/posts/beach-1867881_1920.jpg").default}
                                 />
                             </a>
 
@@ -434,7 +443,8 @@ export default function () {
                             </p>
 
                             <p><a
-                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/" className="custom-btn-primary-lg my-5">Read
+                                href="https://appetitedemo.wordpress.com/the-staff/jonatan-doe/"
+                                className="custom-btn-primary-lg my-5">Read
                                 More <span className="screen-reader-text">“Jonatan Doe”</span>
                             </a>
                             </p>

@@ -3,19 +3,18 @@ ul {
   padding: 0;
 }
 
-.dropdown {
+.custom-dropdown {
   position: relative;
-  width: 300px;
   border-radius: 30px;
   outline: none;
   cursor: pointer;
   background: #f0f1f2;
-  padding: 0;
+  padding: 0 2rem 0 0;
   margin: 0;
 }
 
-.dropdown input,
-.dropdown p {
+.custom-dropdown input,
+.custom-dropdown p {
   position: relative;
   outline: none;
   border: none !important;
@@ -23,11 +22,11 @@ ul {
   left: 50%;
   background: transparent;
   transform: translate(-50%, -50%);
-  font-size: 1.2rem;
+  //font-size: 1.2rem;
   cursor: pointer;
 }
 
-.dropdown input:focus {
+.custom-dropdown input:focus {
   outline: none;
   border: none;
 }
@@ -35,7 +34,7 @@ ul {
 .options {
   position: absolute;
   left: 0;
-  width: 300px;
+  width: max-content;
   border-radius: 30px;
   cursor: pointer;
   background: #f0f1f2;
@@ -45,7 +44,7 @@ ul {
   display: none;
 }
 
-.dropdown.show .options {
+.custom-dropdown.show .options {
   display: list-item;
 }
 
@@ -55,7 +54,7 @@ ul {
 
 .options li {
   position: relative;
-  padding: .5rem 1.5rem;
+  padding: .5rem 2rem;
 }
 
 .options li:first-child {

@@ -85,7 +85,7 @@ function NewPost(props) {
                     return (
                         <div
                             className="container-lg px-6 py-6 dark-theme min-h-100 dark-theme-editor custom-label relative">
-                            <h2 className="text-center font-ubuntu text-body my-6">Using CKEditor 5 build in React</h2>
+                            <h2 className="text-center font-rubik text-body my-6">Using CKEditor 5 build in React</h2>
                             <form>
                                 <Form.Item
                                     required={true}
@@ -166,7 +166,7 @@ function NewPost(props) {
                                 </div>
                                 <div className="w-3/12 p-0-imp child-px-5 mx-3 my-border">
                                     <div className="my-border-b mt-2">
-                                        <h3 className="font-ubuntu font-weight-bold mx-2">Publish</h3>
+                                        <h3 className="font-rubik font-weight-bold mx-2">Publish</h3>
                                     </div>
                                     <div className="flex mx-0 mt-6 content-between justify-content-between">
                                         <button className="custom-btn-primary">Save Draft</button>

@@ -373,17 +373,33 @@
   border-left: 1 pxl solid var(--pirmaryBorderDarkColor)
 }
 
+.font-rubik {
+  font-family: 'Rubik', serif;
+}
+
+.font-roboto {
+  font-family: 'Roboto', serif;
+}
+
+.font-raleway {
+  font-family: 'Raleway', serif;
+}
+
 .font-ubuntu {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: 'Ubuntu', serif;
 }
 
 .font-pt-serif {
-  font-family: 'PT Serif', serif;
+  //font-family: 'PT Serif', serif;
+  font-family: 'JoseSans', serif;
 }
 
-.font-lobster {
-  font-family: 'Lobster', cursive;
+.font-josesans {
+  font-family: 'JoseSans', serif;
+  //font-family: 'Lobster', cursive;
 }
+
+
 
 .p-p1 {
   p {
@@ -447,6 +463,30 @@ h5 {
 }
 
 h6 {
+  font-size: 1.25rem;
+}
+
+.h1 {
+  font-size: 2.5rem;
+}
+
+.h2 {
+  font-size: 2.25rem;
+}
+
+.h3 {
+  font-size: 2rem;
+}
+
+.h4 {
+  font-size: 1.75rem;
+}
+
+.h5 {
+  font-size: 1.5rem;
+}
+
+.h6 {
   font-size: 1.25rem;
 }
 

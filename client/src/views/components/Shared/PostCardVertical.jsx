@@ -17,7 +17,7 @@ const PostCardVertical = ({postViewSeparate = {title: "Title", "createdAt": "Tod
                 </div>
                 <div className="col-8 text-left ml-5">
                     <a>FOOD</a> - <span className="fw-3">July 8 2020</span>
-                    <h5 className="font-ubuntu fw-8">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</h5>
+                    <h5 className="font-rubik fw-8">5-MINUTE BREAKFASTS THAT ARE ACTUALLY HEALTHY</h5>
                     <div className="flex d-flex fs-1 mt-2">
                     </div>
                     <div className="mt-3">

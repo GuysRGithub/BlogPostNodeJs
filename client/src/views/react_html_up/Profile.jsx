@@ -88,7 +88,7 @@ export const Profile = (props) => {
                     {/* Logo */}
                     <div id="logo">
                         <span className="image"><img className="img-avatar" src={require("../../assets/images/profile/cat-4977436_640.jpg")} alt=""/></span>
-                        <h1 id="title" className="font-lobster">{user.name}</h1>
+                        <h1 id="title" className="font-jose-sans">{user.name}</h1>
                         <p className="mt-3 font-pt-serif">Hyperspace Engineer</p>
                     </div>
                     {/* Nav */}
