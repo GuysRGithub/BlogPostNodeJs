@@ -1,6 +1,11 @@
 import React, {Component, useState} from 'react'
 import {execCommandStyle, ExecCommandStyle} from "../../../assets/ts/editor";
-import {getFirstParentOfSpan, getFirstParentWithTag, styleElement} from "../../../utils/editor_utils";
+import {
+    getFirstParentOfSpan,
+    getFirstParentWithTag,
+    getFirstParentWithTags,
+    styleElement
+} from "../../../utils/editor_utils";
 import {connect, useSelector} from "react-redux"
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
@@ -476,6 +481,43 @@ class TestNewPost extends Component {
         // }
     }
 
+    toggleStrikeIcon(element: HTMLElement) {
+
+        let iconStrike = document.getElementById("editor-icon-align-justify")
+        const elementAlign = getFirstParentOfSpan(element)
+
+        if (iconStrike == null) return;
+        if (elementAlign == null) return;
+
+        let strikeElement = getFirstParentWithTag("strike", element)
+
+        /*      //////////////////////          DOES NOT HAVE STRIKE             ///////////////////////     */
+        if (strikeElement == null) {
+            if (iconStrike.classList.contains("active")) {
+                iconStrike.classList.toggle("active")
+            }
+
+            return;
+        }
+
+        /*      //////////////////////          HAVE STRIKE             ///////////////////////     */
+        if (iconStrike.classList.contains("active")) return;
+        iconStrike.classList.toggle("active")
+
+
+        // let parentElement = element.parentNode as HTMLElement
+        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
+        //
+        //     if (!parentElement.style) return;
+        //     if (parentElement.style['text-align'] === 'justify') {
+        //         if (iconAlignLeft.classList.contains("active")) return;
+        //         iconAlignLeft.classList.toggle("active")
+        //     }
+        //
+        //     parentElement = parentElement.parentNode as HTMLElement
+        // }
+    }
+
     applyEditorStyleElement(element: HTMLElement, forceApply: boolean = false) {
         // @ts-ignore
         let editorState = this.props.state
@@ -613,6 +655,49 @@ class TestNewPost extends Component {
          ************************************************************************************************/
     }
 
+    handleStrikeElement() {
+        /************************************************************************************************
+         * CHANGE THE TAG OF CURRENT SELECT ELEMENT
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        const spanElement = getFirstParentWithTag("span", selectionNode)
+
+        if (spanElement == null || spanElement.parentElement == null) return;
+        let d = document.createElement("strike");
+        d.innerHTML = spanElement.innerHTML;
+        ////////////////////////////////          CLEAR CONTENT            ////////////////////////////////
+        spanElement.innerHTML = ""
+        spanElement?.appendChild(d)
+
+        /************************************************************************************************
+         *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
+         ************************************************************************************************/
+    }
+
+    handleQuoteElement() {
+        /************************************************************************************************
+         * CHANGE THE TAG OF CURRENT SELECT ELEMENT
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        const spanElement = getFirstParentWithTag("span", selectionNode)
+
+        if (spanElement == null || spanElement.parentElement == null) return;
+        let d = document.createElement("i");
+        d.classList.add("fa", "fa-quote-left", "mr-3", "absolute", "left-0", "top-0")
+        spanElement.parentElement.classList.add("quote-container")
+        spanElement.parentElement.insertBefore(d, spanElement)
+
+        /************************************************************************************************
+         *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
+         ************************************************************************************************/
+    }
+
     handleFontFamilyClicked(value: string) {
 
         /************************************************************************************************
@@ -737,6 +822,7 @@ class TestNewPost extends Component {
         this.toggleActiveAlignCenter(selectElement)
         this.toggleActiveAlignJustify(selectElement)
         this.toggleActiveAlignJustify(selectElement)
+        this.toggleStrikeIcon(selectElement)
     }
 
     /************************************************************************************************
@@ -948,7 +1034,8 @@ class TestNewPost extends Component {
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-underline"
                              onClick={underlineSelection}><i
                             className="fa fa-underline disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike">
+                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike"
+                             onClick={scope.handleStrikeElement}>
                             <i className="fa fa-strikethrough disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-left"
                              onClick={alignLeftSelection}>
@@ -965,6 +1052,13 @@ class TestNewPost extends Component {
                         {/*</div>*/}
 
                         {/*<div className="d-flex">*/}
+
+                        <div className="center-element-inner editor-icon tooltip"
+                             onClick={scope.handleQuoteElement}>
+                            <span className="tooltip-text">Quote</span>
+                            <i className="fa fa-quote-left"/>
+                        </div>
+
                         <div className="center-element-inner editor-icon tooltip">
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-indent"/>
