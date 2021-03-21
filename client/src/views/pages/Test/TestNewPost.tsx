@@ -1,7 +1,7 @@
 import React, {Component, useState} from 'react'
 import {execCommandStyle, ExecCommandStyle} from "../../../assets/ts/editor";
 import {
-    getFirstParentOfSpan,
+    getFirstParent,
     getFirstParentWithTag,
     getFirstParentWithTags,
     styleElement
@@ -20,6 +20,9 @@ import {State} from "react-toastify/dist/hooks/toastContainerReducer";
 import {Login} from "../Auth/Login";
 import {elementType, instanceOf} from "prop-types";
 import MediaLibrary from "../../components/Upload/MediaLibrary";
+import {ReactComponent} from "*.svg";
+import PopupLink from "../../components/UI/Popup";
+import ReactDOM from 'react-dom';
 // import store from '../reducers/store';
 
 
@@ -350,7 +353,7 @@ class TestNewPost extends Component {
     toggleActiveAlignLeft(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-left")
-        const elementAlign = getFirstParentOfSpan(element)
+        const elementAlign = getFirstParent(element)
 
         if (elementAlign == null) return;
         if (iconAlignLeft == null) return;
@@ -390,7 +393,7 @@ class TestNewPost extends Component {
     toggleActiveAlignRight(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-right")
-        const elementAlign = getFirstParentOfSpan(element)
+        const elementAlign = getFirstParent(element)
         if (iconAlignLeft == null) return;
         if (elementAlign == null) return;
         if (elementAlign.style == null) return;
@@ -421,7 +424,7 @@ class TestNewPost extends Component {
     toggleActiveAlignCenter(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-center")
-        const elementAlign = getFirstParentOfSpan(element)
+        const elementAlign = getFirstParent(element)
         if (iconAlignLeft == null) return;
         if (elementAlign == null) return;
         if (elementAlign.style == null) return;
@@ -452,7 +455,7 @@ class TestNewPost extends Component {
     toggleActiveAlignJustify(element: HTMLElement) {
 
         let iconAlignJustify = document.getElementById("editor-icon-align-justify")
-        const elementAlign = getFirstParentOfSpan(element)
+        const elementAlign = getFirstParent(element)
 
         if (iconAlignJustify == null) return;
         if (elementAlign == null) return;
@@ -483,8 +486,8 @@ class TestNewPost extends Component {
 
     toggleStrikeIcon(element: HTMLElement) {
 
-        let iconStrike = document.getElementById("editor-icon-align-justify")
-        const elementAlign = getFirstParentOfSpan(element)
+        let iconStrike = document.getElementById("editor-icon-strike")
+        const elementAlign = getFirstParent(element)
 
         if (iconStrike == null) return;
         if (elementAlign == null) return;
@@ -643,7 +646,7 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParentOfSpan(selectionNode)
+        const pElement = getFirstParent(selectionNode)
 
         if (pElement == null || pElement.parentElement == null) return;
         let d = document.createElement(value);
@@ -655,7 +658,7 @@ class TestNewPost extends Component {
          ************************************************************************************************/
     }
 
-    handleStrikeElement() {
+    handleStrikeSelection() {
         /************************************************************************************************
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
          ************************************************************************************************/
@@ -707,7 +710,7 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParentOfSpan(selectionNode)
+        const pElement = getFirstParent(selectionNode)
 
         if (pElement == null) return;
 
@@ -776,7 +779,7 @@ class TestNewPost extends Component {
             span.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
             span.innerText = selectText
             span.style[style] = value
-            getFirstParentOfSpan(selectionStyle)?.appendChild(span)
+            getFirstParent(selectionStyle)?.appendChild(span)
 
             console.log("Span Selected", span)
             range.commonAncestorContainer.textContent = textContent.replace(selectText, "")
@@ -790,12 +793,12 @@ class TestNewPost extends Component {
             let spanRemain = document.createElement("span")
             spanRemain.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
             spanRemain.innerText = remainText
-            getFirstParentOfSpan(selectionStyle)?.appendChild(spanRemain)
+            getFirstParent(selectionStyle)?.appendChild(spanRemain)
             return;
         }
 
         if (useParent) {
-            selectionStyle = getFirstParentOfSpan(selectionStyle)
+            selectionStyle = getFirstParent(selectionStyle)
         } else {
             selectionStyle = getFirstParentWithTag(tag, selectionStyle)
         }
@@ -925,6 +928,33 @@ class TestNewPost extends Component {
             // selectionNode.style['text-align'] = 'justify'
         }
 
+        function strikeSelection(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+            // dispatch(toggleAlignCenter())
+
+            scope.handleStrikeSelection()
+        }
+
+        function quoteSelection(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+            // dispatch(toggleAlignCenter())
+
+            scope.handleQuoteElement()
+        }
+
+        function linkSelection() {
+            // const component = Component()
+            const element = React.createElement(PopupLink)
+            const selectionNode = textField.document.getSelection()?.anchorNode as HTMLElement | null
+            const constraint = getFirstParent(selectionNode)
+            console.log("WTF", constraint)
+            console.log("Fucking element", element)
+            if (constraint == null) return
+            const x = ReactDOM.createPortal(PopupLink, constraint)
+            ReactDOM.render(<PopupLink/>, constraint)
+            console.log(x)
+        }
+
         function pickImage() {
             const popup = document.getElementById("popup-pick-media")
             if (popup == null) return
@@ -1035,7 +1065,7 @@ class TestNewPost extends Component {
                              onClick={underlineSelection}><i
                             className="fa fa-underline disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike"
-                             onClick={scope.handleStrikeElement}>
+                             onClick={strikeSelection}>
                             <i className="fa fa-strikethrough disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-left"
                              onClick={alignLeftSelection}>
@@ -1054,7 +1084,7 @@ class TestNewPost extends Component {
                         {/*<div className="d-flex">*/}
 
                         <div className="center-element-inner editor-icon tooltip"
-                             onClick={scope.handleQuoteElement}>
+                             onClick={quoteSelection}>
                             <span className="tooltip-text">Quote</span>
                             <i className="fa fa-quote-left"/>
                         </div>
@@ -1080,7 +1110,8 @@ class TestNewPost extends Component {
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-image"/>
                         </div>
-                        <div className="center-element-inner editor-icon tooltip">
+                        <div className="center-element-inner editor-icon tooltip"
+                             onClick={linkSelection}>
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-link"/>
                         </div>

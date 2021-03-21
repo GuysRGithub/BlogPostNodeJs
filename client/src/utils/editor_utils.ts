@@ -53,7 +53,7 @@ export function getFirstParentWithTag(tag: string, child: HTMLElement | null) {
     return selectionNode
 }
 
-export function getFirstParentOfSpan(child: HTMLElement | null) {
+export function getFirstParent(child: HTMLElement | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     return getFirstParentWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
 }

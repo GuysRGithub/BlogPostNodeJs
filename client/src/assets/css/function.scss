@@ -627,6 +627,11 @@ h6 {
   margin-right: .5rem;
 }
 
+*[class*='child-my-2'] > * {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 *[class*='child-px-2'] > * {
   padding-left: 1rem;
   padding-right: 1rem;
