@@ -24,7 +24,6 @@ import MediaLibrary from "./views/components/Upload/MediaLibrary.jsx";
 // Javascript script
 import "../src/assets/js/index"
 
-
 function App() {
     return (
         <Suspense fallback={(<div>Loading...</div>)}>
