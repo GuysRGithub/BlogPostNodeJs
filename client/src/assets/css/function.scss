@@ -552,25 +552,22 @@ h6 {
 }
 
 .tooltip .tooltip-text {
-  width: 120px;
+  width: max-content;
+  font-size: 16px;
   top: 120%;
   left: 50%;
-  margin-left: -60px;
-
-  font-size: 16px;
+  transform: translateX(-50%);
   font-family: 'Ubuntu', sans-serif;
-
   visibility: hidden;
-  background-color: #5d6260;
-  color: #fff;
+  background-color: #242625d6;
+  color: #fcfbfb;
   text-align: center;
-  padding: 2px 0;
-  border-radius: 6px;
-
-  /* Position the tooltip text - see examples below! */
   position: absolute !important;
   z-index: 1;
-  transform: none;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-weight: lighter;
+  text-transform: capitalize;
 }
 
 .tooltip:hover .tooltip-text {

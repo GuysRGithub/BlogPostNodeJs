@@ -469,19 +469,6 @@ class TestNewPost extends Component {
                 iconAlignJustify.classList.toggle("active")
             }
         }
-
-
-        // let parentElement = element.parentNode as HTMLElement
-        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-        //
-        //     if (!parentElement.style) return;
-        //     if (parentElement.style['text-align'] === 'justify') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        //
-        //     parentElement = parentElement.parentNode as HTMLElement
-        // }
     }
 
     toggleStrikeIcon(element: HTMLElement) {
@@ -507,18 +494,31 @@ class TestNewPost extends Component {
         if (iconStrike.classList.contains("active")) return;
         iconStrike.classList.toggle("active")
 
+    }
 
-        // let parentElement = element.parentNode as HTMLElement
-        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-        //
-        //     if (!parentElement.style) return;
-        //     if (parentElement.style['text-align'] === 'justify') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        //
-        //     parentElement = parentElement.parentNode as HTMLElement
-        // }
+    toggleQuoteIcon(element: HTMLElement) {
+
+        let iconStrike = document.getElementById("editor-icon-quote")
+        const elementAlign = getFirstParent(element)
+
+        if (iconStrike == null) return;
+        if (elementAlign == null) return;
+
+        let parent = getFirstParent(element)
+
+        /*      //////////////////////          HAVE QUOTE BLOCK             ///////////////////////     */
+        if (parent?.classList.contains("quote-container")) {
+            if (iconStrike.classList.contains("active")) return;
+            iconStrike.classList.toggle("active")
+
+            return;
+        }
+
+        /*      //////////////////////          NOT HAVE QUOTE BLOCK             ///////////////////////     */
+        if (iconStrike.classList.contains("active")) {
+            iconStrike.classList.toggle("active")
+        }
+
     }
 
     applyEditorStyleElement(element: HTMLElement, forceApply: boolean = false) {
@@ -535,9 +535,6 @@ class TestNewPost extends Component {
             if (editorState.underlineEnable) {
                 element.style["text-decoration"] = "underline"
             }
-            // if (editorState.isAlignLeft) {
-            //     element.style["text-align"] = "left"
-            // }
         }
     }
 
@@ -688,14 +685,21 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
+        if (selectionNode == null) return;
+
+        let parent = getFirstParent(selectionNode)
+        /*      //////////////////////          HAVE QUOTE BLOCK             ///////////////////////     */
+        if (parent?.classList.contains("quote-container")) {
+            parent?.classList.remove("quote-container", "fa")
+            return;
+        }
+
         const spanElement = getFirstParentWithTag("span", selectionNode)
 
         if (spanElement == null || spanElement.parentElement == null) return;
-        let d = document.createElement("i");
-        d.classList.add("fa", "fa-quote-left", "mr-3", "absolute", "left-0", "top-0")
-        spanElement.parentElement.classList.add("quote-container")
-        spanElement.parentElement.insertBefore(d, spanElement)
+        spanElement.parentElement.classList.add("quote-container", "fa")
 
+        this.handleUpdateUI(selectionNode)
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
@@ -826,6 +830,8 @@ class TestNewPost extends Component {
         this.toggleActiveAlignJustify(selectElement)
         this.toggleActiveAlignJustify(selectElement)
         this.toggleStrikeIcon(selectElement)
+        this.toggleQuoteIcon(selectElement)
+
     }
 
     /************************************************************************************************
@@ -943,16 +949,44 @@ class TestNewPost extends Component {
         }
 
         function linkSelection() {
-            // const component = Component()
-            const element = React.createElement(PopupLink)
             const selectionNode = textField.document.getSelection()?.anchorNode as HTMLElement | null
+            console.log("Selection node link", textField.document.getSelection()?.anchorNode?.nodeValue)
             const constraint = getFirstParent(selectionNode)
-            console.log("WTF", constraint)
-            console.log("Fucking element", element)
-            if (constraint == null) return
-            const x = ReactDOM.createPortal(PopupLink, constraint)
-            ReactDOM.render(<PopupLink/>, constraint)
-            console.log(x)
+            const container = document.createElement("div")
+            ////////////////////////////////          DO NOT ENABLE EDIT FOR POPUP            ////////////////////////////////
+            container.attributes['contentEditable'] = false
+
+            /*      //////////////////////          REMOVE POPUP WHEN CLICK OUTSIDE             ///////////////////////     */
+            textField.document.addEventListener("click", function (e) {
+                if (e == null || e.target ! instanceof Node) return
+                const target = e.target as Node
+                if (!container.contains(target)) {
+                    container.remove()
+                }
+            })
+
+            const popup = <PopupLink text={selectionNode?.nodeValue ?? ""}
+                                     onApply={function (text: string, link: string) {
+                                         container.remove()
+                                         // textField.document.getElementById("popup-add-link")?.remove()
+                                         const a = document.createElement("a")
+                                         a.title = text
+                                         a.appendChild(document.createTextNode(text))
+                                         a.href = link
+                                         textField.document.body.appendChild(a)
+                                         if (selectionNode?.nodeType === Node.TEXT_NODE) {
+                                             selectionNode?.remove()
+                                         }
+                                     }}/>
+
+            if (constraint == null) {
+                textField.document.body.appendChild(container)
+                ReactDOM.render(popup, container)
+                return
+            }
+
+            constraint.appendChild(container)
+            ReactDOM.render(popup, container)
         }
 
         function pickImage() {
@@ -989,65 +1023,42 @@ class TestNewPost extends Component {
                  style={{height: '100vh', backgroundColor: "#ededed"}}>
                 <div>
 
-                    {/*<div className="d-flex mx-3">*/}
-                    {/*    <div className="w-2/12">*/}
-                    {/*        <i className="fa fa-xs fa-check"><span className="ml-2 fs-1">Save</span></i>*/}
-                    {/*    </div>*/}
-                    {/*    <div*/}
-                    {/*        className="d-flex justify-content-between content-between align-items-center child-mx-2-not-first">*/}
-                    {/*        <i className="fa fa-xs fa-arrow-left"/>*/}
-                    {/*        <i className="fa fa-xs fa-arrow-right"/>*/}
-                    {/*    </div>*/}
-                    {/*    <div*/}
-                    {/*        className="d-flex justify-content-end w-2/12 content-end align-items-center child-mx-2-not-first">*/}
-                    {/*        <i className="fa fa-xs fa-desktop"><span className="ml-2 fs-1">Desktop</span></i>*/}
-                    {/*    </div>*/}
-                    {/*    <div*/}
-                    {/*        className="d-flex justify-content-end w-2/12 content-end align-items-center child-mx-2-not-first">*/}
-                    {/*        <i className="fa fa-xs fa-wrench"><span className="ml-2 fs-1">Tools</span></i>*/}
-                    {/*    </div>*/}
-                    {/*    <div*/}
-                    {/*        className="d-flex align-items-center justify-end justify-content-end flex-1 child-mx-2-not-first">*/}
-                    {/*        <div*/}
-                    {/*            className="d-flex justify-content-between content-between align-items-center child-mx-2-not-first">*/}
-                    {/*            <i className="fa fa-xs fa-cog"><span className="ml-2 fs-1">Pages</span></i>*/}
-                    {/*            <i className="fa fa-xs fa-fill-drip"><span className="ml-2 fs-1">Themes</span></i>*/}
-                    {/*            <i className="fa fa-xs fa-globe"><span className="ml-2 fs-1">Site</span></i>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                     <div className="d-flex justify-between mx-3 mt-5 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
                          style={{backgroundColor: "#f7f7f7"}}>
-                        {/*<div className="d-flex content-between">*/}
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
+                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
+                            <span className="tooltip-text">Select Heading</span>
                             <p id="input-select-tag-new-element" className="pl-5">Normal text</p>
 
                             <ul className="options" id="options">
                                 {mapTag.map(function (item) {
-                                    return <li data-value={item.value} data-key={TAG_KEY}><span
+                                    return <li key={`${item.value}-${TAG_KEY}`} data-value={item.value}
+                                               data-key={TAG_KEY}><span
                                         className={item.value}>{item.key}</span></li>
                                 })}
                             </ul>
                         </ul>
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
+                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
+                            <span className="tooltip-text">Select font</span>
                             <p id="input-select-font-family" className="pl-5">Roboto</p>
-
                             <ul className="options" id="options">
                                 {mapFont.map(function (item) {
-                                    return <li data-value={item} data-key={FONT_FAMILY_KEY}><span
+                                    return <li key={`${item}-${FONT_FAMILY_KEY}`} data-value={item}
+                                               data-key={FONT_FAMILY_KEY}><span
                                         className={`font-${item.toLowerCase()}`}>{item}</span>
                                     </li>
                                 })}
                             </ul>
                         </ul>
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
+                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
+                            <span className="tooltip-text">Select Text Size</span>
                             <p id="input-select-font-size" className="pl-5">18</p>
                             <ul className="options" id="options">
                                 {mapFontSize.map(function (item) {
-                                    return <li data-value={item} data-key={FONT_SIZE_KEY}><span
+                                    return <li key={`${item}-${FONT_SIZE_KEY}`} data-value={item}
+                                               data-key={FONT_SIZE_KEY}><span
                                         style={{fontSize: `${item}px`}}>{item}</span></li>
                                 })}
                             </ul>
@@ -1055,46 +1066,54 @@ class TestNewPost extends Component {
 
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-bold" data-cmd="bold"
                              onClick={boldSelection}>
+                            <span className="tooltip-text">Bold Text</span>
                             <i className="fa fa-bold disabled"/>
                         </div>
 
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-italic"
                              onClick={italicSelection}>
+                            <span className="tooltip-text">Italic Text</span>
                             <i className="fa fa-italic disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-underline"
-                             onClick={underlineSelection}><i
-                            className="fa fa-underline disabled"/></div>
+                             onClick={underlineSelection}>
+                            <span className="tooltip-text">Center Text</span>
+                            <i className="fa fa-underline disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike"
                              onClick={strikeSelection}>
+                            <span className="tooltip-text">Strike Text</span>
                             <i className="fa fa-strikethrough disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-left"
                              onClick={alignLeftSelection}>
+                            <span className="tooltip-text">Align Text Left</span>
                             <i className="fa fa-align-left disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-center"
                              onClick={alignCenterSelection}>
+                            <span className="tooltip-text">Align Text Center</span>
                             <i className="fa fa-align-center disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-right"
                              onClick={alignRightSelection}>
+                            <span className="tooltip-text">Align Text Right</span>
                             <i className="fa fa-align-right disabled"/></div>
                         <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-justify"
                              onClick={alignJustifySelection}>
+                            <span className="tooltip-text">Justify Text</span>
                             <i className="fa fa-align-justify disabled"/></div>
                         {/*</div>*/}
 
                         {/*<div className="d-flex">*/}
 
-                        <div className="center-element-inner editor-icon tooltip"
+                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-quote"
                              onClick={quoteSelection}>
                             <span className="tooltip-text">Quote</span>
                             <i className="fa fa-quote-left"/>
                         </div>
 
                         <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">Dedent Text</span>
                             <i className="fa fa-indent"/>
                         </div>
                         <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">Indent Text</span>
                             <i className="fa fa-indent"/>
                         </div>
                         {/*</div>*/}
@@ -1102,21 +1121,20 @@ class TestNewPost extends Component {
                         {/*<div className="d-flex">*/}
 
                         <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">Import file</span>
                             <i className="fa fa-file"/>
                         </div>
                         <div className="center-element-inner editor-icon tooltip"
                              onClick={pickImage}>
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">Insert Image</span>
                             <i className="fa fa-image"/>
                         </div>
                         <div className="center-element-inner editor-icon tooltip"
                              onClick={linkSelection}>
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">Create link</span>
                             <i className="fa fa-link"/>
                         </div>
                         {/*</div>*/}
-
 
                         {/*<div className="d-flex">*/}
 
