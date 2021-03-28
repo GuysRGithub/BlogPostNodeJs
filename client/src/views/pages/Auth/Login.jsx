@@ -21,7 +21,6 @@ export const Login = (props) => {
     const {email, password} = FormData;
 
     const handleChange = (text) => (e) => {
-        console.log({email, password});
         setFormData({...FormData, [text]: e.target.value});
     };
 
@@ -47,7 +46,7 @@ export const Login = (props) => {
                 console.log(response);
                 informParent(response);
             })
-            .catch((err) => {
+            .catch(() => {
                 toast.error("Google login failed");
             });
     };
@@ -68,6 +67,7 @@ export const Login = (props) => {
 
     const responseFacebook = (response) => {
         // Must be spell correct or it not work
+        // noinspection JSUnresolvedVariable
         sendFacebookToken(response.userID, response.accessToken)
 
     }
@@ -88,14 +88,14 @@ export const Login = (props) => {
                             password: "",
                         });
 
-                        toast.success("Login Successful");
+                        toast.success(`Login Successful. Welcome back ${response.data.user.name}`);
+
+                        isAuth() && isAuth().role === "admin"
+                            ? props.history.push("/admin")
+                            : props.history.push("/");
+
                     });
 
-                    isAuth() && isAuth().role === "admin"
-                        ? props.history.push("/admin")
-                        : props.history.push("/");
-
-                    toast.success(`Hey ${response.data.user.name} Welcome back`);
                 })
                 .catch((err) => {
                     toast.error(err);
@@ -108,7 +108,6 @@ export const Login = (props) => {
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
             {isAuth() ? <Redirect to="/"/> : null}
-            <ToastContainer/>
             <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
                 <div className="mt-12 flex flex-col items-center">
                     <h1 className="text-2xl xl:text-3xl font-extrabold">Sign In</h1>
@@ -149,22 +148,22 @@ export const Login = (props) => {
                             <div>
 
                             </div>
-                            <GoogleLogin
-                                clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
-                                onSuccess={responseGoogle}
-                                onFailure={responseGoogle}
-                                cookiePolicy={"single_host_origin"}
-                                render={(renderProps) => (
-                                    <button
-                                        onClick={renderProps.onClick}
-                                        disabled={renderProps.disabled}
-                                        className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'"
-                                    >
-                                        Sign In with Google
-                                    </button>
-                                )}
-                            >
-                            </GoogleLogin>
+                            {/*<GoogleLogin*/}
+                            {/*    clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}*/}
+                            {/*    onSuccess={responseGoogle}*/}
+                            {/*    onFailure={responseGoogle}*/}
+                            {/*    cookiePolicy={"single_host_origin"}*/}
+                            {/*    render={(renderProps) => (*/}
+                            {/*        <button*/}
+                            {/*            onClick={renderProps.onClick}*/}
+                            {/*            disabled={renderProps.disabled}*/}
+                            {/*            className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'"*/}
+                            {/*        >*/}
+                            {/*            Sign In with Google*/}
+                            {/*        </button>*/}
+                            {/*    )}*/}
+                            {/*>*/}
+                            {/*</GoogleLogin>*/}
 
                             <FacebookLogin
                                 appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`} // Facebook App ID

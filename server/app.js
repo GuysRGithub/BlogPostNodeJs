@@ -12,9 +12,9 @@ const mongoose = require("mongoose");
 const app = express();
 const config = require("./config/config");
 
-let mode = "Localhost"
+let mode = "development"
 
-if (mode === "Localhost") {
+if (mode === "localhost") {
     // Connection URL
     let url = 'mongodb://127.0.0.1:27017/BlogFullStack';
     // Use connect method to connect to the Server
@@ -22,17 +22,15 @@ if (mode === "Localhost") {
         useNewUrlParser: true, useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
-    }, () => {
+    }, (err) => {
+        if (err) {
+            console.log("Error when connect to mongo server: ", err);
+            return
+        }
         console.log("Connected correctly to mongo server");
     });
-    mongoose.connection.on('error', err => {
-        console.log(err);
-    });
-    mongoose.connection.once('open', function callback() {
-        console.log("Connect Successful");
-    });
 } else {
-    const connect = mongoose.connect(config.mongoURI,
+    mongoose.connect(config.mongoURI,
         {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -42,12 +40,6 @@ if (mode === "Localhost") {
         .then(() => console.log('MongoDB Connected...'))
         .catch(err => console.log(err));
 }
-// const mongoose = require("mongoose");
-// mongoose
-//   .connect(config.mongoURI, { useNewUrlParser: true })
-//   .then(() => console.log("DB connected"))
-//   .catch(err => console.error(err));
-
 
 app.use(cors())
 
@@ -81,7 +73,7 @@ if (process.env.NODE_ENV === "production") {
     // All the javascript and css files will be read and served from this folder
     app.use(express.static("client/build"));
 
-    // index.html for all page routes    html or routing and naviagtion
+    // index.html for all page routes    html or routing and navigation
     app.get("*", (req, res) => {
         res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"));
     });
