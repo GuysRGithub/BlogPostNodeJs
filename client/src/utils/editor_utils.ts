@@ -48,9 +48,19 @@ export function getFirstParentWithTag(tag: string, child: HTMLElement | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child
     while (selectionNode != null && selectionNode.tagName?.toLowerCase() !== tag.toLowerCase()) {
-        selectionNode = selectionNode.parentNode as HTMLElement | null
+        selectionNode = selectionNode.parentElement
     }
     return selectionNode
+}
+
+export function getFirstChildWithTag(tag: string, child: HTMLElement | null) {
+    if (child == null || !child.querySelectorAll) return null;
+    console.log("Child", child)
+    const selects = child.querySelectorAll(tag)
+    if (selects.length > 0) {
+        return selects[0]
+    }
+    return null;
 }
 
 export function getFirstParent(child: HTMLElement | null) {
@@ -62,7 +72,7 @@ export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | 
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child
     while (selectionNode != null && !tag.includes(selectionNode.tagName?.toLowerCase())) {
-        selectionNode = selectionNode.parentNode as HTMLElement | null
+        selectionNode = selectionNode.parentElement
     }
     return selectionNode
 }
@@ -72,8 +82,14 @@ export function getFirstParentNotWithTag(tag: string, child: HTMLElement | null)
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child
     do {
-        selectionNode = selectionNode?.parentNode as HTMLElement | null
+        selectionNode = selectionNode?.parentElement as HTMLElement | null
     } while (selectionNode != null && selectionNode.tagName?.toLowerCase() === tag.toLowerCase());
 
     return selectionNode
+}
+
+export function removeAllChildNodes(parent: HTMLElement) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
 }

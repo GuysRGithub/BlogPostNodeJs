@@ -1,9 +1,10 @@
 import React, {Component, useState} from 'react'
 import {execCommandStyle, ExecCommandStyle} from "../../../assets/ts/editor";
 import {
+    getFirstChildWithTag,
     getFirstParent,
     getFirstParentWithTag,
-    getFirstParentWithTags,
+    getFirstParentWithTags, removeAllChildNodes,
     styleElement
 } from "../../../utils/editor_utils";
 import {connect, useSelector} from "react-redux"
@@ -177,7 +178,6 @@ class TestNewPost extends Component {
                     }
                 }
                 // element.innerHTML = ' '
-                // console.log("FUCk", span.childNodes[0])
                 element.appendChild(span)
 
             } else {
@@ -265,7 +265,6 @@ class TestNewPost extends Component {
         // Because the selection is always the text node so need to get parent twice to get
         // the actual parent of the select element
         let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-        console.log("Selection Node Handle...", selectionNode)
         if (selectionNode == null) return;
 
         this.handleUpdateUI(selectionNode)
@@ -521,6 +520,34 @@ class TestNewPost extends Component {
 
     }
 
+    toggleListIcon(element: HTMLElement, ordered: boolean = false) {
+
+        let iconList = document.getElementById(ordered ? "editor-icon-ordered-list" : "editor-icon-unordered-list")
+        if (iconList == null) return;
+
+        /*      //////////////////////          IF HAS DESCENDANT (IT ALSO IS LIST)             ///////////////////////     */
+        if (element.querySelectorAll(ordered ? "ol" : "ul").length > 0) {
+            if (iconList.classList.contains("active")) return;
+            iconList.classList.toggle("active")
+            return;
+        }
+
+        /*      //////////////////////          IF HAS PARENT WITH OL OR UL TAG...             ///////////////////////     */
+        const listParent = getFirstParentWithTag(ordered ? "ol" : "ul", element)
+        if (listParent == null) {
+            /*      //////////////////////          NOT HAVE QUOTE BLOCK             ///////////////////////     */
+            if (iconList.classList.contains("active")) {
+                iconList.classList.toggle("active")
+            }
+            return;
+        }
+
+        if (iconList.classList.contains("active")) return;
+        iconList.classList.toggle("active")
+        return;
+
+    }
+
     applyEditorStyleElement(element: HTMLElement, forceApply: boolean = false) {
         // @ts-ignore
         let editorState = this.props.state
@@ -598,10 +625,8 @@ class TestNewPost extends Component {
 
             for (let i = 0; i < optionsList.length; i++) {
                 const option = optionsList[i] as HTMLElement
-                console.log("Options List", option.innerText)
 
                 option.addEventListener("click", function () {
-                    console.log("Option list Clicked", option.getAttribute("data-value"))
                     const key = option.getAttribute("data-key")
                     const value = option.getAttribute("data-value") ?? "p"
                     if (key === TAG_KEY) {
@@ -705,6 +730,70 @@ class TestNewPost extends Component {
          ************************************************************************************************/
     }
 
+    handleListElement(ordered: boolean = false) {
+        /************************************************************************************************
+         * MAKE LIST FROM ELEMENT(S)
+         ************************************************************************************************/
+        let selection = textField.window.getSelection()
+        if (selection == null) return
+        if (selection.rangeCount <= 0) return;
+        const range = selection.getRangeAt(0)
+        const content = range.cloneContents()
+        // const content = range.extractContents()
+        let selectionNode = selection.anchorNode as HTMLElement | null
+        if (selectionNode == null) return;
+
+        /*      //////////////////////          IF LIST ELEMENT PRESENT IT MEAN REMOVE LIST ATTRS (DISABLE LIST)            ///////////////////////     */
+        const listElement = getFirstParentWithTag(ordered ? "ol" : "ul", selectionNode)
+        if (listElement != null) {
+            listElement.parentElement?.replaceWith(...Array.from(listElement.parentElement?.childNodes))
+            listElement.childNodes.forEach(it => {
+                it.replaceWith(...Array.from(it.childNodes))
+            })
+            listElement.replaceWith(...Array.from(listElement.childNodes))
+            return;
+        }
+
+        /*      //////////////////////          CHANGE LIST STYLE (OL TO UL AND VERSE)             ///////////////////////     */
+        const currentListElement = getFirstParentWithTag(ordered ? "ul" : "ol", selectionNode) ??
+            getFirstChildWithTag(ordered ? "ul" : "ol", selectionNode)
+        console.log("Current list element", currentListElement, selectionNode)
+        if (currentListElement != null) {
+            const listOpposite = document.createElement(ordered ? "ol" : "ul")
+            listOpposite.innerHTML = currentListElement.innerHTML
+            currentListElement.parentElement?.replaceChild(listOpposite, currentListElement)
+            this.handleUpdateUI(listOpposite)
+            return;
+        }
+
+        /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
+        for (let i = 0; i < content.children.length; i++) {
+            const child = content.children[i]
+            const li = document.createElement("li")
+            child.parentNode?.replaceChild(li, child)
+            li.appendChild(child)
+        }
+
+        const parent = getFirstParent(selectionNode)?.parentElement
+        if (parent == null) return;
+
+        removeAllChildNodes(parent)
+
+        const container = document.createElement("div")
+        const list = document.createElement(ordered ? "ol" : "ul")
+        list.appendChild(content)
+        container.classList.add("ml-4")
+        container.appendChild(list)
+
+        parent.appendChild(container)
+        range.selectNode(parent)
+
+        this.handleUpdateUI(container)
+        /************************************************************************************************
+         *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
+         ************************************************************************************************/
+    }
+
     handleFontFamilyClicked(value: string) {
 
         /************************************************************************************************
@@ -745,8 +834,6 @@ class TestNewPost extends Component {
         let selection = textField.window.getSelection()
         if (selection == null) return
         let selectionStyle = selection.anchorNode as HTMLElement | null
-
-        console.log("Selection count", selection.anchorNode)
 
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
@@ -807,7 +894,6 @@ class TestNewPost extends Component {
             selectionStyle = getFirstParentWithTag(tag, selectionStyle)
         }
 
-        console.log("Fucking selection", selectionStyle)
         if (selectionStyle == null || selectionStyle.style == null) return;
 
         if (selectionStyle.style[style] === value) {
@@ -831,7 +917,8 @@ class TestNewPost extends Component {
         this.toggleActiveAlignJustify(selectElement)
         this.toggleStrikeIcon(selectElement)
         this.toggleQuoteIcon(selectElement)
-
+        this.toggleListIcon(selectElement, false)
+        this.toggleListIcon(selectElement, true)
     }
 
     /************************************************************************************************
@@ -946,6 +1033,16 @@ class TestNewPost extends Component {
             // dispatch(toggleAlignCenter())
 
             scope.handleQuoteElement()
+        }
+
+        function listItemsSelection(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+            scope.handleListElement(false)
+        }
+
+        function listItemsOrderedSelection(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+            scope.handleListElement(true)
         }
 
         function linkSelection() {
@@ -1138,11 +1235,15 @@ class TestNewPost extends Component {
 
                         {/*<div className="d-flex">*/}
 
-                        <div className="center-element-inner editor-icon tooltip">
+                        <div className="center-element-inner editor-icon tooltip"
+                             id="editor-icon-unordered-list"
+                             onClick={listItemsSelection}>
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-list-ul"/>
                         </div>
-                        <div className="center-element-inner editor-icon tooltip">
+                        <div className="center-element-inner editor-icon tooltip"
+                             id="editor-icon-ordered-list"
+                             onClick={listItemsOrderedSelection}>
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-list-ol"/>
                         </div>
