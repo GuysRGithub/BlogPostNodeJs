@@ -565,27 +565,6 @@ class TestNewPost extends Component {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
-        // if (prevProps.specificProperty !== this.props.specificProperty) {
-        // Do whatever you want
-        // }
-        // console.log("FUck State", this.props)
-        //
-        // @ts-ignore
-        // this.editorState = this.props.state
-        //
-        // let doc = textField.document;
-        //
-        // if (doc.addEventListener) {
-        //     console.log("I Love Rose")
-        //     doc.addEventListener("keypress", handleIframeKeyPress, false);
-        //     doc.addEventListener("keyup", handleIframeKeyUp, false);
-        // } else {
-        //     console.log("I not Love Rose")
-        //     doc.onkeypress = handleIframeKeyPress;
-        // }
-    }
-
     componentDidMount() {
 
         // @ts-ignore
@@ -660,6 +639,9 @@ class TestNewPost extends Component {
         }
     }
 
+    /************************************************************************************************
+     * REPLACE THE TAG FOR CONTAINER ELEMENT (p, h1, h2, ...)
+     ************************************************************************************************/
     handleTagOptionClicked(value: string) {
         /************************************************************************************************
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
@@ -668,18 +650,24 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParent(selectionNode)
+        const pElement = getFirstParent(selectionNode);
+        console.log("select", selection, pElement)
 
         if (pElement == null || pElement.parentElement == null) return;
-        let d = document.createElement(value);
-        d.innerHTML = pElement.parentElement.innerHTML;
-        pElement.parentElement.parentElement?.replaceChild(d, pElement.parentElement);
+        let container = document.createElement(value);
+        container.innerHTML = pElement.innerHTML;
+        // container.innerHTML = pElement.parentElement.innerHTML;
+        // pElement.parentElement.parentElement?.replaceChild(container, pElement.parentElement);
+        pElement.parentElement?.replaceChild(container, pElement);
 
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
     }
 
+    /************************************************************************************************
+     * STRIKE/UN STRIKE THROUGH STYLE THE ELEMENT
+     ************************************************************************************************/
     handleStrikeSelection() {
         /************************************************************************************************
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
@@ -702,6 +690,9 @@ class TestNewPost extends Component {
          ************************************************************************************************/
     }
 
+    /************************************************************************************************
+     * WRAP/UNWRAP ELEMENT INSIDE QUOTE
+     ************************************************************************************************/
     handleQuoteElement() {
         /************************************************************************************************
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
@@ -730,6 +721,9 @@ class TestNewPost extends Component {
          ************************************************************************************************/
     }
 
+    /************************************************************************************************
+     * LIST/UN LIST ELEMENT(S)
+     ************************************************************************************************/
     handleListElement(ordered: boolean = false) {
         /************************************************************************************************
          * MAKE LIST FROM ELEMENT(S)
@@ -744,56 +738,98 @@ class TestNewPost extends Component {
         if (selectionNode == null) return;
 
         /*      //////////////////////          IF LIST ELEMENT PRESENT IT MEAN REMOVE LIST ATTRS (DISABLE LIST)            ///////////////////////     */
-        const listElement = getFirstParentWithTag(ordered ? "ol" : "ul", selectionNode)
+        const listElement = getFirstParentWithTag(ordered ? "ol" : "ul", selectionNode) ??
+            getFirstChildWithTag(ordered ? "ol" : "ul", selectionNode)
         if (listElement != null) {
-            listElement.parentElement?.replaceWith(...Array.from(listElement.parentElement?.childNodes))
+            /*      //////////////////////          CLONED KEEP NODE AND APPEND TO PARENT OF WILL REMOVE ELEMENT             ///////////////////////     */
+            const childrenCloned: Node[] = []
             listElement.childNodes.forEach(it => {
-                it.replaceWith(...Array.from(it.childNodes))
+                const x = it.childNodes[0].cloneNode(true)
+                childrenCloned.push(x)
+                listElement.parentElement?.parentElement?.appendChild(x)
             })
-            listElement.replaceWith(...Array.from(listElement.childNodes))
+            listElement.parentElement?.remove()
+
+            if (childrenCloned.length == 0) return;
+            const endElement = childrenCloned[childrenCloned.length - 1]
+            if (endElement.childNodes.length == 0) return;
+
+            const range = new Range()
+            range.setStart(childrenCloned[0], 0)
+            range.setEnd(childrenCloned[childrenCloned.length - 1], 1)
+
+            selection.removeAllRanges()
+            selection.addRange(range)
+
+            console.log("Fucking after range", range)
+
             return;
         }
 
         /*      //////////////////////          CHANGE LIST STYLE (OL TO UL AND VERSE)             ///////////////////////     */
-        const currentListElement = getFirstParentWithTag(ordered ? "ul" : "ol", selectionNode) ??
+        const currentListElementReverse = getFirstParentWithTag(ordered ? "ul" : "ol", selectionNode) ??
             getFirstChildWithTag(ordered ? "ul" : "ol", selectionNode)
-        console.log("Current list element", currentListElement, selectionNode)
-        if (currentListElement != null) {
+        if (currentListElementReverse != null) {
             const listOpposite = document.createElement(ordered ? "ol" : "ul")
-            listOpposite.innerHTML = currentListElement.innerHTML
-            currentListElement.parentElement?.replaceChild(listOpposite, currentListElement)
+            listOpposite.innerHTML = currentListElementReverse.innerHTML
+            currentListElementReverse.parentElement?.replaceChild(listOpposite, currentListElementReverse)
             this.handleUpdateUI(listOpposite)
             return;
         }
 
-        /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
-        for (let i = 0; i < content.children.length; i++) {
-            const child = content.children[i]
-            const li = document.createElement("li")
-            child.parentNode?.replaceChild(li, child)
-            li.appendChild(child)
+        /*      //////////////////////          ELSE HAVE NO LIST STYLE SO LIST ELEMENTS             ///////////////////////     */
+        /*      //////////////////////          WHEN ONLY HAVE ONE OR NO ELEMENT IN FRAGMENT CONTENT (CONTENT CLONE NODES FROM RANGE)             ///////////////////////     */
+        /*      //////////////////////          SO NEED TO MANUALLY LIST ELEMENT             ///////////////////////     */
+        if (content.children.length <= 1) {
+            const parent = getFirstParent(selectionNode)
+            if (parent != null) {
+                const li = document.createElement("li")
+                parent.parentElement?.replaceChild(li, parent)
+                li.appendChild(parent)
+
+                const container = document.createElement("div")
+                li.parentElement?.replaceChild(container, li)
+                const list = document.createElement(ordered ? "ol" : "ul")
+                list.appendChild(li)
+                container.classList.add("ml-4")
+                container.appendChild(list)
+                range.selectNode(container)
+            }
+
+        } else {
+            /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
+            for (let i = 0; i < content.children.length; i++) {
+                const child = content.children[i]
+                const li = document.createElement("li")
+                child.parentNode?.replaceChild(li, child)
+                li.appendChild(child)
+            }
+
+            const parent = getFirstParent(selectionNode)?.parentElement
+            if (parent == null) return;
+
+            removeAllChildNodes(parent)
+
+            const container = document.createElement("div")
+            const list = document.createElement(ordered ? "ol" : "ul")
+            list.appendChild(content)
+            container.classList.add("ml-4")
+            container.appendChild(list)
+
+            parent.appendChild(container)
+            range.selectNode(parent)
+
+            this.handleUpdateUI(container)
         }
 
-        const parent = getFirstParent(selectionNode)?.parentElement
-        if (parent == null) return;
-
-        removeAllChildNodes(parent)
-
-        const container = document.createElement("div")
-        const list = document.createElement(ordered ? "ol" : "ul")
-        list.appendChild(content)
-        container.classList.add("ml-4")
-        container.appendChild(list)
-
-        parent.appendChild(container)
-        range.selectNode(parent)
-
-        this.handleUpdateUI(container)
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
     }
 
+    /************************************************************************************************
+     * ADD FONT FAMILY STYLE FOR CONTAINER
+     ************************************************************************************************/
     handleFontFamilyClicked(value: string) {
 
         /************************************************************************************************
@@ -810,6 +846,9 @@ class TestNewPost extends Component {
         pElement.style['font-family'] = value
     }
 
+    /************************************************************************************************
+     * STYLE FONT SIZE FOR CONTAINER ELEMENT
+     ************************************************************************************************/
     handleFontSizeClicked(value: string) {
         /************************************************************************************************
          * CHANGE FONT FAMILY OF SPAN ELEMENT
@@ -825,15 +864,19 @@ class TestNewPost extends Component {
         pElement.style['font-size'] = `${value}px`
     }
 
+    /************************************************************************************************
+     * TOGGLE BOLD, ITALIC, ALIGN ... FOR ELEMENT
+     * NOTE: ALIGN STYLE NEED TO APPLY ON PARENT SO IT SHOULD SET USE PARENT TO TRUE
+     ************************************************************************************************/
     handleIconToggleSelection(style: string, value: string, tag: string = "span", useParent: boolean = false) {
         /************************************************************************************************
          * CHANGE FONT WEIGHT OF SPAN ELEMENT
          ************************************************************************************************/
 
-
         let selection = textField.window.getSelection()
         if (selection == null) return
         let selectionStyle = selection.anchorNode as HTMLElement | null
+        console.log("Selection anchor node", selectionStyle)
 
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
@@ -856,8 +899,42 @@ class TestNewPost extends Component {
         // const spanSelected = getFirstParentWithTag(tag, selectionStyle)
 
         const range = selection.getRangeAt(0)
+        const content = range.cloneContents()
+        console.log("Content select", content)
+
         let startSelected = range.startOffset
         let endSelected = range.endOffset
+        /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
+        if (content.children.length == 0) {
+
+        } else {
+            const parent = getFirstParent(selectionStyle)?.parentElement
+            if (parent == null) return;
+            console.log("Fucking parent", parent)
+            removeAllChildNodes(parent)
+            console.log("Fucking children", content.children.length)
+            for (let i = 0; i < content.children.length; i++) {
+                const child = content.children[i].cloneNode(true) as HTMLElement
+                const oldSpan = getFirstChildWithTag("span", child) as HTMLElement
+                if (oldSpan != null) {
+                    // const textContent = range.commonAncestorContainer.textContent
+                    // if (textContent == null) return;
+                    // const selectText = textContent?.slice(startSelected, endSelected).toString();
+                    // const remainText = textContent.slice(endSelected).toString()
+                    // if (selectText == null) return;
+
+                    // let span = document.createElement("span")
+                    // span.style.cssText = oldSpan.style.cssText
+                    // span.innerText = selectText
+                    oldSpan.style[style] = value
+                    // child.appendChild(span)
+                }
+                parent.appendChild(child)
+            }
+
+            return;
+        }
+
 
         if (startSelected !== endSelected) {
             const textContent = range.commonAncestorContainer.textContent
@@ -905,6 +982,9 @@ class TestNewPost extends Component {
         this.handleUpdateUI(selectionStyle)
     }
 
+    /************************************************************************************************
+     * UPDATE STATE OF ICONS
+     ************************************************************************************************/
     handleUpdateUI(selectElement: HTMLElement) {
 
         this.toggleActiveBold(selectElement)
@@ -942,13 +1022,7 @@ class TestNewPost extends Component {
             }
         }
 
-        async function styleOnIconClicked(style: string, value: string) {
-            await styleElement(style, value)
-            onIconEditorClicked()
-        }
-
         async function boldSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('font-weight', 'bold')
             onIconEditorClicked(event)
             dispatch(toggleBold())
 
@@ -957,7 +1031,6 @@ class TestNewPost extends Component {
         }
 
         async function italicSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('font-style', 'italic')
             onIconEditorClicked(event)
             dispatch(toggleItalic())
             scope.handleIconToggleSelection('font-style', 'italic')
@@ -965,7 +1038,6 @@ class TestNewPost extends Component {
         }
 
         async function underlineSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('text-decoration', 'underline')
             onIconEditorClicked(event)
             dispatch(toggleUnderline())
 
@@ -974,7 +1046,6 @@ class TestNewPost extends Component {
         }
 
         async function alignLeftSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('text-align', 'left')
             onIconEditorClicked(event)
             dispatch(toggleAlignLeft())
 
@@ -982,7 +1053,6 @@ class TestNewPost extends Component {
         }
 
         async function alignRightSelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('text-align', 'right')
             onIconEditorClicked(event)
             dispatch(toggleAlignRight())
 
@@ -998,27 +1068,10 @@ class TestNewPost extends Component {
         }
 
         async function alignJustifySelection(event: React.MouseEvent<HTMLElement>) {
-            // await styleElement('text-align', 'justify')
-
             onIconEditorClicked(event)
             dispatch(toggleAlignJustify())
 
             scope.handleIconToggleSelection("text-align", 'justify', "p", true)
-
-            // let selection = textField.window.getSelection()
-            //
-            // if (selection == null) return
-            //
-            // // Get parent node of selection node
-            // // Because the selection is always the text node so need to get parent twice to get
-            // // the actual parent of the select element
-            // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-            // while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-            //     selectionNode = selectionNode.parentNode as HTMLElement | null
-            // }
-            // if (selectionNode == null) return;
-            //
-            // selectionNode.style['text-align'] = 'justify'
         }
 
         function strikeSelection(event: React.MouseEvent<HTMLElement>) {
@@ -1045,9 +1098,11 @@ class TestNewPost extends Component {
             scope.handleListElement(true)
         }
 
+        /************************************************************************************************
+         * ADD POPUP TO TAKE INPUT FROM USER AND CREATE LINK FROM SELECTION
+         ************************************************************************************************/
         function linkSelection() {
             const selectionNode = textField.document.getSelection()?.anchorNode as HTMLElement | null
-            console.log("Selection node link", textField.document.getSelection()?.anchorNode?.nodeValue)
             const constraint = getFirstParent(selectionNode)
             const container = document.createElement("div")
             ////////////////////////////////          DO NOT ENABLE EDIT FOR POPUP            ////////////////////////////////
@@ -1238,13 +1293,13 @@ class TestNewPost extends Component {
                         <div className="center-element-inner editor-icon tooltip"
                              id="editor-icon-unordered-list"
                              onClick={listItemsSelection}>
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">List element (unordered)</span>
                             <i className="fa fa-list-ul"/>
                         </div>
                         <div className="center-element-inner editor-icon tooltip"
                              id="editor-icon-ordered-list"
                              onClick={listItemsOrderedSelection}>
-                            <span className="tooltip-text">Bold</span>
+                            <span className="tooltip-text">List element (ordered)</span>
                             <i className="fa fa-list-ol"/>
                         </div>
                         {/*</div>*/}

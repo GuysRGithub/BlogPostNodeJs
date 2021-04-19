@@ -55,7 +55,6 @@ export function getFirstParentWithTag(tag: string, child: HTMLElement | null) {
 
 export function getFirstChildWithTag(tag: string, child: HTMLElement | null) {
     if (child == null || !child.querySelectorAll) return null;
-    console.log("Child", child)
     const selects = child.querySelectorAll(tag)
     if (selects.length > 0) {
         return selects[0]
