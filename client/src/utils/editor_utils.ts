@@ -57,14 +57,19 @@ export function getFirstChildWithTag(tag: string, child: HTMLElement | null) {
     if (child == null || !child.querySelectorAll) return null;
     const selects = child.querySelectorAll(tag)
     if (selects.length > 0) {
-        return selects[0]
+        return selects[0] as HTMLElement
     }
     return null;
 }
 
-export function getFirstParent(child: HTMLElement | null) {
+export function getFirstParentContainer(child: HTMLElement | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     return getFirstParentWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
+}
+
+export function getFirstChildContainer(child: HTMLElement | null) {
+    // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+    return getFirstChildWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
 }
 
 export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | null) {
@@ -76,6 +81,22 @@ export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | 
     return selectionNode
 }
 
+export function getFirstChildWithTags(tag: Array<String>, child: HTMLElement | null) {
+    // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+    let selectionNode: HTMLElement | null = child
+    let count = 0;
+    let countParent = 0;
+    let childSelectNode = selectionNode
+    while (selectionNode != null && childSelectNode != null && selectionNode.children && selectionNode.children.length > 0 && !tag.includes(selectionNode.tagName?.toLowerCase())) {
+        selectionNode = childSelectNode.children[count] as HTMLElement | null
+        if (selectionNode && count == selectionNode.children.length - 1) {
+            childSelectNode = childSelectNode.children[countParent] as HTMLElement
+            countParent++
+        }
+        count++;
+    }
+    return tag.includes(selectionNode?.tagName?.toLowerCase() ?? "") ? selectionNode : null
+}
 
 export function getFirstParentNotWithTag(tag: string, child: HTMLElement | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null

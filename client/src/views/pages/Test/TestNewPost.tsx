@@ -1,13 +1,12 @@
-import React, {Component, useState} from 'react'
-import {execCommandStyle, ExecCommandStyle} from "../../../assets/ts/editor";
+import React, {Component} from 'react'
 import {
+    getFirstChildContainer,
     getFirstChildWithTag,
-    getFirstParent,
+    getFirstParentContainer,
     getFirstParentWithTag,
-    getFirstParentWithTags, removeAllChildNodes,
-    styleElement
+    removeAllChildNodes
 } from "../../../utils/editor_utils";
-import {connect, useSelector} from "react-redux"
+import {connect} from "react-redux"
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
     changeFontSizeElement,
@@ -18,10 +17,7 @@ import setStyleNotChangeEditor, {
     toggleUnderline
 } from "../../../_actions/editor_actions";
 import {State} from "react-toastify/dist/hooks/toastContainerReducer";
-import {Login} from "../Auth/Login";
-import {elementType, instanceOf} from "prop-types";
 import MediaLibrary from "../../components/Upload/MediaLibrary";
-import {ReactComponent} from "*.svg";
 import PopupLink from "../../components/UI/Popup";
 import ReactDOM from 'react-dom';
 // import store from '../reducers/store';
@@ -43,6 +39,104 @@ class TestNewPost extends Component {
         this.handleImageChosen = this.handleImageChosen.bind(this)
     }
 
+    componentDidMount() {
+
+        // @ts-ignore
+        let dispatch = this.props.dispatch;
+        let textFieldDoc = textField.document;
+        const scope = this;
+
+        if (textFieldDoc.addEventListener) {
+            textFieldDoc.addEventListener("keypress", this.handleIframeKeyPress, false);
+            textFieldDoc.addEventListener("selectionchange", this.handleSelectionChange, false);
+            /************************************************************************************************
+             * Hide Popup Selection when click outside
+             ************************************************************************************************/
+            textFieldDoc.addEventListener("click", function (e) {
+                let dropdown = document.getElementById("dropdown")
+                if (e == null || dropdown == null || e.target ! instanceof Node) return
+                const target = e.target as Node
+                if (!dropdown.contains(target)) {
+                    dropdown.classList.remove("show")
+                }
+            })
+            textFieldDoc.head.innerHTML = document.head.innerHTML
+            // doc.addEventListener("keyup", handleIframeKeyUp, false);
+
+            /*      //////////////////////          HANDLE PASTE             ///////////////////////     */
+            textFieldDoc.addEventListener("paste", function (event) {
+                // @ts-ignore
+                let paste = (event.clipboardData || textField.window.clipboardData).getData('text');
+                const selection = textField.window.getSelection();
+                if (!selection?.rangeCount) return false;
+                if (getFirstParentContainer(selection?.anchorNode as HTMLElement | null) == null) {
+                    // @ts-ignore
+                    const editorState = scope.props.state
+                    const tagNewElement = editorState.tagNewElement
+                    const container = document.createElement(tagNewElement)
+                    const span = document.createElement("span")
+                    span.appendChild(document.createTextNode(paste))
+                    container.appendChild(span)
+                    selection.getRangeAt(0).insertNode(container)
+                    selection.getRangeAt(0).selectNodeContents(container)
+                    event.preventDefault()
+                    return
+                }
+                selection.deleteFromDocument();
+                selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+                event.preventDefault()
+            })
+        } else {
+            textFieldDoc.onkeypress = this.handleIframeKeyPress;
+        }
+
+
+        const options = document.getElementsByClassName("options")
+
+        for (let i = 0; i < options.length; i++) {
+
+            // const optionsList = document.getElementById("options")?.children
+            const optionsList = options[i].children
+
+            if (optionsList == null) return
+
+            for (let i = 0; i < optionsList.length; i++) {
+                const option = optionsList[i] as HTMLElement
+
+                option.addEventListener("click", function () {
+                    const key = option.getAttribute("data-key")
+                    const value = option.getAttribute("data-value") ?? "p"
+                    if (key === TAG_KEY) {
+                        dispatch(changeTagNewElement(value))
+                        scope.handleTagOptionClicked(value)
+                        const input = document.getElementById("input-select-tag-new-element") as HTMLElement
+                        if (input == null) return
+                        input.innerText = option.innerText
+
+                    } else if (key === FONT_SIZE_KEY) {
+                        dispatch(changeFontSizeElement(value))
+                        scope.handleFontSizeClicked(value)
+                        const input = document.getElementById("input-select-font-size") as HTMLElement
+                        if (input == null) return
+                        input.style['font-size'] = `${value}px`
+                        input.innerText = option.innerText
+
+                    } else if (key === FONT_FAMILY_KEY) {
+                        dispatch(changeFontFamilyElement(value))
+                        scope.handleFontFamilyClicked(value)
+
+                        const input = document.getElementById("input-select-font-family") as HTMLElement
+                        if (input == null) return
+                        input.style['font-family'] = value
+                        input.innerText = option.innerText
+                    }
+
+
+                })
+            }
+        }
+    }
+
     handleImageChosen(imagePath: string) {
         console.log("Insert image ...", imagePath)
         const element = document.createElement("img")
@@ -52,14 +146,11 @@ class TestNewPost extends Component {
     }
 
     handleIframeKeyPress(evt: KeyboardEvent) {
-
         const charCode = evt.key;
-
         // @ts-ignore
         const editorState = this.props.state;
         // @ts-ignore
         const dispatch = this.props.dispatch;
-
         const selection = textField.window.getSelection()
         if (selection == null) return;
 
@@ -74,9 +165,7 @@ class TestNewPost extends Component {
 
         // If body then insert <p> element
         if (rootSelection != null && (rootSelection as HTMLElement).tagName && (rootSelection as HTMLElement).tagName.toLowerCase() === 'body') {
-
             evt.preventDefault()
-
             console.log("If Root selection is body...")
 
             //////////////////////////////////////////////////
@@ -170,10 +259,12 @@ class TestNewPost extends Component {
                     span.innerText += remainStr
                     let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
                     console.log("Selection Node", selectionNode)
-                    // console.log("Selection Node", selectionNode)
                     if (selectionNode == null) return;
-                    const newContent = currentContent?.replace(remainStr, "")
-                    if (newContent) {
+                    const newContent = currentContent?.replace(remainStr, "") ?? ""
+                    ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+                    if (newContent?.length == 0) {
+                        selectionNode.innerHTML = "<br>"
+                    } else {
                         selectionNode.innerText = newContent
                     }
                 }
@@ -206,10 +297,9 @@ class TestNewPost extends Component {
                     console.log("If not has empty span child...")
                     parentNode.appendChild(element)
                 }
-                // parentNode.appendChild(element)
 
             } else {
-                console.log("If parentNode is not p...")
+                console.log("If parentNode is not p or not changed...")
                 // Loop through to get the root <p> element
                 let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
                 while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
@@ -218,13 +308,21 @@ class TestNewPost extends Component {
                 console.log("Selection Node Insert", selectionNode)
                 console.log("Selection Node Insert", selectionNode?.children[0])
 
-                // if (selectionNode == null) return;
-
                 if (selectionNode != null && selectionNode.tagName && selectionNode.tagName.toLowerCase() !== "body") {
                     if (selectionNode.nextSibling) {
                         textField.document.body.insertBefore(element, selectionNode.nextSibling)
                     } else {
+                        ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
                         textField.document.body.appendChild(element)
+                        // const startNode = element.childNodes[0]
+                        // const newRange = document.createRange()
+                        //
+                        // newRange.setStart(startNode, 0)
+                        // newRange.collapse(true)
+                        //
+                        // selection.removeAllRanges()
+                        // selection.addRange(newRange)
+                        // return;
                     }
                 } else {
                     textField.document.body.appendChild(element)
@@ -232,19 +330,13 @@ class TestNewPost extends Component {
             }
 
             // Keep white space to can set start selection in this node
+            console.log("range", range)
             element.style['white-space'] = 'normal'
 
             const startNode = element.childNodes[0]
-            // const endNode = element.childNodes[0]
-            // div.appendChild(fragment)
-            console.log("range", range)
-            // range.insertNode(div)
-
             const newRange = document.createRange()
-            newRange.setStart(startNode, 1)
-            // newRange.setEnd(endNode, 1)
+            newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
             newRange.collapse(true)
-
             selection.removeAllRanges()
             selection.addRange(newRange)
 
@@ -274,10 +366,10 @@ class TestNewPost extends Component {
     toggleActiveBold(element: HTMLElement) {
         let iconBold = document.getElementById("editor-icon-bold")
         if (iconBold == null) return;
-
         if (element.style == null) return;
-
-        if (element.style['font-weight'] === 'bold') {
+        const container = getFirstParentContainer(element);
+        if (container == null) return;
+        if (container.style['font-weight'] === 'bold') {
             if (iconBold.classList.contains("active")) return;
             iconBold.classList.toggle("active")
         } else {
@@ -286,9 +378,9 @@ class TestNewPost extends Component {
             }
         }
 
-        for (let i = 0; i < element.children.length; i++) {
-            if (!(element.children[i] instanceof HTMLElement)) return;
-            let child = element.children[i] as HTMLElement
+        for (let i = 0; i < container.children.length; i++) {
+            let child = container.children[i] as HTMLElement | null
+            if (child == null) return;
             if (child.style['font-weight'] === 'bold') {
                 if (iconBold.classList.contains("active")) return;
                 iconBold.classList.toggle("active")
@@ -300,10 +392,11 @@ class TestNewPost extends Component {
     toggleActiveItalic(element: HTMLElement) {
         let iconItalic = document.getElementById("editor-icon-italic")
         if (iconItalic == null) return;
-
         if (element.style == null) return;
+        const container = getFirstParentContainer(element);
+        if (container == null) return;
 
-        if (element.style['font-style'] === 'italic') {
+        if (container.style['font-style'] === 'italic') {
             if (iconItalic.classList.contains("active")) return;
             iconItalic.classList.toggle("active")
         } else {
@@ -312,9 +405,9 @@ class TestNewPost extends Component {
             }
         }
 
-        for (let i = 0; i < element.children.length; i++) {
-            if (!(element.children[i] instanceof HTMLElement)) return;
-            let child = element.children[i] as HTMLElement
+        for (let i = 0; i < container.children.length; i++) {
+            let child = container.children[i] as HTMLElement | null
+            if (child == null) return;
             if (child.style['font-style'] === 'italic') {
                 if (iconItalic.classList.contains("active")) return;
                 iconItalic.classList.toggle("active")
@@ -327,8 +420,10 @@ class TestNewPost extends Component {
         let iconUnderline = document.getElementById("editor-icon-underline")
         if (iconUnderline == null) return;
         if (element.style == null) return;
+        const container = getFirstParentContainer(element);
+        if (container == null) return;
 
-        if (element.style['text-decoration'] === 'underline') {
+        if (container.style['text-decoration'] === 'underline') {
             if (iconUnderline.classList.contains("active")) return;
             iconUnderline.classList.toggle("active")
         } else {
@@ -338,9 +433,9 @@ class TestNewPost extends Component {
         }
 
 
-        for (let i = 0; i < element.children.length; i++) {
-            if (!(element.children[i] instanceof HTMLElement)) return;
-            let child = element.children[i] as HTMLElement
+        for (let i = 0; i < container.children.length; i++) {
+            let child = container.children[i] as HTMLElement | null
+            if (child == null) return;
             if (child.style['text-decoration'] === 'underline') {
                 if (iconUnderline.classList.contains("active")) return;
                 iconUnderline.classList.toggle("active")
@@ -352,7 +447,7 @@ class TestNewPost extends Component {
     toggleActiveAlignLeft(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-left")
-        const elementAlign = getFirstParent(element)
+        const elementAlign = getFirstParentContainer(element)
 
         if (elementAlign == null) return;
         if (iconAlignLeft == null) return;
@@ -392,7 +487,7 @@ class TestNewPost extends Component {
     toggleActiveAlignRight(element: HTMLElement) {
 
         let iconAlignLeft = document.getElementById("editor-icon-align-right")
-        const elementAlign = getFirstParent(element)
+        const elementAlign = getFirstParentContainer(element)
         if (iconAlignLeft == null) return;
         if (elementAlign == null) return;
         if (elementAlign.style == null) return;
@@ -422,39 +517,27 @@ class TestNewPost extends Component {
 
     toggleActiveAlignCenter(element: HTMLElement) {
 
-        let iconAlignLeft = document.getElementById("editor-icon-align-center")
-        const elementAlign = getFirstParent(element)
-        if (iconAlignLeft == null) return;
+        let iconAlignCenter = document.getElementById("editor-icon-align-center")
+        const elementAlign = getFirstParentContainer(element)
+        if (iconAlignCenter == null) return;
         if (elementAlign == null) return;
         if (elementAlign.style == null) return;
 
         if (elementAlign.style['text-align'] === 'center') {
-            if (iconAlignLeft.classList.contains("active")) return;
-            iconAlignLeft.classList.toggle("active")
+            if (iconAlignCenter.classList.contains("active")) return;
+            iconAlignCenter.classList.toggle("active")
         } else {
-            if (iconAlignLeft.classList.contains("active")) {
-                iconAlignLeft.classList.toggle("active")
+            if (iconAlignCenter.classList.contains("active")) {
+                iconAlignCenter.classList.toggle("active")
             }
         }
-
-        // let parentElement = element.parentNode as HTMLElement
-        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-        //
-        //     if (!parentElement.style) return;
-        //     if (parentElement.style['text-align'] === 'center') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        //
-        //     parentElement = parentElement.parentNode as HTMLElement
-        // }
 
     }
 
     toggleActiveAlignJustify(element: HTMLElement) {
 
         let iconAlignJustify = document.getElementById("editor-icon-align-justify")
-        const elementAlign = getFirstParent(element)
+        const elementAlign = getFirstParentContainer(element)
 
         if (iconAlignJustify == null) return;
         if (elementAlign == null) return;
@@ -473,12 +556,12 @@ class TestNewPost extends Component {
     toggleStrikeIcon(element: HTMLElement) {
 
         let iconStrike = document.getElementById("editor-icon-strike")
-        const elementAlign = getFirstParent(element)
+        const elementAlign = getFirstParentContainer(element)
 
         if (iconStrike == null) return;
         if (elementAlign == null) return;
 
-        let strikeElement = getFirstParentWithTag("strike", element)
+        let strikeElement = getFirstParentWithTag("strike", element) ?? getFirstChildWithTag("strike", element)
 
         /*      //////////////////////          DOES NOT HAVE STRIKE             ///////////////////////     */
         if (strikeElement == null) {
@@ -498,12 +581,12 @@ class TestNewPost extends Component {
     toggleQuoteIcon(element: HTMLElement) {
 
         let iconStrike = document.getElementById("editor-icon-quote")
-        const elementAlign = getFirstParent(element)
+        const elementAlign = getFirstParentContainer(element)
 
         if (iconStrike == null) return;
         if (elementAlign == null) return;
 
-        let parent = getFirstParent(element)
+        let parent = getFirstParentContainer(element)
 
         /*      //////////////////////          HAVE QUOTE BLOCK             ///////////////////////     */
         if (parent?.classList.contains("quote-container")) {
@@ -565,80 +648,6 @@ class TestNewPost extends Component {
         }
     }
 
-    componentDidMount() {
-
-        // @ts-ignore
-        let dispatch = this.props.dispatch;
-        let textFieldDoc = textField.document;
-
-        const scope = this;
-
-        if (textFieldDoc.addEventListener) {
-            textFieldDoc.addEventListener("keypress", this.handleIframeKeyPress, false);
-            textFieldDoc.addEventListener("selectionchange", this.handleSelectionChange, false);
-            /************************************************************************************************
-             * Hide Popup Selection when click outside
-             ************************************************************************************************/
-            textFieldDoc.addEventListener("click", function (e) {
-                let dropdown = document.getElementById("dropdown")
-                if (e == null || dropdown == null || e.target ! instanceof Node) return
-                const target = e.target as Node
-                if (!dropdown.contains(target)) {
-                    dropdown.classList.remove("show")
-                }
-            })
-            textFieldDoc.head.innerHTML = document.head.innerHTML
-            // doc.addEventListener("keyup", handleIframeKeyUp, false);
-        } else {
-            textFieldDoc.onkeypress = this.handleIframeKeyPress;
-        }
-
-        const options = document.getElementsByClassName("options")
-
-        for (let i = 0; i < options.length; i++) {
-
-            // const optionsList = document.getElementById("options")?.children
-            const optionsList = options[i].children
-
-            if (optionsList == null) return
-
-            for (let i = 0; i < optionsList.length; i++) {
-                const option = optionsList[i] as HTMLElement
-
-                option.addEventListener("click", function () {
-                    const key = option.getAttribute("data-key")
-                    const value = option.getAttribute("data-value") ?? "p"
-                    if (key === TAG_KEY) {
-                        dispatch(changeTagNewElement(value))
-                        scope.handleTagOptionClicked(value)
-                        const input = document.getElementById("input-select-tag-new-element") as HTMLElement
-                        if (input == null) return
-                        input.innerText = option.innerText
-
-                    } else if (key === FONT_SIZE_KEY) {
-                        dispatch(changeFontSizeElement(value))
-                        scope.handleFontSizeClicked(value)
-                        const input = document.getElementById("input-select-font-size") as HTMLElement
-                        if (input == null) return
-                        input.style['font-size'] = `${value}px`
-                        input.innerText = option.innerText
-
-                    } else if (key === FONT_FAMILY_KEY) {
-                        dispatch(changeFontFamilyElement(value))
-                        scope.handleFontFamilyClicked(value)
-
-                        const input = document.getElementById("input-select-font-family") as HTMLElement
-                        if (input == null) return
-                        input.style['font-family'] = value
-                        input.innerText = option.innerText
-                    }
-
-
-                })
-            }
-        }
-    }
-
     /************************************************************************************************
      * REPLACE THE TAG FOR CONTAINER ELEMENT (p, h1, h2, ...)
      ************************************************************************************************/
@@ -647,18 +656,27 @@ class TestNewPost extends Component {
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
          ************************************************************************************************/
         let selection = textField.window.getSelection()
-        if (selection == null) return
+        if (selection == null) return;
 
-        let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParent(selectionNode);
-        console.log("select", selection, pElement)
+        const selectionNode = selection.anchorNode as HTMLElement | null
+        const pElement = selectionNode?.nodeType == Node.TEXT_NODE
+            ? getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
+            : getFirstChildContainer(selectionNode) ?? getFirstParentContainer(selectionNode)
 
         if (pElement == null || pElement.parentElement == null) return;
         let container = document.createElement(value);
         container.innerHTML = pElement.innerHTML;
+        container.style.cssText = pElement.style.cssText
+        /*      //////////////////////          SELECT CONTENT NODE FOR SAME AS BEFORE             ///////////////////////     */
+        // pElement.remove()
         // container.innerHTML = pElement.parentElement.innerHTML;
         // pElement.parentElement.parentElement?.replaceChild(container, pElement.parentElement);
+
         pElement.parentElement?.replaceChild(container, pElement);
+        selection.deleteFromDocument()
+        // selection.getRangeAt(0).insertNode(container);
+        selection.getRangeAt(0).selectNodeContents(container)
+
 
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
@@ -676,7 +694,7 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const spanElement = getFirstParentWithTag("span", selectionNode)
+        const spanElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
 
         if (spanElement == null || spanElement.parentElement == null) return;
         let d = document.createElement("strike");
@@ -703,14 +721,14 @@ class TestNewPost extends Component {
         let selectionNode = selection.anchorNode as HTMLElement | null
         if (selectionNode == null) return;
 
-        let parent = getFirstParent(selectionNode)
+        let parent = getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
         /*      //////////////////////          HAVE QUOTE BLOCK             ///////////////////////     */
         if (parent?.classList.contains("quote-container")) {
             parent?.classList.remove("quote-container", "fa")
             return;
         }
 
-        const spanElement = getFirstParentWithTag("span", selectionNode)
+        const spanElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
 
         if (spanElement == null || spanElement.parentElement == null) return;
         spanElement.parentElement.classList.add("quote-container", "fa")
@@ -761,8 +779,6 @@ class TestNewPost extends Component {
             selection.removeAllRanges()
             selection.addRange(range)
 
-            console.log("Fucking after range", range)
-
             return;
         }
 
@@ -781,7 +797,7 @@ class TestNewPost extends Component {
         /*      //////////////////////          WHEN ONLY HAVE ONE OR NO ELEMENT IN FRAGMENT CONTENT (CONTENT CLONE NODES FROM RANGE)             ///////////////////////     */
         /*      //////////////////////          SO NEED TO MANUALLY LIST ELEMENT             ///////////////////////     */
         if (content.children.length <= 1) {
-            const parent = getFirstParent(selectionNode)
+            const parent = getFirstParentContainer(selectionNode)
             if (parent != null) {
                 const li = document.createElement("li")
                 parent.parentElement?.replaceChild(li, parent)
@@ -805,7 +821,7 @@ class TestNewPost extends Component {
                 li.appendChild(child)
             }
 
-            const parent = getFirstParent(selectionNode)?.parentElement
+            const parent = getFirstParentContainer(selectionNode)?.parentElement
             if (parent == null) return;
 
             removeAllChildNodes(parent)
@@ -839,7 +855,7 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParent(selectionNode)
+        const pElement = getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
 
         if (pElement == null) return;
 
@@ -857,7 +873,7 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParentWithTag("span", selectionNode)
+        const pElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
 
         if (pElement == null) return;
 
@@ -871,12 +887,13 @@ class TestNewPost extends Component {
     handleIconToggleSelection(style: string, value: string, tag: string = "span", useParent: boolean = false) {
         /************************************************************************************************
          * CHANGE FONT WEIGHT OF SPAN ELEMENT
+         * CAREFULLY USE GET PARENT CONTAINER OR CHILD CONTAINER DEPEND ON TYPE OF SELECTION
          ************************************************************************************************/
 
         let selection = textField.window.getSelection()
         if (selection == null) return
         let selectionStyle = selection.anchorNode as HTMLElement | null
-        console.log("Selection anchor node", selectionStyle)
+        console.log("Selection", selection)
 
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
@@ -891,52 +908,107 @@ class TestNewPost extends Component {
         //         const parent = getFirstParentOfSpan(selectionStyle)
         //         parent?.appendChild(span)
         //         span.style[style] = value
-        //         console.log("Span style.............ssssss", span)
         //         return;
         //     }
         // }
 
         // const spanSelected = getFirstParentWithTag(tag, selectionStyle)
-
         const range = selection.getRangeAt(0)
         const content = range.cloneContents()
-        console.log("Content select", content)
 
-        let startSelected = range.startOffset
-        let endSelected = range.endOffset
         /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
-        if (content.children.length == 0) {
+        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
+            const parent = getFirstChildContainer(selectionStyle) ?? getFirstParentContainer(selectionStyle)
+            const container = parent?.parentElement
+            console.log("Fucking shit", container)
+            if (container == null || parent == null) return;
+            /************************************************************************************************
+             * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
+             * CHOOSE CAREFULLY...
+             ************************************************************************************************/
+
+            /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
+            if (!useParent) {
+                container.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    element.style[style] = value
+                })
+            }
 
         } else {
-            const parent = getFirstParent(selectionStyle)?.parentElement
-            if (parent == null) return;
-            console.log("Fucking parent", parent)
-            removeAllChildNodes(parent)
-            console.log("Fucking children", content.children.length)
-            for (let i = 0; i < content.children.length; i++) {
-                const child = content.children[i].cloneNode(true) as HTMLElement
-                const oldSpan = getFirstChildWithTag("span", child) as HTMLElement
-                if (oldSpan != null) {
-                    // const textContent = range.commonAncestorContainer.textContent
-                    // if (textContent == null) return;
-                    // const selectText = textContent?.slice(startSelected, endSelected).toString();
-                    // const remainText = textContent.slice(endSelected).toString()
-                    // if (selectText == null) return;
+            const parent = getFirstChildContainer(selectionStyle) ?? getFirstParentContainer(selectionStyle)
+            const container = parent?.parentElement
+            console.log("Fucking more", container)
+            if (container == null || parent == null) return;
+            /************************************************************************************************
+             * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
+             * CHOOSE CAREFULLY...
+             ************************************************************************************************/
 
-                    // let span = document.createElement("span")
-                    // span.style.cssText = oldSpan.style.cssText
-                    // span.innerText = selectText
-                    oldSpan.style[style] = value
-                    // child.appendChild(span)
-                }
-                parent.appendChild(child)
+            /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
+            if (!useParent) {
+                container.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    element.style[style] = value
+                })
             }
+
+            /*      //////////////////////          REPLACE CHILD CASE             ///////////////////////     */
+            // console.log("Fucking parent", parent)
+            // removeAllChildNodes(parent)
+            // console.log("Fucking children", content.children.length)
+            // for (let i = 0; i < content.children.length; i++) {
+            //     const child = content.children[i].cloneNode(true) as HTMLElement
+            //     const oldSpan = getFirstChildWithTag("span", child) as HTMLElement
+            //     if (oldSpan != null) {
+            //         // const textContent = range.commonAncestorContainer.textContent
+            //         // if (textContent == null) return;
+            //         // const selectText = textContent?.slice(startSelected, endSelected).toString();
+            //         // const remainText = textContent.slice(endSelected).toString()
+            //         // if (selectText == null) return;
+            //
+            //         // let span = document.createElement("span")
+            //         // span.style.cssText = oldSpan.style.cssText
+            //         // span.innerText = selectText
+            //         oldSpan.style[style] = value
+            //         // child.appendChild(span)
+            //     }
+            //     parent.appendChild(child)
+            // }
 
             return;
         }
 
+        /************************************************************************************************
+         * WHEN USE PARENT THEN NEED TO APPLY STYLE ON CONTAINER TO MAKE WHOLE CHILD EFFECT
+         * USEFUL WHEN UPDATE TAG OF SELECTED
+         * ABOVE HAS ADD STYLE IT NOT USE PARENT SO ONLY APPLY STYLE IF USE PARENT (NOT APPLY STYLE AGAIN FOR SPAN,
+         * IT IS INCORRECT)
+         ************************************************************************************************/
+        if (useParent) {
+            selectionStyle = getFirstParentContainer(selectionStyle) ?? getFirstChildContainer(selectionStyle)
+            /*      //////////////////////          NO NEED TO CHECK WHETHER SELECT ALL ELEMENT OR NOT SINCE USE PARENT             ///////////////////////     */
+            if (selectionStyle == null || selectionStyle.style == null) return;
+            if (selectionStyle.style[style] === value) {
+                selectionStyle.style[style] = ``
+            } else {
+                selectionStyle.style[style] = value
+            }
+            this.handleUpdateUI(selectionStyle)
+            return;
+        } else {
+            selectionStyle = getFirstParentWithTag(tag, selectionStyle) ?? getFirstChildWithTag(tag, selectionStyle)
+            if (selectionStyle == null || selectionStyle.style == null) return;
+        }
 
-        if (startSelected !== endSelected) {
+        let startSelected = range.startOffset
+        let endSelected = range.endOffset
+        let spanSelected = getFirstParentWithTag("span", selectionStyle)
+        if (spanSelected == null) return;
+        /************************************************************************************************
+         * WHEN SELECT PART TEXT NODE OF ELEMENT (SELECT ONLY SOME CONTENT NOT ENTIRE ELEMENT)
+         ************************************************************************************************/
+        if (startSelected !== endSelected && range.startContainer.nodeType == Node.TEXT_NODE
+            && endSelected - startSelected != spanSelected.innerText.length) {
+            console.log("Fucking text")
             const textContent = range.commonAncestorContainer.textContent
             if (textContent == null) return;
             const selectText = textContent?.slice(startSelected, endSelected).toString();
@@ -944,12 +1016,12 @@ class TestNewPost extends Component {
             if (selectText == null) return;
 
             let span = document.createElement("span")
-            span.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
+
+            span.style.cssText = spanSelected?.style.cssText ?? span.style.cssText
             span.innerText = selectText
             span.style[style] = value
-            getFirstParent(selectionStyle)?.appendChild(span)
+            getFirstParentContainer(selectionStyle)?.appendChild(span)
 
-            console.log("Span Selected", span)
             range.commonAncestorContainer.textContent = textContent.replace(selectText, "")
 
             /************************************************************************************************
@@ -961,22 +1033,9 @@ class TestNewPost extends Component {
             let spanRemain = document.createElement("span")
             spanRemain.style.cssText = getFirstParentWithTag("span", selectionStyle)?.style.cssText ?? span.style.cssText
             spanRemain.innerText = remainText
-            getFirstParent(selectionStyle)?.appendChild(spanRemain)
+            getFirstParentContainer(selectionStyle)?.appendChild(spanRemain)
+
             return;
-        }
-
-        if (useParent) {
-            selectionStyle = getFirstParent(selectionStyle)
-        } else {
-            selectionStyle = getFirstParentWithTag(tag, selectionStyle)
-        }
-
-        if (selectionStyle == null || selectionStyle.style == null) return;
-
-        if (selectionStyle.style[style] === value) {
-            selectionStyle.style[style] = ``
-        } else {
-            selectionStyle.style[style] = value
         }
 
         this.handleUpdateUI(selectionStyle)
@@ -1007,7 +1066,6 @@ class TestNewPost extends Component {
     load() {
         textField.document.designMode = "On";
     }
-
 
     render() {
 
@@ -1103,7 +1161,7 @@ class TestNewPost extends Component {
          ************************************************************************************************/
         function linkSelection() {
             const selectionNode = textField.document.getSelection()?.anchorNode as HTMLElement | null
-            const constraint = getFirstParent(selectionNode)
+            const constraint = getFirstParentContainer(selectionNode)
             const container = document.createElement("div")
             ////////////////////////////////          DO NOT ENABLE EDIT FOR POPUP            ////////////////////////////////
             container.attributes['contentEditable'] = false
