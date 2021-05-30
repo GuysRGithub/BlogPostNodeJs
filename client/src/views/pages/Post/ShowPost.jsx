@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
-import Sidebar from "../../../components/Sidebar/index.jsx";
-import Layout from "../../../layouts/Layout.jsx";
-import BlogPostDetail from "../BlogPostDetail.jsx";
+import Sidebar from "../../components/Sidebar";
+import Layout from "../../layouts/Layout.jsx";
+import BlogPostDetail from "../Blog/BlogPostDetail.jsx";
 import Axios from "axios";
-import {BLOG_SERVER_URL} from "../../../../config/config.js";
-import Card from "../../../components/UI/Card/index.jsx";
+import {BLOG_SERVER_URL} from "../../../config/config.js";
+import Card from "../../components/UI/Card";
 import HtmlParser from "react-html-parser";
-import Header from "../../../components/Shared/Header.jsx";
+import Header from "../../components/Shared/Header.jsx";
 
 const ShowPost = (props) => {
 
@@ -19,13 +19,10 @@ const ShowPost = (props) => {
     });
 
     useEffect(() => {
-
         console.log("Post Id", postId)
-
         let data = {
             postId: postId
         }
-
         Axios.post(`${BLOG_SERVER_URL}/getPost`, data)
             .then(response => {
                 if (response.data.success) {
@@ -46,7 +43,7 @@ const ShowPost = (props) => {
                     <div className="flex justify-content-between">
                         <div className="flex w-100">
                             <img className="img-avatar text-center"
-                                 src={require("../../../../assets/images/others/EHD_Merit.jpg")}/>
+                                 src={require("../../../assets/images/others/EHD_Merit.jpg")}/>
                             <div className="w-100">
                                 <h4 className="m-0 p-0 ml-3 col-8 title fs-1 color-gray line-height-1 font-italic">Guys Robot</h4>
                                 <h6 className="m-0 p-0 ml-3 col-8 color-gray-light line-height-3 font-weight-lighter font-italic font-rubik">posted

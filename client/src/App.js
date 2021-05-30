@@ -4,11 +4,11 @@ import './App.scss';
 import "react-toastify/dist/ReactToastify.css"
 
 import Auth from "./hocs/auth.js"
-import HomePage from "./views/pages/HomePage/HomePage.jsx";
-import NewPost from "./views/pages/BlogPage/Post/NewPost.jsx";
-import BlogPostIndex from "./views/pages/BlogPage/Post/BlogPostIndex.jsx";
-import ShowPost from "./views/pages/BlogPage/Post/ShowPost.jsx";
-import {Profile} from "./views/react_html_up/Profile.jsx";
+import HomePage from "./views/pages/Home/HomePage.jsx";
+import NewPost from "./views/pages/Post/NewPost.jsx";
+import PostIndex from "./views/pages/Post/PostIndex.jsx";
+import ShowPost from "./views/pages/Post/ShowPost.jsx";
+import {Profile} from "./views/pages/Profile/Profile.jsx";
 import PostCard from "./views/components/Shared/PostCard.jsx";
 import {Register} from "./views/pages/Auth/Register.jsx";
 import {Login} from "./views/pages/Auth/Login.jsx";
@@ -24,6 +24,10 @@ import MediaLibrary from "./views/components/Upload/MediaLibrary.jsx";
 // Javascript script
 import "../src/assets/js/index"
 import {ToastContainer} from "react-toastify";
+import BlogNewPost from "./views/pages/Blog/BlogNewPost";
+import IndexPage from "./views/pages/Home/IndexPage";
+import BlogIndex from "./views/pages/Blog/BlogIndex";
+import ShowBlog from "./views/pages/Blog/ShowBlog";
 
 function App() {
     return (
@@ -31,7 +35,7 @@ function App() {
             <div style={{minHeight: 'calc (100vh - 80px)'}}>
                 <ToastContainer/>
                 <Switch>
-                    <Route exact path={"/"} component={HomePage}/>
+                    <Route exact path={"/"} component={IndexPage}/>
 
                     {/* Authentication  Page */}
                     <Route exact path={"/register"} component={Auth(Register, false)}/>
@@ -41,10 +45,14 @@ function App() {
                     <Route path="/users/passwords/reset/:token" component={ResetPassword}/>
                     <Route exact path={"/users/profile"} component={Profile}/>
 
-
-                    <Route exact path={"/blogs/posts/index"} component={BlogPostIndex}/>
+                    <Route exact path={"/blogs/posts/index"} component={PostIndex}/>
                     <Route exact path={"/blogs/posts/new"} component={NewPost}/>
                     <Route exact path={"/blogs/posts/:postId"} component={ShowPost}/>
+
+                    <Route exact path={"/blogs/new"} component={BlogNewPost} />
+                    <Route exact path={"/blogs/index"} component={BlogIndex} />
+                    <Route exact path={"/blogs/:blogId"} component={ShowBlog}/>
+
                     <Route exact path={"/test"} component={NewPostTest}/>
                     <Route exact path={"/dev"} component={Auth(MediaLibrary, true)}/>
 

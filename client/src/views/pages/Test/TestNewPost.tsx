@@ -30,6 +30,18 @@ const FONT_SIZE_KEY = "FONT_SIZE_KEY_EDITOR"
 const TAG_KEY = "TAG_KEY_EDITOR"
 
 class TestNewPost extends Component {
+    private mapTag = [
+        {"key": "Normal Text", "value": "p"},
+        {"key": "Heading 1", "value": "h1"},
+        {"key": "Heading 2", "value": "h2"},
+        {"key": "Heading 3", "value": "h3"},
+        {"key": "Heading 4", "value": "h4"},
+        {"key": "Heading 5", "value": "h5"},
+        {"key": "Heading 6", "value": "h6"},
+    ]
+
+    private mapFontSize: number[] = [];
+    private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
 
     constructor(props: Object) {
         super(props);
@@ -37,6 +49,10 @@ class TestNewPost extends Component {
         this.handleSelectionChange = this.handleSelectionChange.bind(this)
         this.applyEditorStyleElement = this.applyEditorStyleElement.bind(this)
         this.handleImageChosen = this.handleImageChosen.bind(this)
+
+        for (let i = 12; i <= 36; i += 2) {
+            this.mapFontSize.push(i);
+        }
     }
 
     componentDidMount() {
@@ -72,8 +88,9 @@ class TestNewPost extends Component {
                 if (getFirstParentContainer(selection?.anchorNode as HTMLElement | null) == null) {
                     // @ts-ignore
                     const editorState = scope.props.state
-                    const tagNewElement = editorState.tagNewElement
-                    const container = document.createElement(tagNewElement)
+                    // const tagNewElement = editorState.tagNewElement
+                    // const container = document.createElement(tagNewElement)
+                    const container = document.createElement("p")
                     const span = document.createElement("span")
                     span.appendChild(document.createTextNode(paste))
                     container.appendChild(span)
@@ -90,9 +107,10 @@ class TestNewPost extends Component {
             textFieldDoc.onkeypress = this.handleIframeKeyPress;
         }
 
-
+        /************************************************************************************************
+         * SETUP OPTIONS DROPDOWN
+         ************************************************************************************************/
         const options = document.getElementsByClassName("options")
-
         for (let i = 0; i < options.length; i++) {
 
             // const optionsList = document.getElementById("options")?.children
@@ -118,7 +136,7 @@ class TestNewPost extends Component {
                         scope.handleFontSizeClicked(value)
                         const input = document.getElementById("input-select-font-size") as HTMLElement
                         if (input == null) return
-                        input.style['font-size'] = `${value}px`
+                        // input.style['font-size'] = `${value}px`
                         input.innerText = option.innerText
 
                     } else if (key === FONT_FAMILY_KEY) {
@@ -138,11 +156,11 @@ class TestNewPost extends Component {
     }
 
     handleImageChosen(imagePath: string) {
-        console.log("Insert image ...", imagePath)
         const element = document.createElement("img")
         element.src = imagePath
         element.classList.add("w-9/12")
-        textField.document.body.appendChild(element)
+        textField.document.getSelection()?.anchorNode?.appendChild(element)
+        // textField.document.body.appndChild(element)
     }
 
     handleIframeKeyPress(evt: KeyboardEvent) {
@@ -158,18 +176,14 @@ class TestNewPost extends Component {
         if (range == null) return;
 
         let rootSelection = selection.anchorNode
-        console.log("Root Selection", rootSelection)
-        console.log("range", range.commonAncestorContainer.textContent?.slice(range.startOffset))
-
-        const tagNewElement = editorState.tagNewElement
+        // const tagNewElement = editorState.tagNewElement
 
         // If body then insert <p> element
         if (rootSelection != null && (rootSelection as HTMLElement).tagName && (rootSelection as HTMLElement).tagName.toLowerCase() === 'body') {
             evt.preventDefault()
-            console.log("If Root selection is body...")
-
             //////////////////////////////////////////////////
-            let element = document.createElement(tagNewElement)
+            // let element = document.createElement(tagNewElement)
+            let element = document.createElement("p")
 
             const span = document.createElement('span')
             // Apply style and set not changed style
@@ -185,19 +199,12 @@ class TestNewPost extends Component {
 
             ////////////////////////////////          CAREFULLY            ////////////////////////////////
             element.style['white-space'] = 'normal'
-            // element.classList.add("fs-1", "font-medium")
-
             span.style['white-space'] = 'normal'
 
             const startNode = element.childNodes[0]
-            // const endNode = element.childNodes[0]
-            // div.appendChild(fragment)
             console.log("range", range)
-            // range.insertNode(div)
-            // console.log("Element", element)
 
             const newRange = document.createRange()
-            // var sel = window.getSelection()
             // @ts-ignore
             newRange.setStart(startNode, 1)
             // newRange.setEnd(endNode, 1)
@@ -210,13 +217,9 @@ class TestNewPost extends Component {
         }
 
         // Char code is enter
-        console.log("Char code is enter ... or styled change", charCode === 'Enter', charCode, "Styled", editorState.isStyleChanged)
         if (editorState.isStyleChanged || charCode === 'Enter') {
-
             evt.preventDefault()
-
             let selection = textField.window.getSelection()
-
             if (selection == null) return
 
             // Get parent node of selection node
@@ -227,18 +230,14 @@ class TestNewPost extends Component {
             while (parentNode != null && parentNode.parentNode && (parentNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
                 parentNode = parentNode.parentNode as HTMLElement | null
             }
-
             // console.log("Selection", selection.anchorNode?.parentNode?.parentNode?.nodeName)
             // Get range selection
             const range = selection.getRangeAt(0)
-
             let element;
             // If is enter (break) then insert container (p or div)
             if (charCode === 'Enter') {
-                console.log("If charCode === Enter...")
                 // Get the text of selection element
                 let currentContent = range.commonAncestorContainer.textContent
-                console.log("Current Get Text Element", range.commonAncestorContainer)
                 // Get the string after cursor of element
                 let remainStr = currentContent?.slice(range.startOffset).toString().trim();
 
@@ -247,7 +246,8 @@ class TestNewPost extends Component {
                 }
 
                 ///////////////////////////////////////////////////////////////////////////////
-                element = document.createElement(tagNewElement)
+                // element = document.createElement(tagNewElement)
+                element = document.createElement("p")
                 const span = document.createElement('span')
 
                 this.applyEditorStyleElement(span, true);
@@ -258,71 +258,48 @@ class TestNewPost extends Component {
                 if (remainStr) {
                     span.innerText += remainStr
                     let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                    console.log("Selection Node", selectionNode)
                     if (selectionNode == null) return;
                     const newContent = currentContent?.replace(remainStr, "") ?? ""
                     ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
-                    if (newContent?.length == 0) {
+                    if (newContent?.trim().length == 0) {
                         selectionNode.innerHTML = "<br>"
                     } else {
                         selectionNode.innerText = newContent
                     }
                 }
-                // element.innerHTML = ' '
                 element.appendChild(span)
-
             } else {
-                console.log("If charCode !== Enter...")
                 element = document.createElement("span")
                 element.innerText = charCode
             }
 
             // If has style changed then need to apply style to it
             this.applyEditorStyleElement(element)
-            console.log("ParentNode", parentNode)
             //  If have container then need to append element inside container instead fragment to not break the paragraph
             if (parentNode != null && parentNode.nodeName?.toLowerCase() === 'p' && editorState.isStyleChanged && element.tagName.toLowerCase() !== "p") {
-                console.log("If parentNode is p...")
                 // If have empty span child then use this as element (no need to append new element)
                 if (parentNode.children && parentNode.children[0] && parentNode.children[0].tagName.toLowerCase() == "span" && (parentNode.children[0] as HTMLElement).innerText.trim().length == 0) {
-                    console.log("If has empty span child...")
                     const newElement = parentNode.children[0] as HTMLElement;
                     newElement.innerText = element.innerText;
                     // Not render so cannot get css Text
                     // newElement.style.cssText = document.defaultView?.getComputedStyle(element, "").cssText ?? newElement.style.cssText;
                     this.applyEditorStyleElement(newElement, true)
                     element = newElement;
-                    console.log("New Element Style", newElement)
                 } else {
-                    console.log("If not has empty span child...")
                     parentNode.appendChild(element)
                 }
-
             } else {
-                console.log("If parentNode is not p or not changed...")
                 // Loop through to get the root <p> element
                 let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
                 while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
                     selectionNode = selectionNode.parentNode as HTMLElement | null
                 }
-                console.log("Selection Node Insert", selectionNode)
-                console.log("Selection Node Insert", selectionNode?.children[0])
-
                 if (selectionNode != null && selectionNode.tagName && selectionNode.tagName.toLowerCase() !== "body") {
                     if (selectionNode.nextSibling) {
                         textField.document.body.insertBefore(element, selectionNode.nextSibling)
                     } else {
                         ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
                         textField.document.body.appendChild(element)
-                        // const startNode = element.childNodes[0]
-                        // const newRange = document.createRange()
-                        //
-                        // newRange.setStart(startNode, 0)
-                        // newRange.collapse(true)
-                        //
-                        // selection.removeAllRanges()
-                        // selection.addRange(newRange)
-                        // return;
                     }
                 } else {
                     textField.document.body.appendChild(element)
@@ -343,7 +320,6 @@ class TestNewPost extends Component {
             dispatch(setStyleNotChangeEditor())
 
         }
-
 
     }
 
@@ -648,6 +624,35 @@ class TestNewPost extends Component {
         }
     }
 
+    updateTagOptions(element: HTMLElement) {
+        const container = getFirstParentContainer(element)
+        this.mapTag.forEach(it => {
+            if (it["value"] == container?.tagName.toLowerCase()) {
+                const input = document.getElementById("input-select-tag-new-element")
+                if (input == null) return
+                input.innerText = it["key"]
+            }
+        })
+    }
+
+    updateFontSizeOptions(element: HTMLElement) {
+        const span = getFirstParentWithTag("span", element)
+        if (span == null) return
+        if (!span.style['font-size']) return;
+        const inputFontSize = document.getElementById("input-select-font-size")
+        if (inputFontSize == null) return;
+        inputFontSize.innerText = span.style['font-size']
+    }
+
+    updateFontOptions(element: HTMLElement) {
+        const span = getFirstParentWithTag("span", element)
+        if (span == null) return
+        if (!span.style['font-family']) return;
+        const inputFontSize = document.getElementById("input-select-font-family")
+        if (inputFontSize == null) return;
+        inputFontSize.innerText = span.style['font-family']
+    }
+
     /************************************************************************************************
      * REPLACE THE TAG FOR CONTAINER ELEMENT (p, h1, h2, ...)
      ************************************************************************************************/
@@ -855,7 +860,9 @@ class TestNewPost extends Component {
         if (selection == null) return
 
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
+        // const pElement = getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
+        const pElement = getFirstParentWithTag("span", selectionNode)
+        console.log("pelement", selection, pElement)
 
         if (pElement == null) return;
 
@@ -893,8 +900,6 @@ class TestNewPost extends Component {
         let selection = textField.window.getSelection()
         if (selection == null) return
         let selectionStyle = selection.anchorNode as HTMLElement | null
-        console.log("Selection", selection)
-
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
         // let currentContent = range.commonAncestorContainer.textContent
@@ -919,9 +924,7 @@ class TestNewPost extends Component {
         /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
         if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
             const parent = getFirstChildContainer(selectionStyle) ?? getFirstParentContainer(selectionStyle)
-            const container = parent?.parentElement
-            console.log("Fucking shit", container)
-            if (container == null || parent == null) return;
+            if (parent == null) return;
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
              * CHOOSE CAREFULLY...
@@ -929,16 +932,18 @@ class TestNewPost extends Component {
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
             if (!useParent) {
-                container.querySelectorAll("span").forEach((element: HTMLElement) => {
-                    element.style[style] = value
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    if (element.style[style] === value) {
+                        element.style[style] = ``
+                    } else {
+                        element.style[style] = value
+                    }
                 })
             }
 
         } else {
             const parent = getFirstChildContainer(selectionStyle) ?? getFirstParentContainer(selectionStyle)
-            const container = parent?.parentElement
-            console.log("Fucking more", container)
-            if (container == null || parent == null) return;
+            if (parent == null) return;
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
              * CHOOSE CAREFULLY...
@@ -946,8 +951,13 @@ class TestNewPost extends Component {
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
             if (!useParent) {
-                container.querySelectorAll("span").forEach((element: HTMLElement) => {
-                    element.style[style] = value
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    if (element.style[style] === value) {
+                        element.style[style] = ``
+                    } else {
+                        element.style[style] = value
+                    }
+                    // element.style[style] = value
                 })
             }
 
@@ -1008,7 +1018,6 @@ class TestNewPost extends Component {
          ************************************************************************************************/
         if (startSelected !== endSelected && range.startContainer.nodeType == Node.TEXT_NODE
             && endSelected - startSelected != spanSelected.innerText.length) {
-            console.log("Fucking text")
             const textContent = range.commonAncestorContainer.textContent
             if (textContent == null) return;
             const selectText = textContent?.slice(startSelected, endSelected).toString();
@@ -1058,6 +1067,9 @@ class TestNewPost extends Component {
         this.toggleQuoteIcon(selectElement)
         this.toggleListIcon(selectElement, false)
         this.toggleListIcon(selectElement, true)
+        this.updateTagOptions(selectElement)
+        this.updateFontSizeOptions(selectElement)
+        this.updateFontOptions(selectElement)
     }
 
     /************************************************************************************************
@@ -1065,6 +1077,12 @@ class TestNewPost extends Component {
      ************************************************************************************************/
     load() {
         textField.document.designMode = "On";
+        textField.document.body.innerHTML = "" +
+            "<h2 style=\"text-align: center;\"><span style=\"font-weight: bold;\">Lorem Ipsum\n" +
+            "<br></span></h2><h5 style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">What is Lorem Ipsum?</span></h5><p style=\"white-space: normal;\"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></p><p style=\"white-space: normal;\"><br></p><p style=\"white-space: normal;\"><span><img src=\"http://localhost:5000/uploads\\media\\guys\\images\\1612584752819_sunrise-1014710_1920.jpg\" class=\"w-9/12\"></span></p><p style=\"white-space: normal;\"><span><br></span></p><h5 style=\"white-space: normal;\"><span style=\"font-weight: bold;\">Where can I get some?</span></h5><p style=\"white-space: normal;\">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).\n" +
+            "\n" +
+            "<br></p><p style=\"white-space: normal;\"><br></p><p style=\"white-space: normal;\"><span><img src=\"http://localhost:5000/uploads\\media\\guys\\images\\1612584752781_GNispE-ssZQyBTMJbGDDsMhq.jpg\" class=\"w-9/12\"></span></p>"
+
     }
 
     render() {
@@ -1210,38 +1228,31 @@ class TestNewPost extends Component {
             }
         }
 
-        const mapTag = [
-            {"key": "Normal Text", "value": "p"},
-            {"key": "Heading 1", "value": "h1"},
-            {"key": "Heading 2", "value": "h2"},
-            {"key": "Heading 3", "value": "h3"},
-            {"key": "Heading 4", "value": "h4"},
-            {"key": "Heading 5", "value": "h5"},
-            {"key": "Heading 6", "value": "h6"},
-        ]
-
-        const mapFontSize = [];
-
-        for (let i = 12; i <= 36; i += 2) {
-            mapFontSize.push(i);
+        function handleSave() {
+            console.log(textField.document.body.innerHTML)
         }
-        const mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
 
         // @ts-ignore
         return (
             <div className="w-11/12 bg-white mt-break mx-auto"
                  style={{height: '100vh', backgroundColor: "#ededed"}}>
                 <div>
-
-                    <div className="d-flex justify-between mx-3 mt-5 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
+                    <div className="py-2 flex justify-content-end mx-5">
+                        <div onClick={handleSave}
+                             className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
+                            <i className="fa fa-shopping-cart mr-3 duration-500"/>Publish
+                        </div>
+                    </div>
+                    <div className="d-flex justify-between mx-3 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
                          style={{backgroundColor: "#f7f7f7"}}>
 
-                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
-                            <span className="tooltip-text">Select Heading</span>
-                            <p id="input-select-tag-new-element" className="pl-5">Normal text</p>
-
+                        <ul className="custom-dropdown" id="custom-dropdown-tag">
+                            <div className="tooltip w-100 h-full absolute z-10">
+                                <span className="tooltip-text">Select Heading</span>
+                            </div>
+                            <p id="input-select-tag-new-element" className="pl-5">Normal Text</p>
                             <ul className="options" id="options">
-                                {mapTag.map(function (item) {
+                                {this.mapTag.map(function (item) {
                                     return <li key={`${item.value}-${TAG_KEY}`} data-value={item.value}
                                                data-key={TAG_KEY}><span
                                         className={item.value}>{item.key}</span></li>
@@ -1249,11 +1260,13 @@ class TestNewPost extends Component {
                             </ul>
                         </ul>
 
-                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
-                            <span className="tooltip-text">Select font</span>
+                        <ul className="custom-dropdown" id="custom-dropdown-font">
+                            <div className="tooltip w-100 h-full absolute z-10">
+                                <span className="tooltip-text">Select font</span>
+                            </div>
                             <p id="input-select-font-family" className="pl-5">Roboto</p>
-                            <ul className="options" id="options">
-                                {mapFont.map(function (item) {
+                            <ul className="options tooltip-disabled" id="options">
+                                {this.mapFont.map(function (item) {
                                     return <li key={`${item}-${FONT_FAMILY_KEY}`} data-value={item}
                                                data-key={FONT_FAMILY_KEY}><span
                                         className={`font-${item.toLowerCase()}`}>{item}</span>
@@ -1262,11 +1275,14 @@ class TestNewPost extends Component {
                             </ul>
                         </ul>
 
-                        <ul className="custom-dropdown tooltip" id="custom-dropdown">
-                            <span className="tooltip-text">Select Text Size</span>
+                        <ul className="custom-dropdown" id="custom-dropdown-font-size">
+                            <div className="tooltip w-100 h-full absolute z-10">
+                                <span className="tooltip-text">Select Text Size</span>
+                            </div>
+
                             <p id="input-select-font-size" className="pl-5">18</p>
                             <ul className="options" id="options">
-                                {mapFontSize.map(function (item) {
+                                {this.mapFontSize.map(function (item) {
                                     return <li key={`${item}-${FONT_SIZE_KEY}`} data-value={item}
                                                data-key={FONT_SIZE_KEY}><span
                                         style={{fontSize: `${item}px`}}>{item}</span></li>
@@ -1402,137 +1418,6 @@ class TestNewPost extends Component {
     }
 }
 
-// export default function NewPostTest() {
-//
-//     // const boldSelection = () => {
-//     //     let action: ExecCommandStyle = {
-//     //         style: 'color',
-//     //         value: "red",
-//     //         initial: (element: HTMLElement | null) => new Promise<boolean>(((resolve) => {
-//     //             if (element?.style["color"]) {
-//     //                 resolve(true)
-//     //             } else {
-//     //                 resolve(false)
-//     //             }
-//     //         }))
-//     //     }
-//     //
-//     //     let x = execCommandStyle(action, "div")
-//     //     console.log("Test Exec cmd")
-//     // }
-//
-//     function load() {
-//         textField.document.designMode = "On";
-//     }
-//
-//     return (
-//         <div className="w-9/12 bg-white mt-break mx-auto" style={{height: '100vh', boxShadow: '0 0 5px 5px #bac7c1'}}>
-//             <div className="d-flex mx-3">
-//                 <div className="w-2/12">
-//                     <i className="fa fa-xs fa-check"><span className="ml-2 fs-1">Save</span></i>
-//                 </div>
-//                 <div className="d-flex justify-content-between content-between align-items-center child-mx-2-not-first">
-//                     <i className="fa fa-xs fa-arrow-left"/>
-//                     <i className="fa fa-xs fa-arrow-right"/>
-//                 </div>
-//                 <div className="d-flex justify-content-end w-2/12 content-end align-items-center child-mx-2-not-first">
-//                     <i className="fa fa-xs fa-desktop"><span className="ml-2 fs-1">Desktop</span></i>
-//                 </div>
-//                 <div className="d-flex justify-content-end w-2/12 content-end align-items-center child-mx-2-not-first">
-//                     <i className="fa fa-xs fa-wrench"><span className="ml-2 fs-1">Tools</span></i>
-//                 </div>
-//                 <div className="d-flex align-items-center justify-end justify-content-end flex-1 child-mx-2-not-first">
-//                     <div
-//                         className="d-flex justify-content-between content-between align-items-center child-mx-2-not-first">
-//                         <i className="fa fa-xs fa-cog"><span className="ml-2 fs-1">Pages</span></i>
-//                         <i className="fa fa-xs fa-fill-drip"><span className="ml-2 fs-1">Themes</span></i>
-//                         <i className="fa fa-xs fa-globe"><span className="ml-2 fs-1">Site</span></i>
-//                     </div>
-//                 </div>
-//             </div>
-//             <div className="d-flex justify-between mx-3 mt-5 child-mx-1 ml-auto">
-//                 {/*<div className="d-flex content-between">*/}
-//                 <div className="center-element-inner editor-icon tooltip" onClick={boldSelection}><i
-//                     className="fa fa-bold"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={italicSelection}><i
-//                     className="fa fa-italic"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={underlineSelection}><i
-//                     className="fa fa-underline"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={underlineSelection}><i
-//                     className="fa fa-strikethrough"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={alignLeftSelection}><i
-//                     className="fa fa-align-left"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={alignCenterSelection}><i
-//                     className="fa fa-align-center"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={alignRightSelection}><i
-//                     className="fa fa-align-right"/></div>
-//                 <div className="center-element-inner editor-icon tooltip" onClick={alignJustifySelection}><i
-//                     className="fa fa-align-justify"/></div>
-//                 {/*</div>*/}
-//
-//                 {/*<div className="d-flex">*/}
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-indent"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-indent"/>
-//                 </div>
-//                 {/*</div>*/}
-//
-//                 {/*<div className="d-flex">*/}
-//
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-file"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-image"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-link"/>
-//                 </div>
-//                 {/*</div>*/}
-//
-//
-//
-//                 {/*<div className="d-flex">*/}
-//
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-list-ul"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-list-ol"/>
-//                 </div>
-//                 {/*</div>*/}
-//
-//
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-redo-alt"/>
-//                 </div>
-//                 <div className="center-element-inner editor-icon tooltip">
-//                     <span className="tooltip-text">Bold</span>
-//                     <i className="fa fa-undo-alt"/>
-//                 </div>
-//
-//
-//             </div>
-//
-//             <iframe name="textField" onLoad={load} style={{width: "100%", minHeight: "50vh"}}>
-//
-//             </iframe>
-//
-//
-//         </div>
-//     )
-// }
 const mapStateToProps = (state: State) => {
     // @ts-ignore
     if (state.editorReducer) {

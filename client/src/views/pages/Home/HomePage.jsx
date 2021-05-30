@@ -6,7 +6,6 @@ export default function () {
     return (<div className="dark-theme">
             <Header/>
             <br/>
-
             <section className="row fit-content container-fluid my-5 mx-auto justify-content-center">
                 <div className="col-6">
                     <div className="px-4">

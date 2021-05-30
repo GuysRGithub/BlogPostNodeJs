@@ -12,7 +12,7 @@ const mongoose = require("mongoose");
 const app = express();
 const config = require("./config/config");
 
-let mode = "development"
+let mode = "localhost"
 
 if (mode === "localhost") {
     // Connection URL
@@ -41,6 +41,7 @@ if (mode === "localhost") {
         .catch(err => console.log(err));
 }
 
+// noinspection JSCheckFunctionSignatures
 app.use(cors())
 
 //to not get any deprecation warning or error

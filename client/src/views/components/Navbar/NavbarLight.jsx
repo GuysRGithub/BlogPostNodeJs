@@ -1,37 +1,31 @@
 import React from "react";
 import {Link} from "react-router-dom";
 
-function Navbar() {
+function NavbarLight() {
     return (
-        <header id="header-nav"
-                className="site-header primary-font th-flex sm:th-flex-no-wrap th-flex-wrap th-justify-center th-items-center sm:th-p-lg th-p-base">
+        <header className="py-8 px-16 primary-font flex">
             <div
                 className="site-branding th-stack--sm sm:th-text-align-unset th-text-center sm:th-mb-0 th-mb-base th-w-full">
-                <p className="site-title th-uppercase th-text-xl th-mb-0">MIHOME</p>
+                <p className="font-josesans font-bold color-dark-primary">GUYS</p>
                 <p className="site-description th-text-base th-font-normal th-hidden th-mb-0 font-jose-sans">
                     Appetite is a clean,
                     flexible and fully responsive WordPress theme with special features for restaurants and cafes</p>
             </div>
 
-            <nav id="site-navigation" className="site-menu main-navigation th-uppercase lg:th-block th-hidden th-w-full"
+            <nav className="site-menu navigation w-full"
                  aria-label="Primary Menu">
                 <ul className="menu th-flex th-flex-wrap th-justify-end">
-                    <li
-                        className="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-43">
+                    <li className="color-gray-primary font-bold">
                         <Link to="/">Home</Link>
                     </li>
-                    <li
-                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-124">
-                        <a
-                        href="https://appetitedemo.wordpress.com/our-menu/">Menu</a>
+                    <li className="color-gray-fade-primary">
+                        <a href="https://appetitedemo.wordpress.com/our-menu/">Menu</a>
                     </li>
-                    <li
-                        className="menu-item menu-item-type-post_type menu-item-object-page menu-item-99">
+                    <li className="color-gray-fade-primary font-bold">
                         <Link to="/blogs/posts/index">Blog</Link>
                     </li>
-                    <li
-                        className="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-46">
-                        <a href="#">Features</a><span className="arrow-icon" aria-hidden="true"></span>
+                    <li className="color-gray-fade-primary font-bold">
+                        <a href="#">Features</a><span className="arrow-icon" aria-hidden="true"/>
                         <ul className="sub-menu">
                             <li id="menu-item-57"
                                 className="menu-item menu-item-type-post_type menu-item-object-page menu-item-57"><a
@@ -58,11 +52,10 @@ function Navbar() {
                                 href="https://appetitedemo.wordpress.com/abcd">404 Page</a></li>
                         </ul>
                     </li>
-                    <li
-                        className="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-166">
+                    <li className="color-gray-fade-primary font-bold">
                         <a target="_blank" rel="noopener noreferrer"
                            href="https://theme.wordpress.com/themes/appetite/support/">Support</a>
-                        <span className="arrow-icon" aria-hidden="true"></span>
+                        <span className="arrow-icon" aria-hidden="true"/>
                         <ul className="sub-menu">
                             <li id="menu-item-168"
                                 className="menu-item menu-item-type-custom menu-item-object-custom menu-item-168"><a
@@ -79,49 +72,16 @@ function Navbar() {
                             </li>
                         </ul>
                     </li>
-                    <li id="menu-item-42"
-                        className="menu-item menu-item-type-custom menu-item-object-custom menu-item-42"><a
-                        href="https://appetitedemo.wordpress.com/testimonial/">Testimonials</a></li>
+                    <li className="color-gray-fade-primary font-bold">
+                        <Link to="/blogs/posts/index">Testimonial</Link>
+                    </li>
                 </ul>
             </nav>
-
-
-            <button id="sidebar-button"
-                    className="toggle-sidebar-button clean-button th-uppercase th-flex th-items-center lg:th-ml-sm"
-                    type="button" aria-expanded="false">
-                <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
-                     focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                     data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
-                     >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <span className="screen-reader-text header-search">Search</span>
-                <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
-                     focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                     data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
-                     >
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-                <span className="header-menu lg:th-hidden th-block">Menu</span>
-                <svg className="svg-icon th-fill-current" width="24" height="24" aria-hidden="true" role="img"
-                     focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                     data-darkreader-inline-fill="" data-darkreader-inline-stroke=""
-                     >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
         </header>
     )
 }
 
-export default Navbar
+export default NavbarLight
 
 // <>
 // <nav id="header-nav" className="navbar navbar-expand-lg navbar-dark">

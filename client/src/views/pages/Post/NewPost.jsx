@@ -1,17 +1,17 @@
-import React, {Component, useState} from 'react';
+// noinspection JSUnusedLocalSymbols
+
+import * as Yup from "yup"
+import React, {useState} from 'react';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-// import ClassicEditor from '../../../../helpers/ckeditor5/build/ckeditor';
-
 import Icon from "antd/es/icon";
-import {Button, Checkbox, Form, Input} from "antd";
+import {Form} from "antd";
+import {toast} from "react-toastify";
 import {Formik} from "formik";
-import * as Yup from "yup"
 import {useDispatch} from "react-redux";
-import {loginUser, savePost} from "../../../../_actions/user_actions";
-import {REMEMBER_ME_KEY} from "../../../../config/local_storage_key.js";
-import Header from "../../../components/Shared/Header.jsx";
-import Footer from "../../../components/Shared/Footer.jsx";
+import {savePost} from "../../../_actions/user_actions";
+import Header from "../../components/Shared/Header.jsx";
+import Footer from "../../components/Shared/Footer.jsx";
 
 function NewPost(props) {
 
@@ -34,10 +34,6 @@ function NewPost(props) {
                         .required("Title is required"),
                 })}
 
-                // onSubmit={(values, {setSubmitting}) => {
-                //     console.log("Fuck It")
-                // }}
-
                 onSubmit={(values, {setSubmitting}) => {
                     console.log("Submitting")
 
@@ -48,13 +44,12 @@ function NewPost(props) {
                             author: window.localStorage.getItem('userId')
                         }
 
-
                         dispatch(savePost(data))
                             .then(response => {
                                 if (response.payload.success) {
                                     props.history.push("/")
                                 } else {
-                                    alert("Failed to save post. Please try again")
+                                    toast.error("Failed to save post. Please try again!")
                                 }
                             })
                             .catch(_ => {
@@ -208,19 +203,12 @@ function NewPost(props) {
                                                     Save
                                                 </button>
                                             </Form.Item>
-
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
-
                         </div>
-
                     )
-
-
                 }}
             </Formik>
             <Footer/>

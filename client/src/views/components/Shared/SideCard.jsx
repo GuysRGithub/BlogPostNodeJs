@@ -1,12 +1,12 @@
 import React from 'react'
 
 const SideCard = ({postViewSeparate = {title: "Title", "createdAt": "Today", content: "Content"}}) => {
-    const defaultImage = require("../../../assets/images/posts/beautiful-&-simple.jpg")
+    const defaultImage = require("../../../assets/images/posts/chromehill-4724725_1920.jpg").default
     return (
         <div>
             <div className="d-flex img-hover-blur mt-8">
                 <img className="" style={{width: "100%", objectFit: "cover"}}
-                     src={postViewSeparate.src || defaultImage}
+                     src={postViewSeparate.src || require("../../../assets/images/posts/sunrise-1014710_1920.jpg").default} alt=""
                 />
             </div>
             <div className="mt-4">

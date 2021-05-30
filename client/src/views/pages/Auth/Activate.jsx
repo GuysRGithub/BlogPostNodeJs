@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Axios from "axios";
-import { isAuth } from "../../../helpers/auth";
-import { Redirect } from "react-router-dom";
 import {USER_ACTIVATE_SERVER_URL} from "../../../config/router_path";
 const jwt = require("jsonwebtoken");
 

@@ -1,5 +1,3 @@
-import {instanceOf} from "prop-types";
-
 window.addEventListener("load", function () {
 
     let dropdowns = document.getElementsByClassName("custom-dropdown")
@@ -8,9 +6,6 @@ window.addEventListener("load", function () {
 
     for (let i = 0; i < dropdowns.length; i++) {
         const dropdown = dropdowns[i]
-
-        console.log("Dropdown", dropdown)
-        // if (dropdown == null || dropdown instanceof HTMLElement) return
 
         dropdown.addEventListener('click', function (e) {
             dropdown.classList.toggle("show")

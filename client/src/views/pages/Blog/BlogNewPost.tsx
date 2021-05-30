@@ -20,6 +20,8 @@ import {State} from "react-toastify/dist/hooks/toastContainerReducer";
 import MediaLibrary from "../../components/Upload/MediaLibrary";
 import PopupLink from "../../components/UI/Popup";
 import ReactDOM from 'react-dom';
+import {savePost} from "../../../_actions/user_actions";
+import {toast} from "react-toastify";
 
 declare var textField: Window
 
@@ -676,7 +678,6 @@ class BlogNewPost extends Component {
         // selection.getRangeAt(0).insertNode(container);
         selection.getRangeAt(0).selectNodeContents(container)
 
-
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
@@ -851,10 +852,31 @@ class BlogNewPost extends Component {
          ************************************************************************************************/
         let selection = textField.window.getSelection()
         if (selection == null) return
+        const content = selection.getRangeAt(0).extractContents();
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const span = getFirstParentWithTag("span", selectionNode)
-        if (span == null) return;
-        span.style['font-family'] = value
+
+        /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
+        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
+            const span = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
+            if (span == null) return;
+            span.style['font-family'] = value
+            /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
+        } else {
+            content.childNodes.forEach(contentElement => {
+                const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
+                if (parent == null) return;
+                /************************************************************************************************
+                 * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
+                 * CHOOSE CAREFULLY...
+                 ************************************************************************************************/
+                /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    element.style['font-family'] = value
+                })
+            })
+
+            selection.getRangeAt(0).insertNode(content)
+        }
     }
 
     /************************************************************************************************
@@ -866,13 +888,30 @@ class BlogNewPost extends Component {
          ************************************************************************************************/
         let selection = textField.window.getSelection()
         if (selection == null) return
-
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const pElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
+        const content = selection.getRangeAt(0).extractContents()
 
-        if (pElement == null) return;
-
-        pElement.style['font-size'] = `${value}px`
+        /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
+        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
+            const span = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
+            if (span == null) return;
+            span.style['font-size'] = `${value}px`
+            /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
+        } else {
+            content.childNodes.forEach(contentElement => {
+                const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
+                if (parent == null) return;
+                /************************************************************************************************
+                 * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
+                 * CHOOSE CAREFULLY...
+                 ************************************************************************************************/
+                /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    element.style['font-size'] = `${value}px`
+                })
+            })
+            selection.getRangeAt(0).insertNode(content)
+        }
     }
 
     /************************************************************************************************
@@ -1066,7 +1105,12 @@ class BlogNewPost extends Component {
      ************************************************************************************************/
     load() {
         textField.document.designMode = "On";
-        textField.document.body.innerHTML = "<h1 style=\"font-family: Ubuntu;\"><span style=\"font-weight: bold;\">6 Tips to Freshen up your workplace</span></h1><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">15 Feb 2018</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 18px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: Ubuntu;\"><span style=\"font-weight: bold;\">Provide kitchen snacks</span></p><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: Ubuntu;\"><span style=\"font-weight: bold;\">New year clean</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: Ubuntu;\"><span style=\"font-weight: bold;\">Greenery</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: Ubuntu;\"><span style=\"font-weight: bold;\">Add some colour</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; font-family: JoseSans;\"><span style=\"font-size: 14px;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p>"
+        textField.document.body.spellcheck = false;
+        textField.document.body.innerHTML = "<h1><span style=\"font-weight: bold; font-family: Ubuntu;\">6 Tips to Freshen up your workplace</span></h1><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">15 Feb 2018</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Provide kitchen snacks</span></p><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">New year clean</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Greenery</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Add some colour</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal;\"><span style=\"font-family: Ubuntu; font-weight: bold;\">Extras</span></p><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 14px;\">Nam faucibus leo eu nisl sodales sodales. Praesent blandit magna at massa dignissim lacinia. Etiam eget dui egestas, mattis risus sit amet, imperdiet ante. Duis vulputate elit ut lectus pulvinar, ac sagittis ex dapibus. Nullam sagittis tortor vitae sem pharetra consectetur. Praesent sit amet lorem dictum, molestie lacus et, dictum quam. In hac habitasse platea dictumst. Praesent nec tempus purus. Vivamus at malesuada orci. Integer convallis feugiat metus non ultrices. Sed commodo feugiat libero, vitae mollis urna. Curabitur volutpat ultricies tortor, a auctor risus eleifend vitae. Praesent dignissim dui nisi, at dignissim purus placerat eu.\n" +
+            "\n" +
+            "<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Nullam ligula diam, viverra nec maximus ut, imperdiet et lectus. Vivamus et tellus arcu. In at dolor efficitur nibh rutrum dictum eget ut turpis. Sed magna felis, euismod tempor libero non, facilisis dictum nisl. Duis mollis pellentesque venenatis. Suspendisse vulputate ut nibh vitae consequat. Etiam imperdiet ante nisi, eu posuere magna consectetur a. Nulla hendrerit quis erat nec rhoncus. Praesent tincidunt orci massa, vel cursus eros laoreet et.\n" +
+            "\n" +
+            "<br></span></p>"
     }
 
     render() {
@@ -1213,7 +1257,31 @@ class BlogNewPost extends Component {
         }
 
         function handleSave() {
-            console.log(textField.document.body.innerHTML)
+            const content = textField.document.body.innerHTML
+            const title = getFirstChildContainer(textField.document.body)?.innerText
+            console.log(content)
+            console.log(title)
+
+            let data = {
+                title: title,
+                content: content,
+            }
+
+            dispatch(savePost(data))
+                // @ts-ignore
+                .then((response) => {
+                    if (response.payload.success) {
+                        toast.success("Save post successfully!")
+                    } else {
+                        toast.error("Failed to save post. Please try again!")
+                    }
+                })
+                // @ts-ignore
+                .catch(_ => {
+                    alert("Failed to save post. Please try again")
+                    // setFormErrorMessage("Please check your Email or Password again.")
+
+                })
         }
 
         // @ts-ignore
@@ -1378,10 +1446,10 @@ class BlogNewPost extends Component {
                     </div>
 
                     <iframe name="textField" className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
+                            spellCheck="false"
                             onLoad={this.load}
                             style={{width: "80%", minHeight: "75vh"}}>
                         <style>
-
                         </style>
 
                     </iframe>

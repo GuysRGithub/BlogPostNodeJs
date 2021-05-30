@@ -96,12 +96,10 @@ router.post('/getProfile', auth, (req, res) => {
 
 router.get('/getMediaLibrary', auth, async (req, res) => {
     console.log("Server Load All Medias")
-
     console.log("Request Get Media Token", req.cookies.token)
+
     const {token} = req.cookies;
-
     let user = null;
-
     if (token) {
         jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
             if (err) {
@@ -110,12 +108,9 @@ router.get('/getMediaLibrary', auth, async (req, res) => {
                     error: "Something went wrong when verify token, may be need to login",
                 });
             } else {
-
-                console.log("Decode", jwt.decode(token))
+                console.log("Decode", decoded)
                 const {_id} = jwt.decode(token);
-
                 user = await AuthorUser.findById(_id).exec()
-
                 if (user == null) return
                 // noinspection JSIgnoredPromiseFromCall
                 await UserMediaLibrary.findOne({"author": user._id})

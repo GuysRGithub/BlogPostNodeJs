@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react'
 // import "../../assets/css/html_template_style/main.scss"
-// import "./react_html_main.scss"
+// import "./profile.scss"
 // import "../../assets/css/profile.scss"
-import PostCardVertical from "../components/Shared/PostCardVertical.jsx";
+import PostCardVertical from "../../components/Shared/PostCardVertical.jsx";
 import Axios from "axios";
-import {BLOG_SERVER_URL, USER_SERVER_URL} from "../../config/config.js";
-import PostSeparateViewModel from "../../view_models/post_separate_view_model.js";
-import PostCard from "../components/Shared/PostCard.jsx";
-import {isAuth} from "../../helpers/auth";
+import {BLOG_SERVER_URL, USER_SERVER_URL} from "../../../config/config.js";
+import PostSeparateViewModel from "../../../view_models/post_separate_view_model.js";
+import PostCard from "../../components/Shared/PostCard.jsx";
+import {isAuth} from "../../../helpers/auth";
 import {Redirect} from "react-router-dom";
-import {USER_GET_PROFILE_SERVER_URL} from "../../config/router_path";
+import {USER_GET_PROFILE_SERVER_URL} from "../../../config/router_path";
 
 
 export const Profile = (props) => {
@@ -87,7 +87,7 @@ export const Profile = (props) => {
                 <div className="top">
                     {/* Logo */}
                     <div id="logo">
-                        <span className="image"><img className="img-avatar" src={require("../../assets/images/profile/cat-4977436_640.jpg")} alt=""/></span>
+                        <span className="image"><img className="img-avatar" src={require("../../../assets/images/profile/cat-4977436_640.jpg")} alt=""/></span>
                         <h1 id="title" className="font-jose-sans">{user.name}</h1>
                         <p className="mt-3 font-pt-serif">Hyperspace Engineer</p>
                     </div>
@@ -148,14 +148,14 @@ export const Profile = (props) => {
                             <div className="col-4 col-12-mobile">
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/mockup-3684376_640.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/mockup-3684376_640.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Ipsum Feugiat</h3>
                                     </header>
                                 </article>
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/pic03.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/pic03.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Rhoncus Semper</h3>
                                     </header>
@@ -164,14 +164,14 @@ export const Profile = (props) => {
                             <div className="col-4 col-12-mobile">
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/photography-3749383_640.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/photography-3749383_640.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Magna Nullam</h3>
                                     </header>
                                 </article>
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/pic05.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/pic05.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Natoque Vitae</h3>
                                     </header>
@@ -180,14 +180,14 @@ export const Profile = (props) => {
                             <div className="col-4 col-12-mobile">
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/sunset-4509879_1280.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/sunset-4509879_1280.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Dolor Penatibus</h3>
                                     </header>
                                 </article>
                                 <article className="item">
                                     <a href="#" className="image fit"><img
-                                        src={require("../../assets/images/profile/tropical-5074304_640.jpg")} alt=""/></a>
+                                        src={require("../../../assets/images/profile/tropical-5074304_640.jpg")} alt=""/></a>
                                     <header>
                                         <h3>Orci Convallis</h3>
                                     </header>
@@ -203,7 +203,7 @@ export const Profile = (props) => {
                             <h2>About Me</h2>
                         </header>
                         <a href="#" className="image featured"><img
-                            src={require("../../assets/images/profile/pic08.jpg")} alt=""/></a>
+                            src={require("../../../assets/images/profile/pic08.jpg")} alt=""/></a>
                         <p>{Profile.about}</p>
                     </div>
                 </section>

@@ -1,3 +1,43 @@
+.word-space-1 {
+  word-spacing: 0.01rem !important;
+}
+
+.word-space-2 {
+  word-spacing: 0.025rem !important;
+}
+
+.word-space-3 {
+  word-spacing: 0.05rem !important;
+}
+
+.word-space-4 {
+  word-spacing: 0.075rem !important;
+}
+
+.word-space-5 {
+  word-spacing: 0.1rem !important;
+}
+
+.word-space-6 {
+  word-spacing: 0.125rem !important;
+}
+
+.word-space-7 {
+  word-spacing: 0.15rem !important;
+}
+
+.word-space-8 {
+  word-spacing: 0.175rem !important;
+}
+
+.word-space-9 {
+  word-spacing: 0.2rem !important;
+}
+
+.word-space-10 {
+  word-spacing: 0.225rem !important;
+}
+
 .letter-space-1 {
   letter-spacing: 0.01rem !important;
 }
@@ -18,26 +58,21 @@
   letter-spacing: 0.1rem !important;
 }
 
-
 .letter-space-6 {
   letter-spacing: 0.125rem !important;
 }
-
 
 .letter-space-7 {
   letter-spacing: 0.15rem !important;
 }
 
-
 .letter-space-8 {
   letter-spacing: 0.175rem !important;
 }
 
-
 .letter-space-9 {
   letter-spacing: 0.2rem !important;
 }
-
 
 .letter-space-10 {
   letter-spacing: 0.225rem !important;
@@ -85,7 +120,11 @@
 }
 
 .opacity-4 {
-  opacity: .8 !important;
+  opacity: 0.8 !important;
+}
+
+.opacity-4-5 {
+  opacity: .9 !important;
 }
 
 .opacity-5 {
@@ -337,6 +376,10 @@
   margin-bottom: 5rem !important;
 }
 
+.h-128 {
+  height: 32rem;
+}
+
 .line-height-1 {
   line-height: 1rem;
 }
@@ -398,7 +441,6 @@
   font-family: 'JoseSans', serif;
   //font-family: 'Lobster', cursive;
 }
-
 
 
 .p-p1 {
@@ -548,7 +590,7 @@ h6 {
 }
 
 .tooltip {
-  position: relative;
+  //position: relative;
 }
 
 .tooltip .tooltip-text {
@@ -648,15 +690,19 @@ h6 {
   position: relative;
 
   * {
-    text-transform: uppercase;
     position: absolute;
-    letter-spacing: 0.02rem;
-    top: 50%;
+    top:  50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
 }
 
+.center-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .justify-content-start {
   -ms-flex-pack: start !important;
@@ -773,6 +819,18 @@ h6 {
   color: var(--primaryColor);
 }
 
+.color-dark-primary {
+  color: #232732
+}
+
+.color-gray-fade-primary {
+  color: #c1c5cc;
+}
+
+.color-gray-primary {
+  color: #51545c
+}
+
 .dark-theme {
   .border {
     border: 2px solid;
@@ -788,3 +846,19 @@ h6 {
 .scroll-bar-none::-webkit-scrollbar {
   display: none;
 }
+
+
+.z-neg-10 {
+  z-index: -10;
+}
+
+.img-header {
+  width: 71vw;
+  left: 50%;
+  position: absolute;
+  top: 75%;
+  transform: translate(-5%, -50%);
+  object-fit: cover;
+  overflow: hidden;
+}
+

@@ -166,6 +166,7 @@ exports.activationController = async (req, res) => {
 };
 
 exports.loginController = (req, res) => {
+    console.log("Fucking req", req)
     const {email, password} = req.body;
     const errors = validationResult(req);
 
@@ -282,7 +283,6 @@ exports.forgetController = (req, res) => {
 };
 
 exports.resetController = (req, res) => {
-    console.log("Reset Password", req.body);
     const {resetPasswordLink, newPassword} = req.body;
     const errors = validationResult(req);
 
@@ -300,7 +300,7 @@ exports.resetController = (req, res) => {
                 if (err) {
                     console.log(err);
                     return res.status(400).json({
-                        error: "Exprired Link",
+                        error: "Expired Link",
                     });
                 }
 

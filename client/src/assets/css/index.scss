@@ -35,6 +35,14 @@
     transform: translate(-50%, -50%);
 }
 
+.welcome-header-text-light {
+    position: absolute;
+    letter-spacing: 0.02rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-100%, -50%);
+}
+
 .header-description {
     margin-top: 2rem;
     font-weight: bold;
@@ -64,6 +72,20 @@
     border: 3px solid;
 }
 
+.custom-btn-primary-light {
+    display: inline-block;
+    background: transparent;
+    transition: var(--mainTransition);
+    text-transform: uppercase;
+    cursor: pointer;
+    color: #51545c;
+    text-decoration: none;
+    border: 3px solid #51545c;
+    border-radius: 1px;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    vertical-align: bottom;
+}
 
 .custom-btn-primary-lg {
     display: inline-block;
@@ -92,6 +114,19 @@
 
 }
 
+.custom-btn-rounded {
+    display: inline-block;
+    letter-spacing: var(--smallSpacing);
+    transition: var(--mainTransition);
+    text-transform: uppercase;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    border-radius: 2rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    vertical-align: bottom;
+}
 
 .nav-btn {
     background: transparent;
@@ -342,4 +377,9 @@ a:hover, a:focus {
     transition: 1s;
     text-align: start;
     margin: 0 2rem;
+}
+
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
 }

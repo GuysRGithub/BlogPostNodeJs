@@ -1,18 +1,42 @@
 const express = require("express")
 const Post = require("../models/Post");
+const jwt = require("jsonwebtoken");
+const AuthorUser = require("../models/AuthorUser");
 const router = express.Router()
 router.post("/savePost", (req, res) => {
     console.log("Server Save ShowPost", req.body)
-    let post = new Post({
-        title: req.body.title,
-        content: req.body.content,
-        author: req.body.author
-    })
-    // noinspection JSIgnoredPromiseFromCall
-    post.save((err, doc) => {
-        if (err) return res.status(400).json({success: false, err})
-        return res.status(200).json({success: true, doc: doc})
-    })
+    let user = null;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+            if (err) {
+                console.log("Error Verify Token Failed", err);
+                return res.status(401).json({
+                    error: "Something went wrong when verify token, may be need to login",
+                });
+            } else {
+                console.log("Decode", decoded)
+                const {_id} = jwt.decode(token);
+                user = await AuthorUser.findById(_id).exec()
+                if (user == null) return
+                let post = new Post({
+                    title: req.body.title,
+                    content: req.body.content,
+                    author: user._id
+                })
+
+                // noinspection JSIgnoredPromiseFromCall
+                await post.save((err, doc) => {
+                    if (err) return res.status(400).json({success: false, err})
+                    return res.status(200).json({success: true, doc: doc})
+                })
+            }
+        });
+    } else {
+        return res.json({
+            message: "error happening please try again",
+        });
+    }
+
 })
 
 router.post("/getPost", (req, res) => {

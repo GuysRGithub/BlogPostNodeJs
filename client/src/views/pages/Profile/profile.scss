@@ -1,9 +1,9 @@
-@import '../../assets/css/html_template_style/libs/vars';
-@import '../../assets/css/html_template_style/libs/functions';
-@import '../../assets/css/html_template_style/libs/mixins';
-@import '../../assets/css/html_template_style/libs/vendor';
-@import '../../assets/css/html_template_style/libs/breakpoints';
-@import '../../assets/css/html_template_style/libs/html-grid';
+@import '../../../assets/css/html_template_style/libs/vars';
+@import '../../../assets/css/html_template_style/libs/functions';
+@import '../../../assets/css/html_template_style/libs/mixins';
+@import '../../../assets/css/html_template_style/libs/vendor';
+@import '../../../assets/css/html_template_style/libs/breakpoints';
+@import '../../../assets/css/html_template_style/libs/html-grid';
 //@import url("../../../src/assets/css/html_template_style/fontawesome-all.min.css");
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,600");
 
@@ -132,7 +132,6 @@
 
 	h1, h2, h3, h4, h5, h6 {
 		font-weight: 300;
-		color: #666;
 		line-height: 1.5em;
 	}
 
@@ -476,7 +475,7 @@
 			text-align: left;
 			padding: 0.5em 1em 0.5em 1em;
 			color: #fff;
-			background: #222729 url('../../assets/images/html_template/overlay.png');
+			background: #222729 url('../../../assets/images/html_template/overlay.png');
 		}
 
 		thead {
@@ -568,7 +567,7 @@
 		@include vendor('display', 'flex');
 		@include vendor('flex-direction', 'column');
 		@include vendor('justify-content', 'space-between');
-		background: #222629 url('../../assets/images/html_template/overlay.png');
+		background: #222629 url('../../../assets/images/html_template/overlay.png');
 		box-shadow: inset -0.25em 0 0.25em 0 rgba(0, 0, 0, 0.1);
 		color: #fff;
 		height: 100%;
@@ -725,7 +724,7 @@
 			padding: 4em 0;
 			box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.05), inset 0 0.1em 0.1em 0 rgba(0, 0, 0, 0.025);
 			text-align: center;
-			background-image: url('../../assets/images/html_template/overlay.png');
+			background-image: url('../../../assets/images/html_template/overlay.png');
 
 			&.dark {
 				color: #ddd;
@@ -963,7 +962,7 @@
 				width: _size(header);
 				z-index: _misc(z-index-base) + 2;
 				width: _size(header);
-				background: #222729 url('../../assets/images/html_template/overlay.png');
+				background: #222729 url('../../../assets/images/html_template/overlay.png');
 				box-shadow: inset -0.25em 0 0.25em 0 rgba(0, 0, 0, 0.125);
 
 				.top {
