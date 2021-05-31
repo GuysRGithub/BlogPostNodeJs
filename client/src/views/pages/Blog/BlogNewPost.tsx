@@ -808,18 +808,30 @@ class BlogNewPost extends Component {
         if (listElement != null) {
             /*      //////////////////////          CLONED KEEP NODE AND APPEND TO PARENT OF WILL REMOVE ELEMENT             ///////////////////////     */
             const childrenCloned: Node[] = []
-            listElement.childNodes.forEach(it => {
-                const x = it.childNodes[0].cloneNode(true)
-                childrenCloned.push(x)
-                listElement.parentElement?.parentElement?.appendChild(x)
+            listElement.childNodes.forEach(function (it) {
+                if (it.childNodes.length != 0) {
+                    /************************************************************************************************
+                     * NOTE: ONLY CLONE THE CHILD OF LI ELEMENT NOT OTHER ELEMENT (IF IT NOT LI ELEMENT JUST KEEP IT)
+                     * FOR WORKING WITH LIST ELEMENT AGAIN (INSERT BEFORE NEED TO FIND CONTAINER)
+                     ************************************************************************************************/
+                    if (it.nodeName.toLowerCase() == "li") {
+                        const x = it.childNodes[0].cloneNode(true)
+                        childrenCloned.push(x)
+                    } else {
+                        childrenCloned.push(it)
+                    }
+                }
             })
-            listElement.parentElement?.remove()
 
             if (childrenCloned.length == 0) return;
-            const endElement = childrenCloned[childrenCloned.length - 1]
-            if (endElement.childNodes.length == 0) return;
+            const fragment = document.createDocumentFragment();
+            childrenCloned.forEach(it => {
+                fragment.appendChild(it)
+            })
+            listElement.parentElement?.parentElement?.replaceChild(fragment, listElement.parentElement)
 
             const range = new Range()
+            // range.selectNodeContents(fragment)
             range.setStart(childrenCloned[0], 0)
             range.setEnd(childrenCloned[childrenCloned.length - 1], 1)
 
@@ -863,15 +875,18 @@ class BlogNewPost extends Component {
             /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
             for (let i = 0; i < content.children.length; i++) {
                 const child = content.children[i]
+                if ((child as HTMLElement).innerText.trim().length == 0) continue;
                 const li = document.createElement("li")
                 child.parentNode?.replaceChild(li, child)
                 li.appendChild(child)
             }
 
-            const parent = getFirstParentContainer(selectionNode)?.parentElement
+            const containerSelect = getFirstParentContainer(selectionNode)
+            console.log("FUCKing", selection, selectionNode)
+            const parent = containerSelect?.parentElement
             if (parent == null) return;
-
-            removeAllChildNodes(parent)
+            /*      //////////////////////          REMOVE SELECT ELEMENTS             ///////////////////////     */
+            range.extractContents()
 
             const container = document.createElement("div")
             const list = document.createElement(ordered ? "ol" : "ul")
@@ -879,8 +894,9 @@ class BlogNewPost extends Component {
             container.classList.add("ml-4")
             container.appendChild(list)
 
-            parent.appendChild(container)
-            range.selectNode(parent)
+            // parent.appendChild(container)
+            parent.insertBefore(container, containerSelect)
+            range.selectNode(container)
 
             this.handleUpdateUI(container)
         }
