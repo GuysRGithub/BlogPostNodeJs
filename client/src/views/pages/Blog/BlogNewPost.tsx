@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, PropsWithChildren} from 'react'
 import {
     getFirstChildContainer,
     getFirstChildWithTag,
@@ -22,6 +22,7 @@ import PopupLink from "../../components/UI/Popup";
 import ReactDOM from 'react-dom';
 import {savePost} from "../../../_actions/user_actions";
 import {toast} from "react-toastify";
+import {log} from "util";
 
 declare var textField: Window
 
@@ -43,9 +44,10 @@ class BlogNewPost extends Component {
     private mapFontSize: number[] = [];
     private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
 
-    constructor(props: Object) {
+    constructor(props: PropsWithChildren<any>) {
         super(props);
-        this.handleIframeKeyPress = this.handleIframeKeyPress.bind(this)
+        this.handleIFrameKeyPress = this.handleIFrameKeyPress.bind(this)
+        this.handleIFrameKeyDown = this.handleIFrameKeyDown.bind(this)
         this.handleSelectionChange = this.handleSelectionChange.bind(this)
         this.applyEditorStyleElement = this.applyEditorStyleElement.bind(this)
         this.handleImageChosen = this.handleImageChosen.bind(this)
@@ -63,8 +65,9 @@ class BlogNewPost extends Component {
         const scope = this;
 
         if (textFieldDoc.addEventListener) {
-            textFieldDoc.addEventListener("keypress", this.handleIframeKeyPress, false);
+            textFieldDoc.addEventListener("keypress", this.handleIFrameKeyPress, false);
             textFieldDoc.addEventListener("selectionchange", this.handleSelectionChange, false);
+            textFieldDoc.addEventListener("keydown", this.handleIFrameKeyDown, false)
             /************************************************************************************************
              * Hide Popup Selection when click outside
              ************************************************************************************************/
@@ -103,14 +106,11 @@ class BlogNewPost extends Component {
                 event.preventDefault()
             })
         } else {
-            textFieldDoc.onkeypress = this.handleIframeKeyPress;
+            textFieldDoc.onkeypress = this.handleIFrameKeyPress;
         }
 
-
         const options = document.getElementsByClassName("options")
-
         for (let i = 0; i < options.length; i++) {
-
             // const optionsList = document.getElementById("options")?.children
             const optionsList = options[i].children
 
@@ -161,7 +161,7 @@ class BlogNewPost extends Component {
         // textField.document.body.appndChild(element)
     }
 
-    handleIframeKeyPress(evt: KeyboardEvent) {
+    handleIFrameKeyPress(evt: KeyboardEvent) {
         const charCode = evt.key;
         // @ts-ignore
         const editorState = this.props.state;
@@ -173,8 +173,31 @@ class BlogNewPost extends Component {
         const range = selection.getRangeAt(0)
         if (range == null) return;
 
-        let rootSelection = selection.anchorNode
+        let rootSelection = selection.anchorNode as HTMLElement | null
         const tagNewElement = editorState.tagNewElement
+
+        ////////////////////////////////          PREVENT BROWSER AUTO CREATE NEW ELEMENT            ////////////////////////////////
+        if ((rootSelection as HTMLElement | undefined)?.innerText?.trim()?.length || 0 == 0) {
+            const parent = getFirstParentContainer(rootSelection)
+            if (parent == null) return;
+            if (getFirstChildWithTag("span", parent) != null) return;
+            evt.preventDefault()
+
+            const span = document.createElement('span')
+            span.innerHTML = charCode
+            span.style['white-space'] = 'normal'
+
+            parent.innerHTML = ""
+            parent.appendChild(span)
+
+            const startNode = parent.childNodes[0] as HTMLElement
+            const newRange = document.createRange()
+            newRange.setStart(startNode, startNode.innerText.length) // 0 or 1 (start or end of text)
+            newRange.collapse(true)
+            selection.removeAllRanges()
+            selection.addRange(newRange)
+            return;
+        }
 
         // If body then insert <p> element
         if (rootSelection != null && (rootSelection as HTMLElement).tagName && (rootSelection as HTMLElement).tagName.toLowerCase() === 'body') {
@@ -305,7 +328,6 @@ class BlogNewPost extends Component {
             // Keep white space to can set start selection in this node
             console.log("range", range)
             element.style['white-space'] = 'normal'
-
             const startNode = element.childNodes[0]
             const newRange = document.createRange()
             newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
@@ -317,6 +339,31 @@ class BlogNewPost extends Component {
 
         }
 
+    }
+
+    handleIFrameKeyDown(evt: KeyboardEvent) {
+        const selection = textField.window.getSelection()
+        if (selection == null) return;
+        const charCode = evt.key;
+        let rootSelection = selection.anchorNode as HTMLElement | null
+        /*      //////////////////////          KEEP ELEMENT EVEN AFTER DELETE ALL INNER TEXT             ///////////////////////     */
+        if (rootSelection?.nodeType == Node.TEXT_NODE && charCode === "Backspace") {
+            console.log(rootSelection.textContent)
+            if (rootSelection?.textContent?.length == 1) {
+                rootSelection.textContent = ""
+                getFirstParentWithTag("span", rootSelection)?.appendChild(document.createElement("br"))
+                evt.preventDefault()
+                return;
+            }
+
+            if (rootSelection?.textContent?.length == 0) {
+                getFirstParentContainer(rootSelection)?.remove()
+                evt.preventDefault()
+                return;
+            }
+
+            return;
+        }
     }
 
     handleSelectionChange() {
@@ -660,6 +707,7 @@ class BlogNewPost extends Component {
         if (selection == null) return;
 
         const selectionNode = selection.anchorNode as HTMLElement | null
+        console.log("Selection node", selectionNode)
         const pElement = selectionNode?.nodeType == Node.TEXT_NODE
             ? getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
             : getFirstChildContainer(selectionNode) ?? getFirstParentContainer(selectionNode)
@@ -672,9 +720,8 @@ class BlogNewPost extends Component {
         // pElement.remove()
         // container.innerHTML = pElement.parentElement.innerHTML;
         // pElement.parentElement.parentElement?.replaceChild(container, pElement.parentElement);
-
         pElement.parentElement?.replaceChild(container, pElement);
-        selection.deleteFromDocument()
+        // selection.deleteFromDocument()
         // selection.getRangeAt(0).insertNode(container);
         selection.getRangeAt(0).selectNodeContents(container)
 
