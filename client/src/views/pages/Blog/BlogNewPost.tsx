@@ -3,10 +3,8 @@ import {
     getFirstChildContainer,
     getFirstChildWithTag,
     getFirstParentContainer,
-    getFirstParentWithTag,
-    removeAllChildNodes
+    getFirstParentWithTag
 } from "../../../utils/editor_utils";
-import {connect} from "react-redux"
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
     changeFontSizeElement,
@@ -16,13 +14,17 @@ import setStyleNotChangeEditor, {
     toggleItalic,
     toggleUnderline
 } from "../../../_actions/editor_actions";
-import {State} from "react-toastify/dist/hooks/toastContainerReducer";
+
 import MediaLibrary from "../../components/Upload/MediaLibrary";
 import PopupLink from "../../components/UI/Popup";
-import ReactDOM from 'react-dom';
 import {savePost} from "../../../_actions/user_actions";
+
+import {State} from "react-toastify/dist/hooks/toastContainerReducer";
+import ReactDOM from 'react-dom';
+
 import {toast} from "react-toastify";
-import {log} from "util";
+import {connect} from "react-redux"
+import ImageEditor from "../../components/EditorComponents/ImageEditor";
 
 declare var textField: Window
 
@@ -43,6 +45,7 @@ class BlogNewPost extends Component {
 
     private mapFontSize: number[] = [];
     private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
+    private myRef: ImageEditor | null = null;
 
     constructor(props: PropsWithChildren<any>) {
         super(props);
@@ -71,14 +74,15 @@ class BlogNewPost extends Component {
             /************************************************************************************************
              * Hide Popup Selection when click outside
              ************************************************************************************************/
-            textFieldDoc.addEventListener("click", function (e) {
-                let dropdown = document.getElementById("dropdown")
-                if (e == null || dropdown == null || e.target ! instanceof Node) return
-                const target = e.target as Node
-                if (!dropdown.contains(target)) {
-                    dropdown.classList.remove("show")
-                }
-            })
+            // textFieldDoc.addEventListener("click", function (e) {
+            //     console.log("Fucking")
+            //     let dropdown = document.getElementById("dropdown")
+            //     if (e == null || dropdown == null || e.target ! instanceof Node) return
+            //     const target = e.target as Node
+            //     if (!dropdown.contains(target)) {
+            //         dropdown.classList.remove("show")
+            //     }
+            // })
             textFieldDoc.head.innerHTML = document.head.innerHTML
             // doc.addEventListener("keyup", handleIframeKeyUp, false);
 
@@ -101,8 +105,12 @@ class BlogNewPost extends Component {
                     event.preventDefault()
                     return
                 }
+                const span = getFirstParentWithTag("span", selection.anchorNode as HTMLElement | null)
+                if (span == null) return
                 selection.deleteFromDocument();
+                selection.getRangeAt(0).selectNodeContents(span)
                 selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+                // span.appendChild(document.createTextNode(paste));
                 event.preventDefault()
             })
         } else {
@@ -153,23 +161,41 @@ class BlogNewPost extends Component {
         }
     }
 
-    handleImageChosen(imagePath: string) {
-        const element = document.createElement("img")
-        element.src = imagePath
-        element.classList.add("w-9/12")
-        textField.document.getSelection()?.anchorNode?.appendChild(element)
-        // textField.document.body.appndChild(element)
+    handleImageChosen(imageSrc: string | null) {
+        // const element = document.createElement("img")
+        // element.src = imagePath
+        // element.classList.add("w-9/12")
+
+        if (this.myRef != null) {
+            this.myRef.updateSrc(imageSrc)
+            console.log("Fucking update Src")
+            return;
+        }
+
+        const selectNode = textField.document.getSelection()?.anchorNode as HTMLElement | null
+        const parent = getFirstParentContainer(selectNode)
+        if (parent == null) return
+        const element = document.createDocumentFragment()
+        const props = {
+            imageSrc: imageSrc,
+            onFocusCallback: () => {
+
+            }
+        }
+        const imageElement = <ImageEditor {...props} ref={(ref) => this.myRef = ref}/>
+        ReactDOM.render(imageElement, element)
+        textField.document.body.insertBefore(element, parent)
     }
 
     handleIFrameKeyPress(evt: KeyboardEvent) {
-        const charCode = evt.key;
+        const charCode = evt.key.toLowerCase();
         // @ts-ignore
         const editorState = this.props.state;
         // @ts-ignore
         const dispatch = this.props.dispatch;
         const selection = textField.window.getSelection()
         if (selection == null) return;
-
+        if (selection.rangeCount == 0) return;
         const range = selection.getRangeAt(0)
         if (range == null) return;
 
@@ -177,25 +203,37 @@ class BlogNewPost extends Component {
         const tagNewElement = editorState.tagNewElement
 
         ////////////////////////////////          PREVENT BROWSER AUTO CREATE NEW ELEMENT            ////////////////////////////////
-        if ((rootSelection as HTMLElement | undefined)?.innerText?.trim()?.length || 0 == 0) {
-            const parent = getFirstParentContainer(rootSelection)
-            if (parent == null) return;
-            if (getFirstChildWithTag("span", parent) != null) return;
+        if ((rootSelection?.textContent?.trim()?.length || 0) == 0 && charCode == "enter") {
             evt.preventDefault()
-
             const span = document.createElement('span')
-            span.innerHTML = charCode
+            const element = document.createElement("p")
+            const parentSelection = getFirstParentContainer(rootSelection)
+
+            span.innerHTML = "<br>"
             span.style['white-space'] = 'normal'
+            element.innerHTML = ""
+            element.contentEditable = "true"
+            element.appendChild(span)
 
-            parent.innerHTML = ""
-            parent.appendChild(span)
+            if (parentSelection?.nextSibling) {
+                textField.document.body.insertBefore(element, parentSelection?.nextSibling)
+            } else {
+                ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
+                textField.document.body.appendChild(element)
+            }
 
-            const startNode = parent.childNodes[0] as HTMLElement
+            if (element.childNodes.length == 0) return;
+            const startNode = element.childNodes[0] as HTMLElement
             const newRange = document.createRange()
-            newRange.setStart(startNode, startNode.innerText.length) // 0 or 1 (start or end of text)
+            if (startNode.nodeType == Node.TEXT_NODE) {
+                newRange.setStart(startNode, startNode.innerText.length) // 0 or 1 (start or end of text)
+            } else {
+                newRange.setStart(startNode, 1)
+            }
             newRange.collapse(true)
             selection.removeAllRanges()
             selection.addRange(newRange)
+
             return;
         }
 
@@ -204,7 +242,6 @@ class BlogNewPost extends Component {
             evt.preventDefault()
             //////////////////////////////////////////////////
             let element = document.createElement(tagNewElement)
-
             const span = document.createElement('span')
             // Apply style and set not changed style
             this.applyEditorStyleElement(span)
@@ -212,24 +249,18 @@ class BlogNewPost extends Component {
             dispatch(setStyleNotChangeEditor())
 
             span.innerText = charCode
-
             element.appendChild(span)
-
-            rootSelection.appendChild(element)
-
             ////////////////////////////////          CAREFULLY            ////////////////////////////////
             element.style['white-space'] = 'normal'
             span.style['white-space'] = 'normal'
 
+            rootSelection.appendChild(element)
+
+            if (element.childNodes.length == 0) return;
             const startNode = element.childNodes[0]
-            console.log("range", range)
-
             const newRange = document.createRange()
-            // @ts-ignore
             newRange.setStart(startNode, 1)
-            // newRange.setEnd(endNode, 1)
             newRange.collapse(true)
-
             selection.removeAllRanges()
             selection.addRange(newRange)
 
@@ -237,45 +268,29 @@ class BlogNewPost extends Component {
         }
 
         // Char code is enter
-        if (editorState.isStyleChanged || charCode === 'Enter') {
+        if (editorState.isStyleChanged || charCode === 'enter') {
             evt.preventDefault()
             let selection = textField.window.getSelection()
             if (selection == null) return
 
             // Get parent node of selection node
-            // Because the selection is always the text node so need to get parent twice to get
-            // the actual parent of the select element the parent <p> of the <span>
-            // let parentNode = selection.anchorNode?.parentNode?.parentNode
-            let parentNode = selection.anchorNode?.parentNode
-            while (parentNode != null && parentNode.parentNode && (parentNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                parentNode = parentNode.parentNode as HTMLElement | null
-            }
-            // console.log("Selection", selection.anchorNode?.parentNode?.parentNode?.nodeName)
+            const parentNode = getFirstParentContainer(selection.anchorNode)
             // Get range selection
             const range = selection.getRangeAt(0)
             let element;
             // If is enter (break) then insert container (p or div)
-            if (charCode === 'Enter') {
+            if (charCode === 'enter') {
                 // Get the text of selection element
                 let currentContent = range.commonAncestorContainer.textContent
                 // Get the string after cursor of element
-                let remainStr = currentContent?.slice(range.startOffset).toString().trim();
-
+                let remainStr = currentContent?.slice(range.startOffset).toString().trim() ?? "";
                 if (currentContent && currentContent.toString().trim().length > 0) {
 
                 }
-
                 ///////////////////////////////////////////////////////////////////////////////
-                element = document.createElement(tagNewElement)
-                const span = document.createElement('span')
+                if (parentNode != null) {
+                    element = parentNode.cloneNode(false) as HTMLElement
 
-                this.applyEditorStyleElement(span, true);
-
-                /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
-                span.innerHTML = '<br>'
-                /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
-                if (remainStr) {
-                    span.innerText += remainStr
                     let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
                     if (selectionNode == null) return;
                     const newContent = currentContent?.replace(remainStr, "") ?? ""
@@ -285,8 +300,44 @@ class BlogNewPost extends Component {
                     } else {
                         selectionNode.innerText = newContent
                     }
+
+                    /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
+                    /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
+                    const span = getFirstChildWithTag("span", parentNode)?.cloneNode(false) as HTMLElement | null
+                    if (span != null) {
+                        if (remainStr.length == 0) {
+                            span.innerHTML = "<br>"
+                        } else {
+                            span.innerText = remainStr
+                        }
+                        element.appendChild(span)
+                    } else {
+                        element.innerText = remainStr
+                    }
+
+                } else {
+                    element = document.createElement("p")
+                    const span = document.createElement('span')
+
+                    this.applyEditorStyleElement(span, true);
+                    /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
+                    span.innerHTML = '<br>'
+                    /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
+                    if (remainStr) {
+                        span.innerText += remainStr
+                        let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+                        if (selectionNode == null) return;
+                        const newContent = currentContent?.replace(remainStr, "") ?? ""
+                        ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+                        if (newContent?.trim().length == 0) {
+                            selectionNode.innerHTML = "<br>"
+                        } else {
+                            selectionNode.innerText = newContent
+                        }
+                    }
+                    element.appendChild(span)
                 }
-                element.appendChild(span)
+
             } else {
                 element = document.createElement("span")
                 element.innerText = charCode
@@ -309,13 +360,10 @@ class BlogNewPost extends Component {
                 }
             } else {
                 // Loop through to get the root <p> element
-                let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                while (selectionNode != null && selectionNode.parentNode && (selectionNode?.parentNode as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-                    selectionNode = selectionNode.parentNode as HTMLElement | null
-                }
-                if (selectionNode != null && selectionNode.tagName && selectionNode.tagName.toLowerCase() !== "body") {
-                    if (selectionNode.nextSibling) {
-                        textField.document.body.insertBefore(element, selectionNode.nextSibling)
+                const parent = getFirstParentContainer(selection.anchorNode)
+                if (parent != null) {
+                    if (parent.nextSibling) {
+                        textField.document.body.insertBefore(element, parent.nextSibling)
                     } else {
                         ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
                         textField.document.body.appendChild(element)
@@ -326,8 +374,8 @@ class BlogNewPost extends Component {
             }
 
             // Keep white space to can set start selection in this node
-            console.log("range", range)
             element.style['white-space'] = 'normal'
+            if (element.childNodes.length == 0) return;
             const startNode = element.childNodes[0]
             const newRange = document.createRange()
             newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
@@ -337,6 +385,8 @@ class BlogNewPost extends Component {
 
             dispatch(setStyleNotChangeEditor())
 
+            return;
+
         }
 
     }
@@ -344,11 +394,31 @@ class BlogNewPost extends Component {
     handleIFrameKeyDown(evt: KeyboardEvent) {
         const selection = textField.window.getSelection()
         if (selection == null) return;
-        const charCode = evt.key;
+
+        const charCode = evt.key.toLowerCase();
         let rootSelection = selection.anchorNode as HTMLElement | null
+        /*      //////////////////////          KEEP ELEMENT EVEN AFTER DELETE ALL INNER TEXT WHEN USE CTRL BACKSPACE             ///////////////////////     */
+        if (rootSelection?.nodeType == Node.TEXT_NODE && charCode === "backspace" && evt.ctrlKey) {
+            const text = rootSelection?.textContent
+            if (text == null) return;
+            if (text.split(" ").length == 1) {
+                rootSelection.textContent = ""
+                getFirstParentWithTag("span", rootSelection)?.appendChild(document.createElement("br"))
+                evt.preventDefault()
+                return;
+            }
+
+            if (rootSelection?.textContent?.length == 0) {
+                getFirstParentContainer(rootSelection)?.remove()
+                evt.preventDefault()
+                return;
+            }
+
+            return;
+        }
+
         /*      //////////////////////          KEEP ELEMENT EVEN AFTER DELETE ALL INNER TEXT             ///////////////////////     */
-        if (rootSelection?.nodeType == Node.TEXT_NODE && charCode === "Backspace") {
-            console.log(rootSelection.textContent)
+        if (rootSelection?.nodeType == Node.TEXT_NODE && charCode === "backspace") {
             if (rootSelection?.textContent?.length == 1) {
                 rootSelection.textContent = ""
                 getFirstParentWithTag("span", rootSelection)?.appendChild(document.createElement("br"))
@@ -364,6 +434,23 @@ class BlogNewPost extends Component {
 
             return;
         }
+
+        if (charCode === "backspace") {
+            const container = getFirstParentContainer(rootSelection)
+            if (container?.previousSibling) {
+                const element = container.previousSibling
+                if (element.childNodes.length == 0) return;
+                const startNode = element.childNodes[0]
+                const newRange = document.createRange()
+                newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
+                newRange.collapse(true)
+                selection.removeAllRanges()
+                selection.addRange(newRange)
+            }
+            container?.remove()
+            evt.preventDefault()
+        }
+
     }
 
     handleSelectionChange() {
@@ -480,27 +567,6 @@ class BlogNewPost extends Component {
                 iconAlignLeft.classList.toggle("active")
             }
         }
-
-        // let parentElement = element.parentNode as HTMLElement
-        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-        //
-        //     if (!parentElement.style) return;
-        //     if (parentElement.style['text-align'] === 'left') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        //
-        //     parentElement = parentElement.parentNode as HTMLElement
-        // }
-        // for (let i = 0; i < element.children.length; i++) {
-        //     if (!(element.children[i] instanceof HTMLElement)) return;
-        //     let child = element.children[i] as HTMLElement
-        //     if (child.style['text-align'] === 'left') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        // }
-
     }
 
     toggleActiveAlignRight(element: HTMLElement) {
@@ -519,18 +585,6 @@ class BlogNewPost extends Component {
                 iconAlignLeft.classList.toggle("active")
             }
         }
-
-        // let parentElement = element.parentNode as HTMLElement
-        // while (parentElement != null && (parentElement as HTMLElement | null)?.tagName?.toLowerCase() !== "body") {
-        //
-        //     if (!parentElement.style) return;
-        //     if (parentElement.style['text-align'] === 'right') {
-        //         if (iconAlignLeft.classList.contains("active")) return;
-        //         iconAlignLeft.classList.toggle("active")
-        //     }
-        //
-        //     parentElement = parentElement.parentNode as HTMLElement
-        // }
 
     }
 
@@ -707,7 +761,6 @@ class BlogNewPost extends Component {
         if (selection == null) return;
 
         const selectionNode = selection.anchorNode as HTMLElement | null
-        console.log("Selection node", selectionNode)
         const pElement = selectionNode?.nodeType == Node.TEXT_NODE
             ? getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
             : getFirstChildContainer(selectionNode) ?? getFirstParentContainer(selectionNode)
@@ -915,7 +968,11 @@ class BlogNewPost extends Component {
          ************************************************************************************************/
         let selection = textField.window.getSelection()
         if (selection == null) return
-        const content = selection.getRangeAt(0).extractContents();
+        if (selection.rangeCount == 0) return;
+        const range =
+            selection.getRangeAt(0)
+        const content =
+            range.cloneContents();
         let selectionNode = selection.anchorNode as HTMLElement | null
 
         /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
@@ -925,6 +982,8 @@ class BlogNewPost extends Component {
             span.style['font-family'] = value
             /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
         } else {
+            // remove select content
+            range.extractContents()
             content.childNodes.forEach(contentElement => {
                 const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
                 if (parent == null) return;
@@ -951,8 +1010,12 @@ class BlogNewPost extends Component {
          ************************************************************************************************/
         let selection = textField.window.getSelection()
         if (selection == null) return
+        if (selection.rangeCount == 0) return;
+        const range =
+            selection.getRangeAt(0)
+        const content =
+            range.cloneContents();
         let selectionNode = selection.anchorNode as HTMLElement | null
-        const content = selection.getRangeAt(0).extractContents()
 
         /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
         if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
@@ -961,6 +1024,8 @@ class BlogNewPost extends Component {
             span.style['font-size'] = `${value}px`
             /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
         } else {
+            ////////////////////////////////          REMOVE SELECTION            ////////////////////////////////
+            range.extractContents()
             content.childNodes.forEach(contentElement => {
                 const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
                 if (parent == null) return;
@@ -1017,7 +1082,7 @@ class BlogNewPost extends Component {
             if (parent == null) return;
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
-             * CHOOSE CAREFULLY...
+             * CHOOSE CAREFULLY... sd
              ************************************************************************************************/
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
@@ -1047,7 +1112,6 @@ class BlogNewPost extends Component {
                     } else {
                         element.style[style] = value
                     }
-                    // element.style[style] = value
                 })
             }
 
@@ -1167,13 +1231,40 @@ class BlogNewPost extends Component {
      * MOVE FROM RENDER
      ************************************************************************************************/
     load() {
-        textField.document.designMode = "On";
+        // textField.document.designMode = "On";
+        // textField.document.body.contentEditable = "true";
         textField.document.body.spellcheck = false;
-        textField.document.body.innerHTML = "<h1><span style=\"font-weight: bold; font-family: Ubuntu;\">6 Tips to Freshen up your workplace</span></h1><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">15 Feb 2018</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Provide kitchen snacks</span></p><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">New year clean</span></p><p style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Greenery</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu;\">Add some colour</span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal;\"><span style=\"font-family: Ubuntu; font-weight: bold;\">Extras</span></p><p style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 14px;\">Nam faucibus leo eu nisl sodales sodales. Praesent blandit magna at massa dignissim lacinia. Etiam eget dui egestas, mattis risus sit amet, imperdiet ante. Duis vulputate elit ut lectus pulvinar, ac sagittis ex dapibus. Nullam sagittis tortor vitae sem pharetra consectetur. Praesent sit amet lorem dictum, molestie lacus et, dictum quam. In hac habitasse platea dictumst. Praesent nec tempus purus. Vivamus at malesuada orci. Integer convallis feugiat metus non ultrices. Sed commodo feugiat libero, vitae mollis urna. Curabitur volutpat ultricies tortor, a auctor risus eleifend vitae. Praesent dignissim dui nisi, at dignissim purus placerat eu.\n" +
-            "\n" +
-            "<br></span></p><p style=\"white-space: normal;\"><span><br></span></p><p style=\"white-space: normal;\"><span style=\"font-size: 14px; font-family: JoseSans;\">Nullam ligula diam, viverra nec maximus ut, imperdiet et lectus. Vivamus et tellus arcu. In at dolor efficitur nibh rutrum dictum eget ut turpis. Sed magna felis, euismod tempor libero non, facilisis dictum nisl. Duis mollis pellentesque venenatis. Suspendisse vulputate ut nibh vitae consequat. Etiam imperdiet ante nisi, eu posuere magna consectetur a. Nulla hendrerit quis erat nec rhoncus. Praesent tincidunt orci massa, vel cursus eros laoreet et.\n" +
-            "\n" +
-            "<br></span></p>"
+        textField.document.body.innerHTML = "<h1 contentEditable=\"true\"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">How to master your life\n" +
+            "</span></h1><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">12 Mar 2019</span></p><h4 contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-size: 18px; font-family: Ubuntu;\">The secrets to love, life and happiness can be unlocked with three simple words: Play. The. Sims.\n" +
+            "</span></h4><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 16px;\"></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">It’s a game where you lead a person’s complete life with a mouse. Want to talk to that girl right there? Just click on her and pick something:\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br><img src=\"http://localhost:5000/uploads\\media\\guys\\images\\1612584741380_beach-1867881_1920.jpg\" class=\"w-9/12\"></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">Left to their own devices, your Sim will do whatever they feel like, which is usually strikingly stupid. (In real life, that may sound familiar). You interrupt your Sim’s autopilot by giving them sage instructions, like “read a book” or “stare at that girl’s butt”.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">Being successful at The Sims is very easy. It’s just like real life, except without a barrier between what you decide and what you do.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">In the Sims, you immediately buy whatever lame fitness equipment you can afford. If you can’t afford anything, go run in the park. Each day you tell your Sim to spend a spare minute exercising, and although progress is slow, you see their bars slowly inch up. Success is guaranteed.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br><img src=\"http://localhost:5000/uploads\\media\\guys\\images\\1612584752813_pic05.jpg\" class=\"w-9/12\"></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">In real life you think about getting fit. You’re not sure what to buy. Can you really afford the ‘right’ equipment? You read reviews. Do you have enough time? You ask questions on Quora. Maybe you buy something. You don’t know how to use it. Maybe you use it a couple times. You don’t see any results. You talk and think and share and do anything but exercise.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">IF ONLY SOMEONE WOULD TELL YOU WHAT TO DO.\n" +
+            "<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px; font-weight: bold;\">\n" +
+            "</span><span style=\"font-family: JoseSans; font-size: 18px; font-weight: bold;\">The first lesson from The Sims is good decisions require little thought.</span><span style=\"font-family: JoseSans; font-size: 18px; font-weight: bold;\"> To get fit: exercise. To be smarter: read. To eat healthier: cook. Such mechanics are elementary to a child playing the game, but when leading your own life, your mischievous mind paralyses you with too much thinking. Stop holding out for perfect decisions. Pick. Act.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">You can solve half the hassles of humanity this way. “I like this girl, how do I get her to like me?” Just click on her, and pick something.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">“But what do I say?” Anything moves you closer to your goal. Pick something. “But she might not like me!” Right now, she doesn’t even know you. Fix that. Pick something. “But what would we name our future kids?” SHUT UP AND PICK SOMETHING.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><br></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">Thinking isn’t inherently bad of course, but save the deep stuff for writing your novel and designing a nuclear powered washing machine. If you’re not clicking your mouse much, you’re probably not playing the game.</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br><img src=\"http://localhost:5000/uploads\\media\\guys\\images\\1612584752777_freedom-4782870_1920.jpg\" class=\"w-9/12\"></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><h4 contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans;/* font-size: 18px; */font-weight: bold;\">The second lesson from The Sims is to nurture your state.\n" +
+            "<br></span></h4><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans; font-size: 18px;\">If your Sim is tired, desperate for company or wetting themselves, they won’t get much done. A decent player keeps an eye on these bars and never lets them slide too far; the exceptional player builds a life that takes care of them automatically.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; ;\"><span style=\"font-size: 18px; font-family: JoseSans, serif;\">And so it is in real life. If you’ve found yourself having a crappy pointless argument, chances are you were a bad mix of tired, stressed, or hungry at the time. If you want to be your wittiest, smartest, and most resilient, you’d better take consistently good care of yourself. The best way to be consistently awesome is to be in a consistently good state.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu, serif; font-size: 18px;\">The third lesson from The Sims is to build selected skills.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu, serif; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-family: JoseSans; font-size: 18px;\">Almost every action your Sim can take makes them better at something. Some skills are easier to gain, depending on your natural strengths, but you can get impressively decent at just about anything with time.\n" +
+            "<br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-family: JoseSans; font-size: 18px;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-family: JoseSans; font-size: 18px;\">You don’t live forever though, so to get great at something means saying no to something else. You must pick, and focus. Fully developed strengths tend to make your weaknesses redundant. Woody Allen would not be better off if he had spent less time writing and more time at the gym.\n" +
+            "<br></span></p><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"></p><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"><span style=\"white-space: normal;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">The final lesson from The Sims is the game is indifferent.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans;\">There’s no winning The Sims. Everyone dies. There’s no high score. You live your life how you want, and you alone judge what to make of it as it rolls by. This may sound familiar.\n" +
+            "</span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans;\">But that doesn’t make life pointless; it makes life anything you choose it to be. If you want to live yours free from regret: keep your state high. Focus your time into a few select skills. But most importantly of all: go ahead and click on something.</span></p>"
+        // textField.document.body.innerHTML = "<h1 contentEditable=\"true\" contentEditable=\"true\"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">6 Tips to Freshen up your workplace</span></h1><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\">15 Feb 2018</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 18px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">Provide kitchen snacks</span></p><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; ;\"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">New year clean</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans,serif,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">Greenery</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-weight: bold; font-family: Ubuntu,serif;\">Add some colour</span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal; \"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rhoncus aliquet elit, ac condimentum sapien convallis at. Cras nec eros ultricies, rutrum elit nec, rhoncus nibh. Sed ultrices diam quis mollis imperdiet. Morbi sagittis erat vitae pellentesque feugiat. Maecenas placerat mollis ultricies. Nullam eu nulla ex.<br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: Ubuntu,serif; font-weight: bold;\">Extras</span></p><p contentEditable=\"true\" style=\"font-weight: bold; white-space: normal;\"><span style=\"font-weight: bold;\"><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-family: JoseSans,serif; font-size: 14px;\">Nam faucibus leo eu nisl sodales sodales. Praesent blandit magna at massa dignissim lacinia. Etiam eget dui egestas, mattis risus sit amet, imperdiet ante. Duis vulputate elit ut lectus pulvinar, ac sagittis ex dapibus. Nullam sagittis tortor vitae sem pharetra consectetur. Praesent sit amet lorem dictum, molestie lacus et, dictum quam. In hac habitasse platea dictumst. Praesent nec tempus purus. Vivamus at malesuada orci. Integer convallis feugiat metus non ultrices. Sed commodo feugiat libero, vitae mollis urna. Curabitur volutpat ultricies tortor, a auctor risus eleifend vitae. Praesent dignissim dui nisi, at dignissim purus placerat eu.\n" +
+        //     "\n" +
+        //     "<br></span></p><p contentEditable=\"true\" contentEditable=\"true\" style=\"white-space: normal;\"><span><br></span></p><p contentEditable=\"true\" style=\"white-space: normal;\"><span style=\"font-size: 14px; font-family: JoseSans,serif;\">Nullam ligula diam, viverra nec maximus ut, imperdiet et lectus. Vivamus et tellus arcu. In at dolor efficitur nibh rutrum dictum eget ut turpis. Sed magna felis, euismod tempor libero non, facilisis dictum nisl. Duis mollis pellentesque venenatis. Suspendisse vulputate ut nibh vitae consequat. Etiam imperdiet ante nisi, eu posuere magna consectetur a. Nulla hendrerit quis erat nec rhoncus. Praesent tincidunt orci massa, vel cursus eros laoreet et.\n" +
+        //     "\n" +
+        //     "<br></span></p>"
+
+
+        // const element = document.createElement("div")
+        // textField.document.body.appendChild(element)
+        // const imageElement = <ImageEditor/>
+        // ReactDOM.render(imageElement, element)
     }
 
     render() {
@@ -1290,8 +1381,8 @@ class BlogNewPost extends Component {
                                          // textField.document.getElementById("popup-add-link")?.remove()
                                          const a = document.createElement("a")
                                          a.title = text
-                                         a.appendChild(document.createTextNode(text))
                                          a.href = link
+                                         a.appendChild(document.createTextNode(text))
                                          textField.document.body.appendChild(a)
                                          if (selectionNode?.nodeType === Node.TEXT_NODE) {
                                              selectionNode?.remove()
@@ -1341,9 +1432,7 @@ class BlogNewPost extends Component {
                 })
                 // @ts-ignore
                 .catch(_ => {
-                    alert("Failed to save post. Please try again")
-                    // setFormErrorMessage("Please check your Email or Password again.")
-
+                    toast.error("Failed to save post. Please try again")
                 })
         }
 
@@ -1355,7 +1444,8 @@ class BlogNewPost extends Component {
                     <div className="py-2 flex justify-content-end mx-5">
                         <div onClick={handleSave}
                              className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
-                            <i className="fa fa-shopping-cart mr-3 duration-500"/>Publish
+                            <i className="fa fa-shopping-cart mr-3 duration-500"/>
+                            Publish
                         </div>
                     </div>
                     <div className="d-flex justify-between mx-3 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
@@ -1504,11 +1594,10 @@ class BlogNewPost extends Component {
                             <span className="tooltip-text">Bold</span>
                             <i className="fa fa-undo-alt"/>
                         </div>
-
-
                     </div>
 
-                    <iframe name="textField" className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
+                    <iframe name="textField" id="textField"
+                            className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
                             spellCheck="false"
                             onLoad={this.load}
                             style={{width: "80%", minHeight: "75vh"}}>
