@@ -45,7 +45,6 @@ export function auth(data) {
     const request = Axios.post(`${USER_AUTHENTICATE_SERVER_URL}`, data)
         .then(response => response.data)
 
-    console.log("Request Auth: ", request)
     return {
         type: AUTH_USER,
         payload: request
@@ -53,11 +52,9 @@ export function auth(data) {
 }
 
 export function savePost(data) {
-    console.log("Save ShowPost", data)
     const request = Axios.post(`${BLOG_SERVER_URL}/savePost`, data)
         .then(response => response.data)
 
-    console.log("Save ShowPost: ", data)
     return {
         type: SAVE_POST,
         payload: request

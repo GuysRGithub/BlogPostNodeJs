@@ -1,9 +1,44 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import HeaderLight from "../../components/Shared/HeaderLight";
 import FooterLight from "../../components/Shared/FooterLight";
+import {Link} from "react-router-dom"
+import Axios from "axios";
+import {BLOG_SERVER_URL} from "../../../config/config";
+import {toast} from "react-toastify";
+import PostViewModel from "../../../view_models/PostViewModel";
+import ImageEditor from "../../components/EditorComponents/ImageEditor";
+import * as ReactDOM from "react-dom";
 
 export default function () {
-    return (<div>
+
+    const [Posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        Axios.get(`${BLOG_SERVER_URL}/getAllPosts`)
+            .then(response => {
+                if (response.data.success) {
+                    let posts = []
+                    response.data.doc.map(post => {
+                        console.log(
+                            new Date(parseInt(post._id.toString().substring(0, 8), 16) * 1000)
+                        )
+                        let postView = new PostViewModel(post)
+                        posts.push(postView)
+                    })
+                    setPosts(posts)
+                } else {
+                    toast.error("Failed to load posts!")
+                }
+            })
+            .catch(err => {
+                toast.error("Something went wrong!")
+            })
+    }, [])
+
+    const x = (e) => {
+        ReactDOM.render(<ImageEditor/>, document.getElementById("fucking"))
+    }
+    return (<div onLoad={x}>
             <HeaderLight/>
 
             <section className="entry-section mt-24 px-32">
@@ -12,74 +47,23 @@ export default function () {
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="grid-cols-3 gap-16 grid">
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/women-3051614_1920.jpg").default} alt=""/>
+                    {Posts.map((post) => (
+                        <div key={post._id}>
+                            <div>
+                                <img className="img-post-fixed-height"
+                                     src={post.src || require("../../../assets/images/posts/affection-baby-baby-girl-beautiful-377058.jpg").default}
+                                     alt=""/>
+                            </div>
+                            <div className="pr-6">
+                                <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <Link to={`/blogs/${post._id}`}>
+                                    <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
+                                        More<i className="fa fa-arrow-right ml-2"/></div>
+                                </Link>
+                            </div>
                         </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/chromehill-4724725_1920.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/memories-from.jpg").default} alt=""/>
-                        </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/women-3051614_1920.jpg").default} alt=""/>
-                        </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/chromehill-4724725_1920.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height"
-                                 src={require("../../../assets/images/posts/memories-from.jpg").default} alt=""/>
-                        </div>
-                        <div className="pr-6">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum is simply dummy text of the printing and typesetting industry</h6>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
 
@@ -89,86 +73,21 @@ export default function () {
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="grid-cols-4 gap-16 grid">
-                    <div>
+                    {Posts.map(post => (
                         <div>
-                            <img className="img-post-fixed-height-card"
-                                 src={require("../../../assets/images/posts/GNispE-ssZQyBTMJbGDDsMhq.jpg").default}
-                                 alt=""/>
+                            <div>
+                                <img className="img-post-fixed-height-card"
+                                     src={post.src || require("../../../assets/images/posts/GNispE-ssZQyBTMJbGDDsMhq.jpg").default}
+                                     alt=""/>
+                            </div>
+                            <div className="pr-6 bg-white shadow-md px-3 py-5">
+                                <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
+                                    More<i className="fa fa-arrow-right ml-2"/></div>
+                            </div>
                         </div>
-                        <div className="pr-6 bg-white shadow-md px-3 py-5">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum</h6>
-                            <p className="color-gray-primary fs-sm-2">Lorem ipsum dolor sit amet, consectetur
-                                adipisicing </p>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                            <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read More<i
-                                className="fa fa-arrow-right ml-2"/></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height-card"
-                                 src={require("../../../assets/images/posts/rowan-chestnut-175871-unsplash-205x300.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6 bg-white shadow-md px-3 py-5">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum</h6>
-                            <p className="color-gray-primary fs-sm-2">Lorem ipsum dolor sit amet, consectetur
-                                adipisicing </p>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                            <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read More<i
-                                className="fa fa-arrow-right ml-2"/></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height-card"
-                                 src={require("../../../assets/images/posts/beach-1867881_1920.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6 bg-white shadow-md px-3 py-5">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum</h6>
-                            <p className="color-gray-primary fs-sm-2">Lorem ipsum dolor sit amet, consectetur
-                                adipisicing </p>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                            <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read More<i
-                                className="fa fa-arrow-right ml-2"/></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height-card"
-                                 src={require("../../../assets/images/posts/sunrise-1014710_1920.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6 bg-white shadow-md px-3 py-5">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum</h6>
-                            <p className="color-gray-primary fs-sm-2">Lorem ipsum dolor sit amet, consectetur
-                                adipisicing </p>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                            <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read More<i
-                                className="fa fa-arrow-right ml-2"/></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img className="img-post-fixed-height-card"
-                                 src={require("../../../assets/images/posts/traveller-1149973_1920.jpg").default}
-                                 alt=""/>
-                        </div>
-                        <div className="pr-6 bg-white shadow-md px-3 py-5">
-                            <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">Lorem
-                                Ipsum</h6>
-                            <p className="color-gray-primary fs-sm-2">Lorem ipsum dolor sit amet, consectetur
-                                adipisicing </p>
-                            <p className="color-gray-fade-primary italic fs-sm-2">30 May 2020</p>
-                            <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read More<i
-                                className="fa fa-arrow-right ml-2"/></div>
-                        </div>
-                    </div>
+                    ))}
 
                 </div>
             </section>
@@ -195,6 +114,9 @@ export default function () {
                 </div>
 
             </section>
+
+            <div id="fucking"></div>
+
             <FooterLight/>
         </div>
     )

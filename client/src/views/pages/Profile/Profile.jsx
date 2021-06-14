@@ -5,7 +5,7 @@ import React, {useEffect, useState} from 'react'
 import PostCardVertical from "../../components/Shared/PostCardVertical.jsx";
 import Axios from "axios";
 import {BLOG_SERVER_URL, USER_SERVER_URL} from "../../../config/config.js";
-import PostSeparateViewModel from "../../../view_models/post_separate_view_model.js";
+import PostViewModel from "../../../view_models/PostViewModel.js";
 import PostCard from "../../components/Shared/PostCard.jsx";
 import {isAuth} from "../../../helpers/auth";
 import {Redirect} from "react-router-dom";
@@ -39,7 +39,7 @@ export const Profile = (props) => {
                         //     content: removePostImageFromPostContent(content),
                         //     src: getSrcFromPostContent(content)
                         // }
-                        let postView = new PostSeparateViewModel(post)
+                        let postView = new PostViewModel(post)
                         posts.push(postView)
                         // postsText.push(post.content.replace(match[0]))
                         // return match[1]

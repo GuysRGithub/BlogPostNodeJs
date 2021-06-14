@@ -1,5 +1,4 @@
 import React from 'react'
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../../../helpers/data_process_helper.js";
 import {Link} from "react-router-dom";
 import HtmlParser from "react-html-parser";
 

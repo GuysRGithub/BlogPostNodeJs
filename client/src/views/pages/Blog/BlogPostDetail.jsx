@@ -1,25 +1,17 @@
 import React, {useState, useEffect} from "react";
-import "../../../assets/css/detail_post_style.scss";
-import Card from "../../components/UI/Card/index.jsx";
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config.js";
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../../../helpers/data_process_helper.js";
+import Card from "../../components/UI/Card/index.jsx";
 import HtmlParser from "react-html-parser";
+import "../../../assets/css/detail_post_style.scss";
+import PostViewModel from "../../../view_models/PostViewModel";
 
 const BlogPostDetail = (props) => {
 
     const postId = props.match.params.postId;
-    const [Post, setPost] = useState({
-        title: "",
-        author: "",
-        content: "",
-        createdAt: "",
-    });
+    const [Post, setPost] = useState<PostViewModel>({});
 
     useEffect(() => {
-
-        console.log("Post Id", postId)
-
         let data = {
             postId: postId
         }

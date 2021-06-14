@@ -1,5 +1,3 @@
-const {isAuth} = require("../helpers/auth");
-
 const express = require('express');
 const AuthorUser = require("../models/AuthorUser");
 const Profile = require("../models/Profile");
@@ -73,7 +71,7 @@ router.post('/auth', auth, function (req, res) {
 router.post('/logout', auth, (req, res) => {
     AuthorUser.findOneAndUpdate({_id: req.user._id},
         {token: "", tokenExp: ""},
-        (err, doc) => {
+        (err) => {
             if (err) return res.json({success: false, err})
             return res.status(200).send({
                 success: true
@@ -95,9 +93,6 @@ router.post('/getProfile', auth, (req, res) => {
 })
 
 router.get('/getMediaLibrary', auth, async (req, res) => {
-    console.log("Server Load All Medias")
-    console.log("Request Get Media Token", req.cookies.token)
-
     const {token} = req.cookies;
     let user = null;
     if (token) {

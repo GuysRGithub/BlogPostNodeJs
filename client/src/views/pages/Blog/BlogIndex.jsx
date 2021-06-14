@@ -1,110 +1,42 @@
-import React, {useEffect, useState} from "react";
 import "../../../assets/css/blog_homstyle.scss";
-import RecentPost from "../Blog/RecentPost.jsx";
-import blogData from "../../../data/blog.json";
-import Layout from "../../layouts/Layout.jsx";
+import React, {useEffect, useState} from "react";
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config.js";
-import BlogHeader from "../../components/BlogHeader";
-import BlogNavBar from "../../components/Navbar";
-import {Link, Switch} from "react-router-dom";
-import blogPost from "../../../data/blog.json";
-import ReactHTMLParser from "react-html-parser"
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../../../helpers/data_process_helper.js";
-import PostCard from "../../components/Shared/PostCard.jsx";
-import PostSeparateViewModel from "../../../view_models/post_separate_view_model.js";
-import Header from "../../components/Shared/Header.jsx";
-import PostCardGrid from "../../components/Shared/PostCardGrid.jsx";
-import SideCard from "../../components/Shared/SideCard.jsx";
 import {toast} from "react-toastify";
-import HeaderLight from "../../components/Shared/HeaderLight";
+import SideCard from "../../components/Shared/SideCard.jsx";
 import PageLayout from "../../layouts/PageLayout";
 import HtmlParser from "react-html-parser";
+import PostViewModel from "../../../view_models/PostViewModel.js";
+import {Link} from "react-router-dom";
 
-const BlogIndex = (props) => {
+const BlogIndex = () => {
 
     const [Posts, setPosts] = useState([]);
-    const [ImagesSrc, setImagesSrc] = useState([]);
-    const [PostsText, setPostsText] = useState([]);
-    // const srcReg = /<img\s+src=["'](.+?)["'](?:.+?)>/
 
     useEffect(() => {
         Axios.get(`${BLOG_SERVER_URL}/getAllPosts`)
             .then(response => {
                 if (response.data.success) {
                     let posts = []
-                    console.log("Loaded Posts: ", response.data.doc)
-                    // let postsText = []
                     response.data.doc.map(post => {
-                        let content = post.content
-                        let postView = new PostSeparateViewModel(post)
+                        let postView = new PostViewModel(post)
                         posts.push(postView)
                     })
                     setPosts(posts)
-                    console.log("Post Processed: ", posts)
                 } else {
-                    toast.error("Failed to load posts...")
+                    toast.error("Failed to load posts!")
                 }
             })
             .catch(err => {
                 toast.error("Something went wrong!")
-                console.log(err)
             })
     }, [])
-
-    const ImageGallery = (props) => (
-        <div className="galleryPost" style={props.galleryStyle}>
-            <section className="postGalleryImage" style={{width: "70%"}}>
-                <div>
-                    <img
-                        // src={require(imagePath("posts/" + props.imagesArray[2]))}
-                        src={require("../../../assets/images/posts/" + props.imagesArray[2])}
-                        alt="Home"
-                    />
-                </div>
-            </section>
-            <section className="sideImageWrapper" style={{width: "30%"}}>
-                <SideImage
-                    height={sideImageHeight}
-                    source={require("../../../assets/images/posts/" + props.imagesArray[1])}
-                />
-                <SideImage
-                    height={sideImageHeight}
-                    source={require("../../../assets/images/posts/" + props.imagesArray[2])}
-                />
-                <SideImage
-                    height={sideImageHeight}
-                    source={require("../../../assets/images/posts/" + props.imagesArray[4])}
-                />
-            </section>
-        </div>
-    );
-
-    const SideImage = (props) => {
-        return (
-            <div style={{height: `${props.height}px`}}>
-                <img src={props.source} alt="Home"/>
-            </div>
-        );
-    };
-
-    const galleryHeight = 450;
-
-    const galleryStyle = {
-        height: galleryHeight + "px",
-        overflow: "hidden",
-    };
-
-    const sideImageHeight = galleryHeight / 3;
-
-    const imgArray = blogData.data.map((post) => post.blogImage);
 
     return (
         <PageLayout>
             {/*<HeaderLight/>*/}
             <div className="d-flex content-around justify-content-around my-16 px-32">
                 <section className="w-8/12 mx-5">
-
                     {Posts.length > 0 && (
                         <div>
                             {Posts.map((post) => (<div>{HtmlParser(post.content)}</div>))}
@@ -133,7 +65,9 @@ const BlogIndex = (props) => {
                         </div>
 
                         {Posts.map((post) => (
-                            SideCard({postViewSeparate: post})
+                            <Link to={`/blogs/${post._id}`}>
+                                {SideCard({postViewSeparate: post})}
+                            </Link>
                         ))}
                     </div>
                     <div className="mt-break">

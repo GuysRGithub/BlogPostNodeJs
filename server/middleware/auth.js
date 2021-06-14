@@ -22,21 +22,30 @@ const {getCookie} = require("../helpers/auth.js")
 //     // }
 // }
 let auth = (req, res, next) => {
-    if (typeof window !== undefined) {
-        const cookieChecked = getCookie("token")
-
-        if (cookieChecked) {
-            if (localStorage.getItem("user")) {
-                next()
-            } else {
-                return false
-            }
-        }
+    // if (typeof window !== undefined) {
+    //     const cookieChecked = getCookie("token")
+    //     if (cookieChecked) {
+    //         if (localStorage.getItem("user")) {
+    //             next()
+    //         } else {
+    //             console.log("Fuckskjfkskfjwfifjiwjfi")
+    //             return false
+    //         }
+    //     }
+    // }
+    if (!req.cookies) {
+        return res.json({
+            isAuthenticated: false,
+            error: true
+        })
     }
-    if (!req.cookies) return
-    // let token = req.cookies["w_auth"]
     const {token} = req.cookies;
-    if (!token) return
+    if (!token) {
+        return res.json({
+            isAuthenticated: false,
+            error: true
+        })
+    }
     const {_id} = jwt.decode(token);
 
     AuthorUser.findById(_id, (err, user) => {

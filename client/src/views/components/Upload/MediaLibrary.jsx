@@ -1,25 +1,16 @@
 import React, {useEffect, useState} from 'react'
-import DropZone from "react-dropzone";
 import Axios from "axios";
 import {REACT_APP_SERVER_URL, UPLOAD_SERVER_URL, USER_SERVER_URL} from "../../../config/config.js";
 import {USER_GET_MEDIA_SERVER_URL, USER_GET_PROFILE_SERVER_URL} from "../../../config/router_path";
-
-const path = require("path")
-const fs = require("fs")
-
-// const directoryPath = path.join(__dirname, '')
-const directoryPath = '../../../assets/images'
-
+import {toast} from "react-toastify";
 
 function MediaLibrary({onImageChosenCallback, ...props}) {
     const [Images, setImages] = useState([]);
     const [ImageSelectedPath, setImageSelectedPath] = useState("");
 
     useEffect(() => {
-        console.log("Get All Data")
         Axios.get(`${USER_GET_MEDIA_SERVER_URL}`)
             .then(response => {
-                console.log("Response", response)
                 if (response.data.success) {
                     setImages(response.data.doc.images)
                 }
@@ -27,12 +18,29 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
     }, [])
 
     const handleOnButtonOkClicked = () => {
-        document.getElementById("popup-pick-media").style['display'] = "none"
+        const popup = window.document.getElementById("popup-pick-media")
         onImageChosenCallback(ImageSelectedPath)
-
+        if (popup == null) {
+            const popupInner = document.getElementById('textField')?.contentWindow?.document?.getElementById("popup-pick-media")
+            if (popupInner == null) return
+            popupInner.style['display'] = "none"
+            return;
+        }
+        popup.style['display'] = "none"
     }
 
-    const onButtonUploadClicked = (e) => {
+    const handleOnButtonCancelClicked = () => {
+        const popup = window.document.getElementById("popup-pick-media")
+        if (popup == null) {
+            const popupInner = document.getElementById('textField')?.contentWindow?.document?.getElementById("popup-pick-media")
+            if (popupInner == null) return
+            popupInner.style['display'] = "none"
+            return;
+        }
+        popup.style['display'] = "none"
+    }
+
+    const onButtonUploadClicked = () => {
         document.getElementById("media-file-upload").click()
     }
 
@@ -45,8 +53,6 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
         const config = {
             header: {"content-type": "multipart/form-data"},
         };
-        // formData.append("file", files[0]);
-        // formData.append("file2", files[1]);
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             formData.append('post_images', file, file.name);
@@ -54,16 +60,12 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
 
         Axios.post(`${UPLOAD_SERVER_URL}/images`, formData, config).then(
             (response) => {
-                console.log("Response Upload Media", response)
                 if (response.data.success) {
-                    // setImages([...Images, response.data.imagesPath[0]]);
                     setImages([...Images, ...response.data.imagesPath])
-                    // if (props.refreshFunction) {
-                    //     props.refreshFunction([...Images, response.data.image]);
-                    // }
-                    e.target.files = []
+                    // e.target.files = []
+                    toast.success("Failed to upload image");
                 } else {
-                    alert("Failed to upload image");
+                    toast.error("Failed to upload image");
                 }
             }
         );
@@ -71,7 +73,6 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
     };
     return (
         <div id="popup-pick-media" className="py-12" style={{background: "#F2F3FB",}} {...props}>
-
             <div className="d-flex w-10/12 rounded-lg overflow-hidden mx-auto"
                  style={{height: "88vh", background: "#F8F9FF"}}>
                 <div className="d-flex flex-col justify-content-center justify-content-between h-full bg-white p-2"
@@ -121,10 +122,11 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                                 <div className="fs-sm-2 font-bold line-height-3">Project</div>
                             </div>
                             <div className="button-cart d-inline-block">
-                                <button onClick={onButtonUploadClicked}
-                                        className="d-flex font-roboto outline-none-imp font-weight-bolder fs-1 align-items-center duration-500 py-1 px-4">
+                                <div
+                                    onClick={onButtonUploadClicked}
+                                    className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
                                     <i className="fa fa-upload mr-3 duration-500"/>Upload
-                                </button>
+                                </div>
                                 <input type="file" multiple hidden={true} id="media-file-upload"
                                        onChange={onFileUploadChange}/>
 
@@ -148,7 +150,7 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                     </div>
 
                     {/*  */}
-                    <div className="flex flex-col justify-between align-items-end" style={{maxHeight: "68vh"}}>
+                    <div className="flex flex-col justify-between align-items-end" style={{maxHeight: "70vh"}}>
 
                         <div className="overflow-y-scroll mt-5 p-3 rounded-md bg-white shadow scroll-bar-none flex-grow"
                              style={{maxHeight: "80%", width: "100%"}}>
@@ -221,17 +223,16 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                             {/*</div>*/}
                         </div>
 
-                        <div className="flex justify-between w-6/12">
-
-                            <button
-                                className="d-flex font-roboto outline-none-imp font-weight-bolder fs-1 align-items-center duration-500 py-1 px-4 my-3">
+                        <div className="flex justify-between w-6/12 mt-3">
+                            <div onClick={handleOnButtonCancelClicked}
+                                 className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
                                 <i className="fa fa-window-close mr-3 duration-500"/>Cancel
-                            </button>
+                            </div>
 
-                            <button onClick={handleOnButtonOkClicked}
-                                    className="d-flex font-roboto outline-none-imp font-weight-bolder fs-1 align-items-center duration-500 py-1 px-4 my-3">
+                            <div onClick={handleOnButtonOkClicked}
+                                 className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
                                 <i className="fa fa-check-circle mr-3 duration-500"/>OK
-                            </button>
+                            </div>
                         </div>
 
                     </div>
@@ -243,19 +244,20 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                         <div
                             className="d-flex justify-end">
                             <div className="button-cart d-inline-block mr-4">
-                                <button onClick={onButtonUploadClicked}
-                                        className="d-flex font-roboto outline-none-imp font-weight-bolder fs-1 align-items-center duration-500 py-1 px-4">
+                                <div
+                                    onClick={onButtonUploadClicked}
+                                    className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
                                     <i className="fa fa-save mr-3 duration-500"/>Save
-                                </button>
+                                </div>
                                 <input type="file" multiple hidden={true} id="media-file-upload"
                                        onChange={onFileUploadChange}/>
 
                             </div>
                             <div className="button-cart d-inline-block">
-                                <button onClick={onButtonUploadClicked}
-                                        className="d-flex font-roboto outline-none-imp font-weight-bolder fs-1 align-items-center duration-500 py-1 px-4">
+                                <div onClick={onButtonUploadClicked}
+                                     className="d-flex font-roboto outline-none-imp font-weight-bold align-items-center duration-500 custom-btn-rounded bg-blue-600">
                                     <i className="fa fa-puzzle-piece mr-3 duration-500"/>Publish
-                                </button>
+                                </div>
                                 <input type="file" multiple hidden={true} id="media-file-upload"
                                        onChange={onFileUploadChange}/>
 

@@ -166,7 +166,6 @@ exports.activationController = async (req, res) => {
 };
 
 exports.loginController = (req, res) => {
-    console.log("Fucking req", req)
     const {email, password} = req.body;
     const errors = validationResult(req);
 
@@ -410,7 +409,6 @@ exports.googleLoginController = (req, res) => {
 
 exports.facebookLoginController = (req, res) => {
     const {userId, accessToken} = req.body;
-
     const url = `https://graph.facebook.com/v2.11/${userId}?fields=id,name,email&access_token=${accessToken}`;
     console.log('==========Facebook Req Body==========================');
     console.log(req.body);

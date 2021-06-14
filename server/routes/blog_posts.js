@@ -4,17 +4,15 @@ const jwt = require("jsonwebtoken");
 const AuthorUser = require("../models/AuthorUser");
 const router = express.Router()
 router.post("/savePost", (req, res) => {
-    console.log("Server Save ShowPost", req.body)
     let user = null;
+    const {token} = req.cookies;
     if (token) {
         jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
             if (err) {
-                console.log("Error Verify Token Failed", err);
                 return res.status(401).json({
                     error: "Something went wrong when verify token, may be need to login",
                 });
             } else {
-                console.log("Decode", decoded)
                 const {_id} = jwt.decode(token);
                 user = await AuthorUser.findById(_id).exec()
                 if (user == null) return
@@ -52,8 +50,6 @@ router.post("/getPost", (req, res) => {
 })
 
 router.get("/getAllPosts", (req, res) => {
-    console.log("Server Load All Posts")
-    // noinspection JSIgnoredPromiseFromCall
     Post.find()
         .populate("Author")
         .exec((err, doc) => {

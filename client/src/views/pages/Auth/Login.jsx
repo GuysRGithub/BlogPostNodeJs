@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import authSvg from "../../../assets/login.svg";
-import {ToastContainer, toast} from "react-toastify";
+import {toast} from "react-toastify";
 import Axios from "axios";
 import {authenticate, isAuth} from "../../../helpers/auth";
 import {Link, Redirect} from "react-router-dom";
@@ -51,7 +51,7 @@ export const Login = (props) => {
             });
     };
 
-    // Login with google sucsess to authen and redirect
+    // Login with google success to authenticate and redirect
 
     const informParent = (response) => {
         authenticate(response, () => {
@@ -87,9 +87,7 @@ export const Login = (props) => {
                             email: "",
                             password: "",
                         });
-
                         toast.success(`Login Successful. Welcome back ${response.data.user.name}`);
-
                         isAuth() && isAuth().role === "admin"
                             ? props.history.push("/admin")
                             : props.history.push("/");
@@ -110,7 +108,7 @@ export const Login = (props) => {
             {isAuth() ? <Redirect to="/"/> : null}
             <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
                 <div className="mt-12 flex flex-col items-center">
-                    <h1 className="text-2xl xl:text-3xl font-extrabold">Sign In</h1>
+                    <h1 className="text-2xl xl:text-3xl font-extrabold font-josesans">Sign In</h1>
                     <form
                         className="w-full flex-1 mt-8 text-indigo-500"
                         onSubmit={handleSubmit}
@@ -131,14 +129,14 @@ export const Login = (props) => {
                                 className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white my-2"
                             />
 
-                            <button
-                                type="submit"
-                                className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-                            >
-                                Sign In
-                            </button>
+                            <div className="w-full d-flex justify-content-center">
+                                <button type="submit"
+                                        className="d-flex d-inline-block font-roboto outline-none-imp font-weight-bold align-items-center duration-500 mt-2 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full p-5 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                                    <i className="fa fa-sign-in-alt mr-3 duration-500"/>Sign In
+                                </button>
+                            </div>
                         </div>
-                        <div className="my-12 border-b-text-center">
+                        <div className="my-5 border-b-text-center">
                             <div
                                 className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                                 Or sign with email or social login
@@ -148,46 +146,47 @@ export const Login = (props) => {
                             <div>
 
                             </div>
-                            {/*<GoogleLogin*/}
-                            {/*    clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}*/}
-                            {/*    onSuccess={responseGoogle}*/}
-                            {/*    onFailure={responseGoogle}*/}
-                            {/*    cookiePolicy={"single_host_origin"}*/}
-                            {/*    render={(renderProps) => (*/}
-                            {/*        <button*/}
-                            {/*            onClick={renderProps.onClick}*/}
-                            {/*            disabled={renderProps.disabled}*/}
-                            {/*            className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'"*/}
-                            {/*        >*/}
-                            {/*            Sign In with Google*/}
-                            {/*        </button>*/}
-                            {/*    )}*/}
-                            {/*>*/}
-                            {/*</GoogleLogin>*/}
+                            <GoogleLogin
+                                clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
+                                onSuccess={responseGoogle}
+                                onFailure={responseGoogle}
+                                autoLoad={false}
+                                cookiePolicy={"single_host_origin"}
+                                render={(renderProps) => (
+                                    <div className="w-full d-flex justify-content-center">
+                                        <button type="submit"
+                                                className="d-flex d-inline-block p-5 w-100 mt-5 f6 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800">
+                                            <i className="fab fa-google mr-3 duration-500"/>Sign In With Google
+                                        </button>
+                                    </div>
+                                )}
+                            >
+                            </GoogleLogin>
 
                             <FacebookLogin
                                 appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`} // Facebook App ID
                                 autoLoad={false} // when open login page it will go to login with facebook if set autoLoad = true
                                 callback={responseFacebook}
                                 render={renderProps =>
-                                    <button
-                                        onClick={renderProps.onClick}
-                                        disabled={renderProps.disabled}
-                                        className="w-full max-w-xs font-bold shadow-sm mt-3 rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'"
-                                    >
-                                        Sign In Facebook
-                                    </button>
+                                    <div className="w-full d-flex justify-content-center">
+                                        <button
+                                            onClick={renderProps.onClick}
+                                            disabled={renderProps.disabled}
+                                            className="d-flex d-inline-block w-100 f6 p-5 mt-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800">
+                                            <i className="fab fa-facebook mr-3 duration-500"/>Sign In With Facebook
+                                        </button>
+                                    </div>
                                 }
                             >
-
                             </FacebookLogin>
 
-                            <Link
-                                to="/register"
-                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 mb-3
-           bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5"
-                            >
-                                Sign up
+                            <Link to="/register" className="no-style w-100">
+                                <div className="w-full d-flex justify-content-center">
+                                    <button
+                                        className="d-flex d-inline-block f6 my-5 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100">
+                                        <i className="fa fa-user-plus mr-3 duration-500"/>Sign Up
+                                    </button>
+                                </div>
                             </Link>
                         </div>
                     </form>

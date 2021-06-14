@@ -10,6 +10,7 @@ import ReduxThunk from "redux-thunk"
 import Reducer from "./_reducers/index"
 import React from 'react';
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
+require("datejs")
 
 ReactDOM.render(
     <Provider store={createStoreWithMiddleware(

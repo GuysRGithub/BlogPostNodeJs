@@ -1,12 +1,8 @@
 import Header from "../../components/Shared/Header.jsx";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import Footer from "../../components/Shared/Footer.jsx";
-import Axios from "axios";
 
 function Home(props) {
-
-    const postId = props.match.params.id;
-    const [Post, setPost] = useState({});
 
     return (<div>
             <Header/>
@@ -14,7 +10,6 @@ function Home(props) {
 
             <div className="row mx-lg-4">
                 <main id="main" className="col-8 fs-3 fw-4 pr-4 font-pt-serif">
-
                     <article>
                         <div>
 

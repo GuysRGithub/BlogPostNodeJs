@@ -12,7 +12,7 @@ import blogPost from "../../../data/blog.json";
 import ReactHTMLParser from "react-html-parser"
 import {getSrcFromPostContent, removePostImageFromPostContent} from "../../../helpers/data_process_helper.js";
 import PostCard from "../../components/Shared/PostCard.jsx";
-import PostSeparateViewModel from "../../../view_models/post_separate_view_model.js";
+import PostViewModel from "../../../view_models/PostViewModel.js";
 import Header from "../../components/Shared/Header.jsx";
 import PostCardGrid from "../../components/Shared/PostCardGrid.jsx";
 import SideCard from "../../components/Shared/SideCard.jsx";
@@ -44,7 +44,7 @@ const PostIndex = (props) => {
                         //     content: removePostImageFromPostContent(content),
                         //     src: getSrcFromPostContent(content)
                         // }
-                        let postView = new PostSeparateViewModel(post)
+                        let postView = new PostViewModel(post)
                         posts.push(postView)
                         // postsText.push(post.content.replace(match[0]))
                         // return match[1]

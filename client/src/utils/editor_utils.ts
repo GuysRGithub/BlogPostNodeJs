@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import {execCommandStyle, ExecCommandStyle} from "../assets/ts/editor";
 
 export async function boldSelection() {
@@ -62,28 +64,28 @@ export function getFirstChildWithTag(tag: string, child: HTMLElement | null) {
     return null;
 }
 
-export function getFirstParentContainer(child: HTMLElement | null) {
+export function getFirstParentContainer(child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     return getFirstParentWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
 }
 
-export function getFirstChildContainer(child: HTMLElement | null) {
+export function getFirstChildContainer(child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     return getFirstChildWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
 }
 
-export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | null) {
+export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-    let selectionNode: HTMLElement | null = child
+    let selectionNode: HTMLElement | null = child as HTMLElement | null
     while (selectionNode != null && !tag.includes(selectionNode.tagName?.toLowerCase())) {
         selectionNode = selectionNode.parentElement
     }
     return selectionNode
 }
 
-export function getFirstChildWithTags(tag: Array<String>, child: HTMLElement | null) {
+export function getFirstChildWithTags(tag: Array<String>, child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-    let selectionNode: HTMLElement | null = child
+    let selectionNode: HTMLElement | null = child as HTMLElement | null
     let count = 0;
     let countParent = 0;
     let childSelectNode = selectionNode
@@ -99,7 +101,6 @@ export function getFirstChildWithTags(tag: Array<String>, child: HTMLElement | n
 }
 
 export function getFirstParentNotWithTag(tag: string, child: HTMLElement | null) {
-    // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child
     do {
         selectionNode = selectionNode?.parentElement as HTMLElement | null
