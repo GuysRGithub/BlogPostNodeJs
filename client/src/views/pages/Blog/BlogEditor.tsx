@@ -1,9 +1,10 @@
 import React, {Component, PropsWithChildren} from 'react'
 import {
+    getContainerSelectedElements,
     getFirstChildContainer,
     getFirstChildWithTag,
     getFirstParentContainer,
-    getFirstParentWithTag
+    getFirstParentWithTag, getSelectedElementTags
 } from "../../../utils/editor_utils";
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
@@ -30,7 +31,6 @@ import {connect} from "react-redux"
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config";
 import {style2object} from "../../../helpers/data_process_helper";
-import {getSelectedElementTags} from "../../../helpers/asset_helper";
 
 declare var textField: Window
 
@@ -1150,11 +1150,11 @@ class BlogEditor extends Component {
         const range = selection.getRangeAt(0)
         const content = range.cloneContents()
 
-        /*      //////////////////////          WRAP LIST AROUND SELECTED ELEMENTS             ///////////////////////     */
-        const parent = getFirstChildContainer(selectionElement) ?? getFirstParentContainer(selectionElement)
-        if (parent == null) return;
         if (useParent) {
-            parent.style[style] = value
+            const selectedElements = getContainerSelectedElements(textField.window)
+            for (let i = 0; i < selectedElements.length; i++) {
+                (selectedElements[i] as HTMLElement).style[style] = value
+            }
             this.handleUpdateUI(selectionElement)
             return;
         }
@@ -1166,14 +1166,17 @@ class BlogEditor extends Component {
              ************************************************************************************************/
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-            parent.querySelectorAll("span").forEach((element: HTMLElement) => {
-                if (element.style[style] === value) {
-                    element.style[style] = ``
-                } else {
-                    element.style[style] = value
-                }
-            })
-
+            const selectedElements = getContainerSelectedElements(textField.window)
+            for (let i = 0; i < selectedElements.length; i++) {
+                const parent = (selectedElements[i] as HTMLElement)
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    if (element.style[style] === value) {
+                        element.style[style] = ``
+                    } else {
+                        element.style[style] = value
+                    }
+                })
+            }
         } else {
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
@@ -1181,13 +1184,17 @@ class BlogEditor extends Component {
              ************************************************************************************************/
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-            parent.querySelectorAll("span").forEach((element: HTMLElement) => {
-                if (element.style[style] === value) {
-                    element.style[style] = ``
-                } else {
-                    element.style[style] = value
-                }
-            })
+            const selectedElements = getContainerSelectedElements(textField.window)
+            for (let i = 0; i < selectedElements.length; i++) {
+                const parent = (selectedElements[i] as HTMLElement)
+                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
+                    if (element.style[style] === value) {
+                        element.style[style] = ``
+                    } else {
+                        element.style[style] = value
+                    }
+                })
+            }
 
 
             /*      //////////////////////          REPLACE CHILD CASE             ///////////////////////     */
