@@ -38,6 +38,7 @@ const FONT_FAMILY_KEY = "FONT_FAMILY_KEY_EDITOR"
 const FONT_SIZE_KEY = "FONT_SIZE_KEY_EDITOR"
 const TAG_KEY = "TAG_KEY_EDITOR"
 
+// noinspection DuplicatedCode
 class BlogEditor extends Component {
     private mapTag = [
         {"key": "Normal Text", "value": "p"},
@@ -809,6 +810,9 @@ class BlogEditor extends Component {
             : getFirstChildContainer(selectionNode) ?? getFirstParentContainer(selectionNode)
 
         if (pElement == null || pElement.parentElement == null) return;
+        pElement.querySelectorAll("span").forEach(span => {
+            span.style['font-size'] = 'unset'
+        })
         let container = document.createElement(value);
         container.innerHTML = pElement.innerHTML;
         container.style.cssText = pElement.style.cssText
@@ -1128,6 +1132,9 @@ class BlogEditor extends Component {
 
         let selection = textField.window.getSelection()
         if (selection == null) return
+        if (selection.rangeCount == 0) return;
+        const range = selection.getRangeAt(0)
+        const content = range.cloneContents()
         let selectionElement = selection.anchorNode as HTMLElement | null
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
@@ -1146,9 +1153,31 @@ class BlogEditor extends Component {
         //     }
         // }
 
-        // const spanSelected = getFirstParentWithTag(tag, selectionStyle)
-        const range = selection.getRangeAt(0)
-        const content = range.cloneContents()
+
+        const selectionNode = selection.anchorNode as HTMLElement | null
+        if (selectionNode && selectionNode.nodeType == Node.TEXT_NODE) {
+            if (useParent) {
+                const container = getFirstParentContainer(selectionNode)
+                if (container) {
+                    if (container.style[style] === value) {
+                        container.style[style] = ``
+                    } else {
+                        container.style[style] = value
+                    }
+                }
+            } else {
+                const spanElement = getFirstParentWithTag("span", selectionNode)
+                if (spanElement) {
+                    if (spanElement.style[style] === value) {
+                        spanElement.style[style] = ``
+                    } else {
+                        spanElement.style[style] = value
+                    }
+                }
+            }
+            this.handleUpdateUI(selectionElement)
+            return;
+        }
 
         if (useParent) {
             const selectedElements = getContainerSelectedElements(textField.window)
@@ -1159,7 +1188,7 @@ class BlogEditor extends Component {
             return;
         }
 
-        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
+        if (content.children.length <= 1) {
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
              * CHOOSE CAREFULLY... sd
@@ -1196,7 +1225,6 @@ class BlogEditor extends Component {
                 })
             }
 
-
             /*      //////////////////////          REPLACE CHILD CASE             ///////////////////////     */
             // removeAllChildNodes(parent)
             // for (let i = 0; i < content.children.length; i++) {
@@ -1218,6 +1246,7 @@ class BlogEditor extends Component {
             //     parent.appendChild(child)
             // }
 
+            this.handleUpdateUI(selectionElement)
             return;
         }
 
