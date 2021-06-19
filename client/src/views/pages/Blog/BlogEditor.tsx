@@ -837,18 +837,16 @@ class BlogEditor extends Component {
         /************************************************************************************************
          * CHANGE THE TAG OF CURRENT SELECT ELEMENT
          ************************************************************************************************/
-        let selection = textField.window.getSelection()
-        if (selection == null) return
-
-        let selectionNode = selection.anchorNode as HTMLElement | null
-        const spanElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
-
-        if (spanElement == null || spanElement.parentElement == null) return;
-        let d = document.createElement("strike");
-        d.innerHTML = spanElement.innerHTML;
-        ////////////////////////////////          CLEAR CONTENT            ////////////////////////////////
-        spanElement.innerHTML = ""
-        spanElement?.appendChild(d)
+        getContainerSelectedElements(textField.window).forEach(element => {
+            (element as HTMLElement).querySelectorAll("span").forEach(spanElement => {
+                if (spanElement == null || spanElement.parentElement == null) return;
+                let d = document.createElement("strike");
+                d.innerHTML = spanElement.innerHTML;
+                ////////////////////////////////          CLEAR CONTENT            ////////////////////////////////
+                spanElement.innerHTML = ""
+                spanElement?.appendChild(d)
+            })
+        })
 
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
@@ -1132,9 +1130,6 @@ class BlogEditor extends Component {
 
         let selection = textField.window.getSelection()
         if (selection == null) return
-        if (selection.rangeCount == 0) return;
-        const range = selection.getRangeAt(0)
-        const content = range.cloneContents()
         let selectionElement = selection.anchorNode as HTMLElement | null
         /*      //////////////////////          IF ONLY WANT APPLY STYLE FOR NEW SPAN WHEN SELECT AT THE END OF ELEMENT THEN UN COMMENT IT             ///////////////////////     */
         // const range = selection.getRangeAt(0)
@@ -1153,59 +1148,23 @@ class BlogEditor extends Component {
         //     }
         // }
 
-
-        const selectionNode = selection.anchorNode as HTMLElement | null
-        if (selectionNode && selectionNode.nodeType == Node.TEXT_NODE) {
-            if (useParent) {
-                const container = getFirstParentContainer(selectionNode)
-                if (container) {
-                    if (container.style[style] === value) {
-                        container.style[style] = ``
-                    } else {
-                        container.style[style] = value
-                    }
-                }
-            } else {
-                const spanElement = getFirstParentWithTag("span", selectionNode)
-                if (spanElement) {
-                    if (spanElement.style[style] === value) {
-                        spanElement.style[style] = ``
-                    } else {
-                        spanElement.style[style] = value
-                    }
-                }
-            }
-            this.handleUpdateUI(selectionElement)
-            return;
-        }
-
+        /************************************************************************************************
+         * WHEN USE PARENT THEN NEED TO APPLY STYLE ON CONTAINER TO MAKE WHOLE CHILD EFFECT
+         * USEFUL WHEN UPDATE TAG OF SELECTED
+         * ABOVE HAS ADD STYLE IT NOT USE PARENT SO ONLY APPLY STYLE IF USE PARENT (NOT APPLY STYLE AGAIN FOR SPAN,
+         * IT IS INCORRECT)
+         ************************************************************************************************/
         if (useParent) {
             const selectedElements = getContainerSelectedElements(textField.window)
-            for (let i = 0; i < selectedElements.length; i++) {
-                (selectedElements[i] as HTMLElement).style[style] = value
-            }
+            selectedElements.forEach(it => {
+                const element = it as HTMLElement
+                if (element.style[style] === value) {
+                    element.style[style] = ``
+                } else {
+                    element.style[style] = value
+                }            })
             this.handleUpdateUI(selectionElement)
             return;
-        }
-
-        if (content.children.length <= 1) {
-            /************************************************************************************************
-             * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
-             * CHOOSE CAREFULLY... sd
-             ************************************************************************************************/
-
-            /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-            const selectedElements = getContainerSelectedElements(textField.window)
-            for (let i = 0; i < selectedElements.length; i++) {
-                const parent = (selectedElements[i] as HTMLElement)
-                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
-                    if (element.style[style] === value) {
-                        element.style[style] = ``
-                    } else {
-                        element.style[style] = value
-                    }
-                })
-            }
         } else {
             /************************************************************************************************
              * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
@@ -1213,9 +1172,8 @@ class BlogEditor extends Component {
              ************************************************************************************************/
 
             /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-            const selectedElements = getContainerSelectedElements(textField.window)
-            for (let i = 0; i < selectedElements.length; i++) {
-                const parent = (selectedElements[i] as HTMLElement)
+            getContainerSelectedElements(textField.window).forEach(element => {
+                const parent = (element as HTMLElement)
                 parent.querySelectorAll("span").forEach((element: HTMLElement) => {
                     if (element.style[style] === value) {
                         element.style[style] = ``
@@ -1223,7 +1181,7 @@ class BlogEditor extends Component {
                         element.style[style] = value
                     }
                 })
-            }
+            })
 
             /*      //////////////////////          REPLACE CHILD CASE             ///////////////////////     */
             // removeAllChildNodes(parent)
@@ -1250,67 +1208,44 @@ class BlogEditor extends Component {
             return;
         }
 
-        /************************************************************************************************
-         * WHEN USE PARENT THEN NEED TO APPLY STYLE ON CONTAINER TO MAKE WHOLE CHILD EFFECT
-         * USEFUL WHEN UPDATE TAG OF SELECTED
-         * ABOVE HAS ADD STYLE IT NOT USE PARENT SO ONLY APPLY STYLE IF USE PARENT (NOT APPLY STYLE AGAIN FOR SPAN,
-         * IT IS INCORRECT)
-         ************************************************************************************************/
-        if (useParent) {
-            selectionElement = getFirstParentContainer(selectionElement) ?? getFirstChildContainer(selectionElement)
-            /*      //////////////////////          NO NEED TO CHECK WHETHER SELECT ALL ELEMENT OR NOT SINCE USE PARENT             ///////////////////////     */
-            if (selectionElement == null || selectionElement.style == null) return;
-            if (selectionElement.style[style] === value) {
-                selectionElement.style[style] = ``
-            } else {
-                selectionElement.style[style] = value
-            }
-            this.handleUpdateUI(selectionElement)
-            return;
-        } else {
-            selectionElement = getFirstParentWithTag(tag, selectionElement) ?? getFirstChildWithTag(tag, selectionElement)
-            if (selectionElement == null || selectionElement.style == null) return;
-        }
-
-        let startSelected = range.startOffset
-        let endSelected = range.endOffset
-        let spanSelected = getFirstParentWithTag("span", selectionElement)
-        if (spanSelected == null) return;
-        /************************************************************************************************
-         * WHEN SELECT PART TEXT NODE OF ELEMENT (SELECT ONLY SOME CONTENT NOT ENTIRE ELEMENT)
-         ************************************************************************************************/
-        if (startSelected !== endSelected && range.startContainer.nodeType == Node.TEXT_NODE
-            && endSelected - startSelected != spanSelected.innerText.length) {
-            const textContent = range.commonAncestorContainer.textContent
-            if (textContent == null) return;
-            const selectText = textContent?.slice(startSelected, endSelected).toString();
-            const remainText = textContent.slice(endSelected).toString()
-            if (selectText == null) return;
-
-            let span = document.createElement("span")
-
-            span.style.cssText = spanSelected?.style.cssText ?? span.style.cssText
-            span.innerText = selectText
-            span.style[style] = value
-            getFirstParentContainer(selectionElement)?.appendChild(span)
-
-            range.commonAncestorContainer.textContent = textContent.replace(selectText, "")
-
-            /************************************************************************************************
-             * IF HAS REMAIN STRING ADD NEW SPAN FOR REMAIN STR
-             ************************************************************************************************/
-            if (remainText.length === 0) return;
-
-            range.commonAncestorContainer.textContent = textContent.replace(remainText, "").replace(selectText, "")
-            let spanRemain = document.createElement("span")
-            spanRemain.style.cssText = getFirstParentWithTag("span", selectionElement)?.style.cssText ?? span.style.cssText
-            spanRemain.innerText = remainText
-            getFirstParentContainer(selectionElement)?.appendChild(spanRemain)
-
-            return;
-        }
-
-        this.handleUpdateUI(selectionElement)
+        /*      //////////////////////          ONLY APPLY THE SELECTED PART NOT ENTIRE ELEMENT             ///////////////////////     */
+        // let startSelected = range.startOffset
+        // let endSelected = range.endOffset
+        // let spanSelected = getFirstParentWithTag("span", selectionElement)
+        // if (spanSelected == null) return;
+        // /************************************************************************************************
+        //  * WHEN SELECT PART TEXT NODE OF ELEMENT (SELECT ONLY SOME CONTENT NOT ENTIRE ELEMENT)
+        //  ************************************************************************************************/
+        // if (startSelected !== endSelected && range.startContainer.nodeType == Node.TEXT_NODE
+        //     && endSelected - startSelected != spanSelected.innerText.length) {
+        //     const textContent = range.commonAncestorContainer.textContent
+        //     if (textContent == null) return;
+        //     const selectText = textContent?.slice(startSelected, endSelected).toString();
+        //     const remainText = textContent.slice(endSelected).toString()
+        //     if (selectText == null) return;
+        //
+        //     let span = document.createElement("span")
+        //
+        //     span.style.cssText = spanSelected?.style.cssText ?? span.style.cssText
+        //     span.innerText = selectText
+        //     span.style[style] = value
+        //     getFirstParentContainer(selectionElement)?.appendChild(span)
+        //
+        //     range.commonAncestorContainer.textContent = textContent.replace(selectText, "")
+        //
+        //     /************************************************************************************************
+        //      * IF HAS REMAIN STRING ADD NEW SPAN FOR REMAIN STR
+        //      ************************************************************************************************/
+        //     if (remainText.length === 0) return;
+        //
+        //     range.commonAncestorContainer.textContent = textContent.replace(remainText, "").replace(selectText, "")
+        //     let spanRemain = document.createElement("span")
+        //     spanRemain.style.cssText = getFirstParentWithTag("span", selectionElement)?.style.cssText ?? span.style.cssText
+        //     spanRemain.innerText = remainText
+        //     getFirstParentContainer(selectionElement)?.appendChild(spanRemain)
+        //
+        //     return;
+        // }
     }
 
     /************************************************************************************************
