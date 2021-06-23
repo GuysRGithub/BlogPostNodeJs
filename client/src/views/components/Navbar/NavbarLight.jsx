@@ -3,22 +3,19 @@ import {Link} from "react-router-dom";
 
 function NavbarLight() {
     return (
-        <header className="py-8 px-16 primary-font flex">
+        <header className="py-8 px-8 lg:px-16 primary-font flex">
             <div
-                className="site-branding th-stack--sm sm:th-text-align-unset th-text-center sm:th-mb-0 th-mb-base th-w-full">
+                className="">
                 <p className="font-josesans font-bold color-dark-primary">GUYS</p>
-                <p className="site-description th-text-base th-font-normal th-hidden th-mb-0 font-jose-sans">
-                    Appetite is a clean,
-                    flexible and fully responsive WordPress theme with special features for restaurants and cafes</p>
             </div>
 
-            <nav className="site-menu navigation w-full"
+            <nav className="navigation w-full"
                  aria-label="Primary Menu">
-                <ul className="menu th-flex th-flex-wrap th-justify-end">
+                <ul className="menu flex flex-wrap justify-end">
                     <li className="color-gray-primary font-bold">
                         <Link to="/">Home</Link>
                     </li>
-                    <li className="color-gray-fade-primary">
+                    <li className="color-gray-fade-primary font-bold">
                         <a href="https://appetitedemo.wordpress.com/our-menu/">Menu</a>
                     </li>
                     <li className="color-gray-fade-primary font-bold">
