@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import authSvg from "../../../assets/login.svg";
+import authSvg from "../../../assets/images/svg/login.svg";
 import {toast} from "react-toastify";
 import Axios from "axios";
 import {authenticate, isAuth} from "../../../helpers/auth";
@@ -119,7 +119,7 @@ export const Login = (props) => {
                                 placeholder="example@gmail.com"
                                 onChange={handleChange("email")}
                                 value={email}
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white my-2"
+                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white my-2"
                             />
                             <input
                                 type="password"

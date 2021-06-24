@@ -6,7 +6,7 @@ export default (props) => {
     return (<div className="app-header w-100 position-relative relative">
         <NavbarLight/>
         <div className="welcome-header-text-light background-none ml-4 lg:ml-8">
-            <div className="w-8/12">
+            <div>
                 <h2 className="font-josesans font-bold color-dark-primary">Welcome to our Blogger for Fantasy
                     Stories</h2>
                 <div className="mt-5">

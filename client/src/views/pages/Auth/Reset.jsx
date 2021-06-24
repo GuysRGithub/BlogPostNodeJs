@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import authSvg from "../../../assets/reset.svg";
+import authSvg from "../../../assets/images/svg/reset.svg";
 import { ToastContainer, toast } from "react-toastify";
 import {USER_RESET_PASSWORD_SERVER_URL} from "../../../config/router_path";
 const Axios = require("axios");

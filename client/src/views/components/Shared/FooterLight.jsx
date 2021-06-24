@@ -6,7 +6,7 @@ function FooterLight() {
         <footer>
             <div className="site-menu navigation w-full flex justify-center my-5"
                  aria-label="Primary Menu">
-                <ul>
+                <ul className="flex flex-wrap justify-center">
                     <li className="color-gray-primary font-bold">
                         <Link to="/">Home</Link>
                     </li>

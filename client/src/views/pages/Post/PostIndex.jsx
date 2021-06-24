@@ -1,17 +1,7 @@
 import React, {useEffect, useState} from "react";
-import "../../../assets/css/blog_homstyle.scss";
-import RecentPost from "../Blog/RecentPost.jsx";
 import blogData from "../../../data/blog.json";
-import Layout from "../../layouts/Layout.jsx";
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config.js";
-import BlogHeader from "../../components/BlogHeader";
-import BlogNavBar from "../../components/Navbar";
-import {Link, Switch} from "react-router-dom";
-import blogPost from "../../../data/blog.json";
-import ReactHTMLParser from "react-html-parser"
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../../../helpers/data_process_helper.js";
-import PostCard from "../../components/Shared/PostCard.jsx";
 import PostViewModel from "../../../view_models/PostViewModel.js";
 import Header from "../../components/Shared/Header.jsx";
 import PostCardGrid from "../../components/Shared/PostCardGrid.jsx";

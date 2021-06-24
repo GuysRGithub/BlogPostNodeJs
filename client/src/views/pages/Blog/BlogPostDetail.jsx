@@ -3,7 +3,7 @@ import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config.js";
 import Card from "../../components/UI/Card/index.jsx";
 import HtmlParser from "react-html-parser";
-import "../../../assets/css/detail_post_style.scss";
+import "../../../assets/css/detail_post.scss";
 import PostViewModel from "../../../view_models/PostViewModel";
 
 const BlogPostDetail = (props) => {
