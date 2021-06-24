@@ -1,10 +1,11 @@
 import React, {Component, PropsWithChildren} from 'react'
 import {
+    containerTags,
     getContainerSelectedElements,
     getFirstChildContainer,
     getFirstChildWithTag,
     getFirstParentContainer,
-    getFirstParentWithTag, getSelectedElementTags
+    getFirstParentWithTag, getSelectedElementTags, tagsUnTouch
 } from "../../../utils/editor_utils";
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
@@ -280,7 +281,11 @@ class BlogEditor extends Component {
         }
 
         // If body then insert <p> element
-        if (rootSelection != null && (rootSelection as HTMLElement).tagName && (rootSelection as HTMLElement).tagName.toLowerCase() === 'body') {
+        const tagName = (rootSelection as HTMLElement)?.tagName?.toLowerCase()
+        if (rootSelection != null
+            && (rootSelection as HTMLElement).tagName
+            && !containerTags.includes(tagName)
+            && !tagsUnTouch.includes(tagName)) {
             evt.preventDefault()
             //////////////////////////////////////////////////
             let element = document.createElement(tagNewElement)
@@ -294,6 +299,7 @@ class BlogEditor extends Component {
             element.appendChild(span)
             ////////////////////////////////          CAREFULLY            ////////////////////////////////
             element.style['white-space'] = 'normal'
+            element.contentEditable = 'true'
             span.style['white-space'] = 'normal'
 
             rootSelection.appendChild(element)
@@ -721,12 +727,11 @@ class BlogEditor extends Component {
     }
 
     toggleListIcon(element: HTMLElement, ordered: boolean = false) {
-
         let iconList = document.getElementById(ordered ? "editor-icon-ordered-list" : "editor-icon-unordered-list")
         if (iconList == null) return;
 
         /*      //////////////////////          IF HAS PARENT WITH OL OR UL TAG...             ///////////////////////     */
-        const listParent = getFirstParentWithTag(ordered ? "ol" : "ul", element)
+        const listParent = getFirstParentWithTag(ordered ? "ol" : "ul", element) ?? getFirstChildWithTag(ordered ? "ol" : "ul", element)
         if (listParent == null) {
             /*      //////////////////////          NOT HAVE QUOTE BLOCK             ///////////////////////     */
             if (iconList.classList.contains("active")) {
@@ -735,6 +740,7 @@ class BlogEditor extends Component {
             return;
         }
 
+        if (typeof element.querySelectorAll == undefined) return;
         /*      //////////////////////          IF HAS DESCENDANT (IT ALSO IS LIST)             ///////////////////////     */
         if (element.querySelectorAll(ordered ? "ol" : "ul").length > 0) {
             if (iconList.classList.contains("active")) return;
@@ -1162,7 +1168,8 @@ class BlogEditor extends Component {
                     element.style[style] = ``
                 } else {
                     element.style[style] = value
-                }            })
+                }
+            })
             this.handleUpdateUI(selectionElement)
             return;
         } else {
@@ -1469,154 +1476,158 @@ class BlogEditor extends Component {
                             Publish
                         </div>
                     </div>
-                    <div className="d-flex justify-between mx-3 child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
+                    <div className="flex justify-between mx-3 flex-wrap child-mx-1 ml-auto py-3 mr-0 rounded-md px-3"
                          style={{backgroundColor: "#ffffff"}}>
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
-                            <div className="tooltip w-100 h-full absolute z-10">
-                                <span className="tooltip-text">Select Heading</span>
+                        <div className="flex justify-between child-mx-2 md:w-6/12 lg:w-4/12">
+                            <ul className="custom-dropdown" id="custom-dropdown">
+                                <div className="tooltip w-100 h-full absolute z-10">
+                                    <span className="tooltip-text">Select Heading</span>
+                                </div>
+
+                                <p id="input-select-tag-new-element" className="pl-5 py-1">Normal Text</p>
+
+                                <ul className="options" id="options">
+                                    {this.mapTag.map(function (item) {
+                                        return <li key={`${item.value}-${TAG_KEY}`} data-value={item.value}
+                                                   data-key={TAG_KEY}><span
+                                            className={item.value}>{item.key}</span></li>
+                                    })}
+                                </ul>
+                            </ul>
+
+                            <ul className="custom-dropdown" id="custom-dropdown">
+                                <div className="tooltip w-100 h-full absolute z-10">
+                                    <span className="tooltip-text">Select font</span>
+                                </div>
+                                <p id="input-select-font-family" className="pl-5 py-1">Roboto</p>
+                                <ul className="options tooltip-disabled" id="options">
+                                    {this.mapFont.map(function (item) {
+                                        return <li key={`${item}-${FONT_FAMILY_KEY}`} data-value={item}
+                                                   data-key={FONT_FAMILY_KEY}><span
+                                            className={`font-${item.toLowerCase()}`}>{item}</span>
+                                        </li>
+                                    })}
+                                </ul>
+                            </ul>
+
+                            <ul className="custom-dropdown" id="custom-dropdown">
+                                <div className="tooltip w-100 h-full absolute z-10">
+                                    <span className="tooltip-text">Select Text Size</span>
+                                </div>
+
+                                <p id="input-select-font-size" className="pl-5 py-1">18</p>
+                                <ul className="options" id="options">
+                                    {this.mapFontSize.map(function (item) {
+                                        return <li key={`${item}-${FONT_SIZE_KEY}`} data-value={item}
+                                                   data-key={FONT_SIZE_KEY}><span
+                                            style={{fontSize: `${item}px`}}>{item}</span></li>
+                                    })}
+                                </ul>
+                            </ul>
+                        </div>
+                        <div className="flex justify-content-between flex-wrap flex-grow md:mt-4 lg:mt-0">
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-bold"
+                                 data-cmd="bold"
+                                 onClick={boldSelection}>
+                                <span className="tooltip-text">Bold Text</span>
+                                <i className="fa fa-bold disabled"/>
                             </div>
 
-                            <p id="input-select-tag-new-element" className="pl-5">Normal Text</p>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-italic"
+                                 onClick={italicSelection}>
+                                <span className="tooltip-text">Italic Text</span>
+                                <i className="fa fa-italic disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-underline"
+                                 onClick={underlineSelection}>
+                                <span className="tooltip-text">Center Text</span>
+                                <i className="fa fa-underline disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike"
+                                 onClick={strikeSelection}>
+                                <span className="tooltip-text">Strike Text</span>
+                                <i className="fa fa-strikethrough disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-left"
+                                 onClick={alignLeftSelection}>
+                                <span className="tooltip-text">Align Text Left</span>
+                                <i className="fa fa-align-left disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-center"
+                                 onClick={alignCenterSelection}>
+                                <span className="tooltip-text">Align Text Center</span>
+                                <i className="fa fa-align-center disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-right"
+                                 onClick={alignRightSelection}>
+                                <span className="tooltip-text">Align Text Right</span>
+                                <i className="fa fa-align-right disabled"/></div>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-justify"
+                                 onClick={alignJustifySelection}>
+                                <span className="tooltip-text">Justify Text</span>
+                                <i className="fa fa-align-justify disabled"/></div>
+                            {/*</div>*/}
 
-                            <ul className="options" id="options">
-                                {this.mapTag.map(function (item) {
-                                    return <li key={`${item.value}-${TAG_KEY}`} data-value={item.value}
-                                               data-key={TAG_KEY}><span
-                                        className={item.value}>{item.key}</span></li>
-                                })}
-                            </ul>
-                        </ul>
+                            {/*<div className="d-flex">*/}
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
-                            <div className="tooltip w-100 h-full absolute z-10">
-                                <span className="tooltip-text">Select font</span>
+                            <div className="center-element-inner editor-icon tooltip" id="editor-icon-quote"
+                                 onClick={quoteSelection}>
+                                <span className="tooltip-text">Quote</span>
+                                <i className="fa fa-quote-left"/>
                             </div>
-                            <p id="input-select-font-family" className="pl-5">Roboto</p>
-                            <ul className="options tooltip-disabled" id="options">
-                                {this.mapFont.map(function (item) {
-                                    return <li key={`${item}-${FONT_FAMILY_KEY}`} data-value={item}
-                                               data-key={FONT_FAMILY_KEY}><span
-                                        className={`font-${item.toLowerCase()}`}>{item}</span>
-                                    </li>
-                                })}
-                            </ul>
-                        </ul>
 
-                        <ul className="custom-dropdown" id="custom-dropdown">
-                            <div className="tooltip w-100 h-full absolute z-10">
-                                <span className="tooltip-text">Select Text Size</span>
+                            <div className="center-element-inner editor-icon tooltip">
+                                <span className="tooltip-text">Dedent Text</span>
+                                <i className="fa fa-indent"/>
                             </div>
+                            <div className="center-element-inner editor-icon tooltip">
+                                <span className="tooltip-text">Indent Text</span>
+                                <i className="fa fa-indent"/>
+                            </div>
+                            {/*</div>*/}
 
-                            <p id="input-select-font-size" className="pl-5">18</p>
-                            <ul className="options" id="options">
-                                {this.mapFontSize.map(function (item) {
-                                    return <li key={`${item}-${FONT_SIZE_KEY}`} data-value={item}
-                                               data-key={FONT_SIZE_KEY}><span
-                                        style={{fontSize: `${item}px`}}>{item}</span></li>
-                                })}
-                            </ul>
-                        </ul>
+                            {/*<div className="d-flex">*/}
 
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-bold" data-cmd="bold"
-                             onClick={boldSelection}>
-                            <span className="tooltip-text">Bold Text</span>
-                            <i className="fa fa-bold disabled"/>
+                            <div className="center-element-inner editor-icon tooltip">
+                                <span className="tooltip-text">Import file</span>
+                                <i className="fa fa-file"/>
+                            </div>
+                            <div className="center-element-inner editor-icon tooltip"
+                                 onClick={pickImage}>
+                                <span className="tooltip-text">Insert Image</span>
+                                <i className="fa fa-image"/>
+                            </div>
+                            <div className="center-element-inner editor-icon tooltip"
+                                 onClick={linkSelection}>
+                                <span className="tooltip-text">Create link</span>
+                                <i className="fa fa-link"/>
+                            </div>
+                            {/*</div>*/}
+
+                            {/*<div className="d-flex">*/}
+
+                            <div className="center-element-inner editor-icon tooltip"
+                                 id="editor-icon-unordered-list"
+                                 onClick={listItemsSelection}>
+                                <span className="tooltip-text">List element (unordered)</span>
+                                <i className="fa fa-list-ul"/>
+                            </div>
+                            <div className="center-element-inner editor-icon tooltip"
+                                 id="editor-icon-ordered-list"
+                                 onClick={listItemsOrderedSelection}>
+                                <span className="tooltip-text">List element (ordered)</span>
+                                <i className="fa fa-list-ol"/>
+                            </div>
+                            {/*</div>*/}
+
+
+                            <div className="center-element-inner editor-icon tooltip">
+                                <span className="tooltip-text">Undo</span>
+                                <i className="fa fa-redo-alt"/>
+                            </div>
+                            <div className="center-element-inner editor-icon tooltip">
+                                <span className="tooltip-text">Redo</span>
+                                <i className="fa fa-undo-alt"/>
+                            </div>
                         </div>
 
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-italic"
-                             onClick={italicSelection}>
-                            <span className="tooltip-text">Italic Text</span>
-                            <i className="fa fa-italic disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-underline"
-                             onClick={underlineSelection}>
-                            <span className="tooltip-text">Center Text</span>
-                            <i className="fa fa-underline disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-strike"
-                             onClick={strikeSelection}>
-                            <span className="tooltip-text">Strike Text</span>
-                            <i className="fa fa-strikethrough disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-left"
-                             onClick={alignLeftSelection}>
-                            <span className="tooltip-text">Align Text Left</span>
-                            <i className="fa fa-align-left disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-center"
-                             onClick={alignCenterSelection}>
-                            <span className="tooltip-text">Align Text Center</span>
-                            <i className="fa fa-align-center disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-right"
-                             onClick={alignRightSelection}>
-                            <span className="tooltip-text">Align Text Right</span>
-                            <i className="fa fa-align-right disabled"/></div>
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-align-justify"
-                             onClick={alignJustifySelection}>
-                            <span className="tooltip-text">Justify Text</span>
-                            <i className="fa fa-align-justify disabled"/></div>
-                        {/*</div>*/}
-
-                        {/*<div className="d-flex">*/}
-
-                        <div className="center-element-inner editor-icon tooltip" id="editor-icon-quote"
-                             onClick={quoteSelection}>
-                            <span className="tooltip-text">Quote</span>
-                            <i className="fa fa-quote-left"/>
-                        </div>
-
-                        <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Dedent Text</span>
-                            <i className="fa fa-indent"/>
-                        </div>
-                        <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Indent Text</span>
-                            <i className="fa fa-indent"/>
-                        </div>
-                        {/*</div>*/}
-
-                        {/*<div className="d-flex">*/}
-
-                        <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Import file</span>
-                            <i className="fa fa-file"/>
-                        </div>
-                        <div className="center-element-inner editor-icon tooltip"
-                             onClick={pickImage}>
-                            <span className="tooltip-text">Insert Image</span>
-                            <i className="fa fa-image"/>
-                        </div>
-                        <div className="center-element-inner editor-icon tooltip"
-                             onClick={linkSelection}>
-                            <span className="tooltip-text">Create link</span>
-                            <i className="fa fa-link"/>
-                        </div>
-                        {/*</div>*/}
-
-                        {/*<div className="d-flex">*/}
-
-                        <div className="center-element-inner editor-icon tooltip"
-                             id="editor-icon-unordered-list"
-                             onClick={listItemsSelection}>
-                            <span className="tooltip-text">List element (unordered)</span>
-                            <i className="fa fa-list-ul"/>
-                        </div>
-                        <div className="center-element-inner editor-icon tooltip"
-                             id="editor-icon-ordered-list"
-                             onClick={listItemsOrderedSelection}>
-                            <span className="tooltip-text">List element (ordered)</span>
-                            <i className="fa fa-list-ol"/>
-                        </div>
-                        {/*</div>*/}
-
-
-                        <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Bold</span>
-                            <i className="fa fa-redo-alt"/>
-                        </div>
-                        <div className="center-element-inner editor-icon tooltip">
-                            <span className="tooltip-text">Bold</span>
-                            <i className="fa fa-undo-alt"/>
-                        </div>
                     </div>
-
                     <iframe name="textField" id="textField"
                             className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
                             spellCheck="false"

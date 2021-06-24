@@ -5,15 +5,15 @@ import {toast} from "react-toastify";
 import HtmlParser from "react-html-parser";
 import PageLayout from "../../layouts/PageLayout";
 import SideCardOverlay from "../../components/Shared/SideCardOverlay";
-import PostViewModel from "../../../view_models/PostViewModel";
-import {PostsResponse} from "../../../interface/PostsResponse";
 import {Link} from "react-router-dom";
 import {getRandom} from "../../../helpers/asset_helper";
+import {style2object} from "../../../helpers/data_process_helper";
+import PostViewModel from "../../../view_models/PostViewModel";
+import {PostResponse, PostsResponse} from "../../../interface/PostsResponse";
 import ImageEditor from "../../components/EditorComponents/ImageEditor";
 import ReactDOM from "react-dom";
-import {style2object} from "../../../helpers/data_process_helper";
 
-const ShowBlog = (props: PropsWithChildren<any>) => {
+const BlogShow = (props: PropsWithChildren<any>) => {
     const blogId = props.match.params.blogId;
     const [Posts, setPosts] = useState<PostViewModel[]>([]);
     const [Post, setPost] = useState<PostViewModel | undefined>(undefined);
@@ -23,11 +23,11 @@ const ShowBlog = (props: PropsWithChildren<any>) => {
         let data = {
             postId: blogId
         }
-        Axios.post<PostsResponse>(`${BLOG_SERVER_URL}/getPost`, data)
+        Axios.post<PostResponse>(`${BLOG_SERVER_URL}/getPost`, data)
             .then(response => {
                 if (response.data.success) {
                     setPost(new PostViewModel(response.data.doc))
-                    x(new PostViewModel(response.data.doc).content)
+                    // x(new PostViewModel(response.data.doc).content)
                 } else {
                     toast.error("Something went wrong when get ShowPost")
                 }
@@ -66,19 +66,19 @@ const ShowBlog = (props: PropsWithChildren<any>) => {
                     ReactDOM.render(imageElement, att.parentElement)
                 }
             }
-            let a = document.getElementById("fucking")
-            a?.appendChild(fragment)
         })
+
+        let a = document.getElementById("fucking")
+        a?.appendChild(fragment)
     }
 
     return (
         <PageLayout>
-            {/*<HeaderLight/>*/}
             <div className="d-flex content-around justify-content-around my-16 px-32">
                 <section className="w-8/12 mx-5">
                     {Post && (
                         <div id="fucking">
-                            {/*{HtmlParser(Post.content)}*/}
+                            {HtmlParser(Post.content)}
                         </div>
                     )}
                 </section>
@@ -158,4 +158,4 @@ const ShowBlog = (props: PropsWithChildren<any>) => {
     );
 };
 
-export default ShowBlog;
+export default BlogShow;
