@@ -1,15 +1,12 @@
 import React, {useEffect, useState} from "react";
-import HeaderLight from "../../components/Shared/HeaderLight";
-import FooterLight from "../../components/Shared/FooterLight";
 import {Link} from "react-router-dom"
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config";
 import {toast} from "react-toastify";
 import PostViewModel from "../../../view_models/PostViewModel";
-import ImageEditor from "../../components/EditorComponents/ImageEditor";
-import * as ReactDOM from "react-dom";
 import {getCookie} from "../../../helpers/data_process_helper";
 import {getRandom} from "../../../helpers/asset_helper";
+import PageLayout from "../../layouts/PageLayout";
 
 const jwt = require("jsonwebtoken");
 
@@ -40,11 +37,7 @@ export default function () {
             })
     }, [])
 
-    const x = () => {
-        // ReactDOM.render(<ImageEditor/>, document.getElementById("fucking"))
-    }
-    return (<div onLoad={x}>
-            <HeaderLight/>
+    return (<PageLayout>
 
             <section className="entry-section mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
@@ -202,8 +195,46 @@ export default function () {
                 </div>
             </section>
             {/*<div id="fucking"/>*/}
+            <section className="entry-section mt-24 px-16 xl:px-32">
+                <div className="flex justify-between my-2">
+                    <h5 className="font-josesans color-dark-primary">Popular Travel Posts</h5>
+                    <p className="color-gray-fade-primary">View all</p>
+                </div>
+                <div className="lg:grid-cols-4 md:grid-cols-2 grid-custom-row lg:gap-8 xl:gap-8 grid">
+                    {posts.slice(0, 6).map((post, index) => (
+                        <div key={post._id} className={"rounded-md relative overflow-hidden " + (index === 0 || index === 5 ? 'col-span-2' : 'row-span-2')}>
+                            <div className="h-full w-full">
+                                <img className="h-full w-full object-cover"
+                                     src={post.src || require("../../../assets/images/posts/affection-baby-baby-girl-beautiful-377058.jpg").default}
+                                     alt=""/>
+                            </div>
+                            <div className="pr-6 absolute transform m-5 bottom-0">
+                                <h6 className="mt-3 text-white font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <p className="color-white-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <div className="flex justify-between">
+                                    <Link to={`/blogs/${post._id}`}>
+                                        <div
+                                            className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
+                                            More<i className="fa fa-arrow-right ml-2"/></div>
+                                    </Link>
 
-            <FooterLight/>
-        </div>
+                                    {post.authorId === userId && (
+                                        <Link to={`/blogs/edit/${post._id}`}>
+                                            <div
+                                                className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Edit<i
+                                                className="fa fa-arrow-right ml-2"/></div>
+                                        </Link>
+                                    )}
+
+                                </div>
+                            </div>
+                            <div className="absolute top-0 m-5 right-0 py-1 px-5 rounded-3xl bg-white">
+                                <p className="color-dark-primary font-bold uppercase fs-sm-2">Traveller</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </PageLayout>
     )
 }
