@@ -38,7 +38,7 @@ const BlogIndex = () => {
                 <div className="xl:w-8/12 md:w-100">
                     <section className="entry-section px-5">
                         <div className="flex justify-between my-2">
-                            <h5 className="font-josesans color-dark-primary">Latest posts</h5>
+                            <h5 className="font-josesans color-primary-dark">Latest posts</h5>
                             <p className="color-gray-fade-primary">View all</p>
                         </div>
                         <div className="sm:grid-cols-1 md:grid-cols-2 md:gap-8 lg:gap-16 grid">
@@ -50,7 +50,7 @@ const BlogIndex = () => {
                                              alt=""/>
                                     </div>
                                     <div className="pr-6">
-                                        <h6 className="mt-3 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                        <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                         <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                         <Link to={`/blogs/${post._id}`}>
                                             <div
@@ -65,7 +65,7 @@ const BlogIndex = () => {
 
                     <section className="entry-section mt-24">
                         <div className="flex justify-between my-2">
-                            <h5 className="font-josesans color-dark-primary">Popular posts</h5>
+                            <h5 className="font-josesans color-primary-dark">Popular posts</h5>
                             <p className="color-gray-fade-primary">View all</p>
                         </div>
                         <div className="sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-8 xl:gap-16 grid">
@@ -77,7 +77,7 @@ const BlogIndex = () => {
                                              alt=""/>
                                     </div>
                                     <div className="pr-6 bg-white shadow-md px-3 py-5">
-                                        <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                        <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                         <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                         <div
                                             className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read

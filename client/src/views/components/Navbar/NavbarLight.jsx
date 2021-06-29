@@ -6,7 +6,7 @@ function NavbarLight() {
         <header className="py-8 px-8 lg:px-16 primary-font flex">
             <div
                 className="">
-                <p className="font-josesans font-bold color-dark-primary">GUYS</p>
+                <p className="font-josesans font-bold color-primary-dark">GUYS</p>
             </div>
 
             <nav className="navigation w-full"

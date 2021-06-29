@@ -21,9 +21,6 @@ export default function () {
                 if (response.data.success) {
                     let posts = []
                     response.data.doc.map(post => {
-                        console.log(
-                            new Date(parseInt(post._id.toString().substring(0, 8), 16) * 1000)
-                        )
                         let postView = new PostViewModel(post)
                         posts.push(postView)
                     })
@@ -38,10 +35,9 @@ export default function () {
     }, [])
 
     return (<PageLayout>
-
             <section className="entry-section mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
-                    <h5 className="font-josesans color-dark-primary">Latest posts</h5>
+                    <h5 className="font-josesans color-primary-dark">Latest posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="lg:grid-cols-3 md:grid-cols-2 lg:gap-8 xl:gap-16 grid">
@@ -53,7 +49,7 @@ export default function () {
                                      alt=""/>
                             </div>
                             <div className="pr-6">
-                                <h6 className="mt-3 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                 <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                 <div className="flex justify-between">
                                     <Link to={`/blogs/${post._id}`}>
@@ -77,9 +73,30 @@ export default function () {
                 </div>
             </section>
 
+            {/* ////////////////////////////////          SHOW CASE POST 1            //////////////////////////////// */}
+            <section className="mt-24 px-16 xl:px-32">
+                <div className="flex align-items-center">
+                    <h1 className="p-8 m-8 shadow-md font-bold font-ubuntu">01</h1>
+                    <h1 className="font-bold mx-16 uppercase font-ubuntu w-full">{posts[0] && posts[0].title}</h1>
+                    <div className="mr-32">
+                        <p className="font-pt-serif">Lorem ipsum dolor sit amet, consectetur adipisicing
+                            elit.
+                            Assumenda commodi consequuntur cumque dicta dignissimos error explicabo, illo impedit, iste
+                            molestiae
+                        </p>
+                        <Link to={`/blogs/${posts[0] && posts[0]._id}`}>
+                            <div
+                                className="color-yellow-light mt-5 cursor-pointer font-bold font-roboto">Read
+                                More<i className="fa fa-arrow-right ml-2"/></div>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/*////////////////////////////////          POPULAR POSTS            ////////////////////////////////*/}
             <section className="entry-section mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
-                    <h5 className="font-josesans color-dark-primary">Popular posts</h5>
+                    <h5 className="font-josesans color-primary-dark">Popular posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-16 lg:gap-8 md:gap-8 grid">
@@ -91,7 +108,7 @@ export default function () {
                                      alt=""/>
                             </div>
                             <div className="pr-6 bg-white shadow-md px-3 py-5">
-                                <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                 <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                 <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
                                     More<i className="fa fa-arrow-right ml-2"/></div>
@@ -102,12 +119,13 @@ export default function () {
                 </div>
             </section>
 
+            {/*////////////////////////////////          NEWSLETTER            ////////////////////////////////*/}
             <section className="mt-24 px-16 xl:px-32">
                 <div className="relative">
                     <img src={require("../../../assets/images/posts/newsletter.jpg").default} alt=""
                          className="h-128 w-full object-cover"/>
                     <div className="center-inner p-12 bg-white opacity-4-5">
-                        <h5 className="font-josesans color-dark-primary">Newsletter subscriber</h5>
+                        <h5 className="font-josesans color-primary-dark">Newsletter subscriber</h5>
                         <p className="color-gray-fade-primary fs-sm-2 mt-2">
                             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Commodi ipsa maiores nam nulla
                             obcaecati, sapiente similique! Cupiditate dolorum earum nobis non odio odit praesentium,
@@ -115,7 +133,7 @@ export default function () {
                         </p>
                         <div className="mt-2 flex">
                             <input placeholder="Email"
-                                   className="focus:outline-none border-solid border-black border px-3 fs-1 color-dark-primary"/>
+                                   className="focus:outline-none border-solid border-black border px-3 fs-1 color-primary-dark"/>
                             <div
                                 className="border border-4 border-black border-solid p-3 ml-3 cursor-pointer">Subscribe
                             </div>
@@ -125,9 +143,30 @@ export default function () {
 
             </section>
 
+            {/* ////////////////////////////////          SHOW CASE POST 2            //////////////////////////////// */}
+            <section className="mt-24 px-16 xl:px-32">
+                <div className="flex align-items-center">
+                    <h1 className="p-8 m-8 shadow-md font-bold font-ubuntu">02</h1>
+                    <h1 className="font-bold mx-16 uppercase font-ubuntu w-full">{posts[1] && posts[1].title}</h1>
+                    <div className="mr-32">
+                        <p className="font-pt-serif">Lorem ipsum dolor sit amet, consectetur adipisicing
+                            elit.
+                            Assumenda commodi consequuntur cumque dicta dignissimos error explicabo, illo impedit, iste
+                            molestiae
+                        </p>
+                        <Link to={`/blogs/${posts[1] && posts[1]._id}`}>
+                            <div
+                                className="color-yellow-light mt-5 cursor-pointer font-bold font-roboto">Read
+                                More<i className="fa fa-arrow-right ml-2"/></div>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/*////////////////////////////////          TOP POSTS            ////////////////////////////////*/}
             <section className="mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
-                    <h5 className="font-josesans color-dark-primary">Top posts</h5>
+                    <h5 className="font-josesans color-primary-dark">Top posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="flex justify-between flex-wrap lg:flex-no-wrap">
@@ -139,7 +178,7 @@ export default function () {
                                      alt=""/>
 
                                 <div className="pr-6">
-                                    <h6 className="mt-3 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                    <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                     <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                     <div className="flex justify-between">
                                         <Link to={`/blogs/${post._id}`}>
@@ -170,7 +209,7 @@ export default function () {
                                          alt=""/>
                                 </div>
                                 <div className="pr-6">
-                                    <h6 className="mt-3 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                    <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                     <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                     <div className="flex justify-between">
                                         <Link to={`/blogs/${post._id}`}>
@@ -195,14 +234,16 @@ export default function () {
                 </div>
             </section>
             {/*<div id="fucking"/>*/}
+            {/*////////////////////////////////          POPULAR TRAVEL POSTS            ////////////////////////////////*/}
             <section className="entry-section mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
-                    <h5 className="font-josesans color-dark-primary">Popular Travel Posts</h5>
+                    <h5 className="font-josesans color-primary-dark">Popular Travel Posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="lg:grid-cols-4 md:grid-cols-2 grid-custom-row lg:gap-8 xl:gap-8 grid">
                     {posts.slice(0, 6).map((post, index) => (
-                        <div key={post._id} className={"rounded-md relative overflow-hidden " + (index === 0 || index === 5 ? 'col-span-2' : 'row-span-2')}>
+                        <div key={post._id}
+                             className={"rounded-md relative overflow-hidden " + (index === 0 || index === 5 ? 'col-span-2' : 'row-span-2')}>
                             <div className="h-full w-full">
                                 <img className="h-full w-full object-cover"
                                      src={post.src || require("../../../assets/images/posts/affection-baby-baby-girl-beautiful-377058.jpg").default}
@@ -229,7 +270,7 @@ export default function () {
                                 </div>
                             </div>
                             <div className="absolute top-0 m-5 right-0 py-1 px-5 rounded-3xl bg-white">
-                                <p className="color-dark-primary font-bold uppercase fs-sm-2">Traveller</p>
+                                <p className="color-primary-dark font-bold uppercase fs-sm-2">Traveller</p>
                             </div>
                         </div>
                     ))}

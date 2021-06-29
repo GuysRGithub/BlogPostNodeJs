@@ -7,7 +7,7 @@ export default (props) => {
         <NavbarLight/>
         <div className="welcome-header-text-light background-none ml-4 lg:ml-8">
             <div>
-                <h2 className="font-josesans font-bold color-dark-primary">Welcome to our Blogger for Fantasy
+                <h2 className="font-josesans font-bold color-primary-dark">Welcome to our Blogger for Fantasy
                     Stories</h2>
                 <div className="mt-5">
                     <p className="font-josesans font-normal fs-sm-2 color-gray-fade-primary w-6/12">
