@@ -197,7 +197,6 @@ export const Login = (props) => {
                     className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
                     style={{backgroundImage: `url(${authSvg})`}}
                 >
-
                 </div>
             </div>
         </div>

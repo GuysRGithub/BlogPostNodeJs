@@ -15,12 +15,12 @@ import Activate from "./views/pages/Auth/Activate.jsx";
 import {ForgetPassword} from "./views/pages/Auth/ForgetPassword.jsx";
 import ResetPassword from "./views/pages/Auth/Reset.jsx";
 import MediaLibrary from "./views/components/Upload/MediaLibrary.jsx";
-import BlogNewPost from "./views/pages/Blog/BlogNewPost";
+import BlogEditor from "./views/pages/Blog/BlogEditor";
 
 // Javascript script
 import IndexPage from "./views/pages/Home/IndexPage";
 import BlogIndex from "./views/pages/Blog/BlogIndex";
-import ShowBlog from "./views/pages/Blog/ShowBlog.tsx";
+import BlogShow from "./views/pages/Blog/BlogShow.tsx";
 import ShowPost from "./views/pages/Post/ShowPost";
 
 function App() {
@@ -43,9 +43,11 @@ function App() {
                     <Route exact path={"/blogs/posts/new"} component={NewPost}/>
                     <Route exact path={"/blogs/posts/:postId"} component={ShowPost}/>
 
-                    <Route exact path={"/blogs/new"} component={Auth(BlogNewPost, true)} />
+                    <Route exact path={"/blogs/new"} component={Auth(BlogEditor, true)} />
+                    <Route exact path={"/blogs/edit/:blogId"} component={Auth(BlogEditor, true)} />
+                    <Route exact path={"/blogs"} component={BlogIndex} />
                     <Route exact path={"/blogs/index"} component={BlogIndex} />
-                    <Route exact path={"/blogs/:blogId"} component={ShowBlog}/>
+                    <Route exact path={"/blogs/:blogId"} component={BlogShow}/>
 
                     <Route exact path={"/dev"} component={Auth(MediaLibrary, true)}/>
 

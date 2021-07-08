@@ -130,7 +130,7 @@ const BlogShow = (props: PropsWithChildren<any>) => {
 
             <section className="entry-section mt-24 px-32">
                 <div className="flex justify-between my-2">
-                    <h5 className="font-josesans color-dark-primary">You may also like</h5>
+                    <h5 className="font-josesans color-primary-dark">You may also like</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
                 <div className="grid-cols-3 gap-16 grid">
@@ -142,7 +142,7 @@ const BlogShow = (props: PropsWithChildren<any>) => {
                                      alt=""/>
                             </div>
                             <div className="pr-6">
-                                <h6 className="mt-lg-5 color-dark-primary font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
+                                <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
                                 <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
                                 <Link to={`/blogs/${post._id}`}>
                                     <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read

@@ -1,243 +1,243 @@
 .app-header {
-    transition: .6s;
-    position: relative;
-    min-height: 680px;
-    max-height: 80vh;
+  transition: .6s;
+  position: relative;
+  min-height: 680px;
+  max-height: 80vh;
 }
 
 #header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: .4;
-    z-index: 0;
-    object-fit: contain;
-    background-size: cover;
-    background: url("../../assets/images/posts/hiker-1149898_1920.jpg") fixed;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .4;
+  z-index: 0;
+  object-fit: contain;
+  background-size: cover;
+  background: url("../../assets/images/posts/hiker-1149898_1920.jpg") fixed;
 }
 
 .welcome-header-text {
-    h2 {
-        font-size: 3rem;
-        letter-spacing: 0.05rem;
-        color: #b08e5499;
-        font-weight: 800;
-    }
+  h2 {
+    font-size: 3rem;
+    letter-spacing: 0.05rem;
+    color: #b08e5499;
+    font-weight: 800;
+  }
 
-    text-transform: uppercase;
-    position: absolute;
-    letter-spacing: 0.02rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  text-transform: uppercase;
+  position: absolute;
+  letter-spacing: 0.02rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .welcome-header-text-light {
-    position: absolute;
-    letter-spacing: 0.02rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-100%, -50%);
+  position: absolute;
+  letter-spacing: 0.02rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-100%, -50%);
 }
 
 .header-description {
-    margin-top: 2rem;
-    font-weight: bold;
-    text-transform: none;
+  margin-top: 2rem;
+  font-weight: bold;
+  text-transform: none;
 }
 
 .custom-btn-primary {
-    display: inline-block;
-    letter-spacing: var(--smallSpacing);
-    background: transparent;
-    transition: var(--mainTransition);
-    text-transform: uppercase;
-    cursor: pointer;
-    color: white;
-    text-decoration: none;
+  display: inline-block;
+  letter-spacing: var(--smallSpacing);
+  background: transparent;
+  transition: var(--mainTransition);
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
 
-    border: 3px solid;
-    border-radius: 1px;
-    font-size: 0.79rem;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    vertical-align: bottom;
+  border: 3px solid;
+  border-radius: 1px;
+  font-size: 0.79rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  vertical-align: bottom;
 }
 
 .custom-btn-primary:hover {
-    color: var(--primaryColor) !important;
-    border: 3px solid;
+  color: var(--primaryColor) !important;
+  border: 3px solid;
 }
 
 .custom-btn-primary-light {
-    display: inline-block;
-    background: transparent;
-    transition: var(--mainTransition);
-    text-transform: uppercase;
-    cursor: pointer;
-    color: #51545c;
-    text-decoration: none;
-    border: 3px solid #51545c;
-    border-radius: 1px;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    vertical-align: bottom;
+  display: inline-block;
+  background: transparent;
+  transition: var(--mainTransition);
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #51545c;
+  text-decoration: none;
+  border: 3px solid #51545c;
+  border-radius: 1px;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  vertical-align: bottom;
 }
 
 .custom-btn-primary-lg {
-    display: inline-block;
-    letter-spacing: var(--smallSpacing);
-    background: transparent;
-    transition: var(--mainTransition);
-    text-transform: uppercase;
-    cursor: pointer;
-    color: white;
-    text-decoration: none;
+  display: inline-block;
+  letter-spacing: var(--smallSpacing);
+  background: transparent;
+  transition: var(--mainTransition);
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
 
-    border: 3px solid;
-    border-radius: 1px;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 0.25rem 1rem;
-    vertical-align: bottom;
+  border: 3px solid;
+  border-radius: 1px;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.25rem 1rem;
+  vertical-align: bottom;
 }
 
 .custom-btn-primary-lg:hover {
-    color: var(--primaryColor);
-    border: 3px solid;
+  color: var(--primaryColor);
+  border: 3px solid;
 }
 
-.custom-btn-primary* {
+.custom-btn-primary * {
 
 }
 
 .custom-btn-rounded {
-    display: inline-block;
-    letter-spacing: var(--smallSpacing);
-    transition: var(--mainTransition);
-    text-transform: uppercase;
-    cursor: pointer;
-    color: white;
-    text-decoration: none;
-    border-radius: 2rem;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    vertical-align: bottom;
+  display: inline-block;
+  letter-spacing: var(--smallSpacing);
+  transition: var(--mainTransition);
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
+  border-radius: 2rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  vertical-align: bottom;
 }
 
 .nav-btn {
-    background: transparent;
-    cursor: pointer;
-    outline: none;
-    text-decoration: none;
-    border: 3px solid #af9a7d;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  border: 3px solid #af9a7d;
 
 }
 
-a:hover, a:focus {
-    color: white;
-    background-color: transparent;
+.dark-theme a:hover, .dark-theme a:focus {
+  color: white;
+  background-color: transparent;
 }
 
 .navbar {
-    transition: .6s;
-    padding: 1.5rem;
+  transition: .6s;
+  padding: 1.5rem;
 
 }
 
 
 //Sticky
 .sticky {
-    background: #222624;
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    transition: .6s;
-    z-index: 2;
-    position: fixed;
-    top: 0;
-    width: 100%;
+  background: #222624;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  transition: .6s;
+  z-index: 2;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .text-decor-none {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .text-decor-none:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .break {
-    height: 1px;
-    background-color: gray;
-    width: 12rem !important;
+  height: 1px;
+  background-color: gray;
+  width: 12rem !important;
 }
 
 .mt-break {
-    margin-top: 6rem !important;
+  margin-top: 6rem !important;
 }
 
 .mb-break {
-    margin-bottom: 6rem !important;
+  margin-bottom: 6rem !important;
 }
 
 .entry-sub-title {
-    color: rgb(166, 158, 146);
-    font-style: italic;
-    font-size: 1.2rem;
+  color: rgb(166, 158, 146);
+  font-style: italic;
+  font-size: 1.2rem;
 }
 
 .content-entry {
-    position: relative;
-    margin: 4rem auto 0 auto;
+  position: relative;
+  margin: 4rem auto 0 auto;
 }
 
 .content-entry::before {
-    content: "";
-    position: absolute;
-    top: -2rem;
-    left: 0;
-    height: 1px;
-    background-color: gray;
-    width: 12rem !important;
+  content: "";
+  position: absolute;
+  top: -2rem;
+  left: 0;
+  height: 1px;
+  background-color: gray;
+  width: 12rem !important;
 }
 
 // End Sticky
 
 .fit-content {
-    height: fit-content;
-    object-fit: cover;
+  height: fit-content;
+  object-fit: cover;
 }
 
 .entry-section {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .entry-content {
-    position: relative;
-    margin-top: 4rem;
-    font-size: 1.2rem;
-    font-weight: 400;
+  position: relative;
+  margin-top: 4rem;
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
 .entry-content::before {
-    position: absolute;
-    top: -2rem;
-    left: 50%;
-    content: "";
-    height: 0.5px;
-    background-color: gray;
-    width: 25%;
-    transform: translate(-50%, 0);
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  content: "";
+  height: 0.5px;
+  background-color: gray;
+  width: 25%;
+  transform: translate(-50%, 0);
 }
 
 
 .article-border-right {
-    position: relative;
+  position: relative;
 }
 
 //.article-border-right::before {
@@ -252,134 +252,148 @@ a:hover, a:focus {
 
 
 .social li a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 .social li {
-    margin: .5rem;
+  margin: .5rem;
 }
 
 .social li a {
-    -ms-flex-align: center;
-    -webkit-box-align: center;
-    align-items: center;
-    border: 2px solid;
-    border-radius: 50%;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    height: 42px;
-    line-height: 38px;
-    width: 42px;
+  -ms-flex-align: center;
+  -webkit-box-align: center;
+  align-items: center;
+  border: 2px solid;
+  border-radius: 50%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 42px;
+  line-height: 38px;
+  width: 42px;
 }
 
 .social li a:hover {
-    background-color: #c7a84e;
-    background-color: var(--color-accent-base);
-    border-color: #c7a84e;
-    border-color: var(--color-accent-base);
-    color: #ffffff;
-    color: var(--color-white);
+  background-color: #c7a84e;
+  background-color: var(--color-accent-base);
+  border-color: #c7a84e;
+  border-color: var(--color-accent-base);
+  color: #ffffff;
+  color: var(--color-white);
 }
 
 .social li a:hover {
-    background-color: rgb(145, 120, 46);
-    border-color: rgb(131, 108, 41);
-    color: rgb(232, 230, 227);
+  background-color: rgb(145, 120, 46);
+  border-color: rgb(131, 108, 41);
+  color: rgb(232, 230, 227);
 }
 
 
 .social li a {
-    -webkit-box-align: center;
-    align-items: center;
-    border: 3px solid;
-    border-radius: 50%;
-    display: flex;
-    height: 60px;
-    line-height: 38px;
-    width: 60px;
+  -webkit-box-align: center;
+  align-items: center;
+  border: 3px solid;
+  border-radius: 50%;
+  display: flex;
+  height: 60px;
+  line-height: 38px;
+  width: 60px;
 }
 
 .social li svg {
-    margin: auto;
+  margin: auto;
 }
 
 .logo {
-    text-align: center;
+  text-align: center;
 }
 
-.logo a{
-    font-family: 'Dancing Script', cursive;
-    font-size: 36px;
-    text-decoration: none;
-    color: #333;
+.logo a {
+  font-family: 'Dancing Script', cursive;
+  font-size: 36px;
+  text-decoration: none;
+  color: #333;
 }
 
 
 .cardArticle {
-    width: 320px;
-    box-sizing: border-box;
-    border: 0.2px solid #ccc9c9;
-    margin: 20px;
-    cursor: pointer;
+  width: 320px;
+  box-sizing: border-box;
+  border: 0.2px solid #ccc9c9;
+  margin: 20px;
+  cursor: pointer;
 }
 
 .cardImage {
-    width: 100%;
-    height: 180px;
+  width: 100%;
+  height: 180px;
 }
 
 .cardImage img {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .cardTitle h2 {
-    font-size: 20px;
-    font-weight: 300;
-    margin: 10px 20px;
-    color: #363333;
+  font-size: 20px;
+  font-weight: 300;
+  margin: 10px 20px;
+  color: #363333;
 }
 
 .cardInfo p {
-    font-size: 16px;
-    font-weight: 100;
-    margin: 10px 10px 10px 20px;
-    color: #726e6e;
+  font-size: 16px;
+  font-weight: 100;
+  margin: 10px 10px 10px 20px;
+  color: #726e6e;
 }
 
 .cardFooter {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 0;
-    margin-left: 20px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  margin-left: 20px;
+  margin-bottom: 20px;
 }
 
 .cardFooter .source span {
-    font-size: 18px;
-    font-weight: 500;
-    color: rgb(38, 206, 102);
-    margin-right: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  color: rgb(38, 206, 102);
+  margin-right: 20px;
 }
 
 .cardFooter .moreInfo span {
-    font-size: 12px;
-    font-weight: 200;
-    color: rgb(140, 143, 140);
-    margin-right: 20px;
+  font-size: 12px;
+  font-weight: 200;
+  color: rgb(140, 143, 140);
+  margin-right: 20px;
 }
 
 
 #header-nav .site-title {
-    transition: 1s;
-    text-align: start;
-    margin: 0 2rem;
+  transition: 1s;
+  text-align: start;
+  margin: 0 2rem;
 }
 
 ::-webkit-scrollbar {
-    width: 0;  /* Remove scrollbar space */
-    background: transparent;  /* Optional: just make scrollbar invisible */
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
+
+input::-webkit-input-placeholder {
+  color: #d9dfe2 !important;
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-size: 1rem;
+}
+
+input::placeholder {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-size: 1rem;
+  color: #d9dfe2 !important;
 }

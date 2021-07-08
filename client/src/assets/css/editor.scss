@@ -1,4 +1,4 @@
-p, h1, h2, h3, h4, h5, h6 {
+p, h1, h2, h3, h4, h5, h6, span {
   outline: none;
 }
 
@@ -77,4 +77,9 @@ p, h1, h2, h3, h4, h5, h6 {
   width: 24px;
   height: 24px;
   border-radius: 50%;
+}
+
+.figcaption {
+  text-align: center;
+  padding: 2rem
 }

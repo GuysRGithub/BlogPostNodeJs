@@ -101,6 +101,9 @@
 
 .navigation ul:not(.sub-menu):not(.children) > li {
     display: inline-block;
-    margin-left: 2rem;
     width: inherit;
+}
+
+.navigation ul:not(.sub-menu):not(.children) > li:not(:first-child) {
+    margin-left: 2rem;
 }

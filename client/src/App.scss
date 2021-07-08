@@ -1,5 +1,4 @@
 @import "assets/css/html_template_style/main";
-@import "assets/css/clone";
 @import "assets/css/react_html_main";
 
 @import "assets/css/fonts";
@@ -11,6 +10,8 @@
 @import "assets/css/footer";
 @import "assets/css/post_card";
 @import "assets/css/dropdown";
+@import "assets/css/blog_hom";
+
 
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,600");
 
@@ -26,6 +27,8 @@
   --primaryHoverColor: #05babe;
   --primaryColorFade: #e3dbdba8;
   --primaryInputDarkBgColor: rgba(24, 26, 27, 0.75);
+  --primaryColorGrayFade: #dadee5;
+  --primaryColorHighlight: #f7d5d5;
   --mainWhite: #fff;
   --offWhite: #f7f7f7;
   --mainBlack: #222;
@@ -102,33 +105,6 @@ input.error {
   font-weight: 600;
 }
 
-.color-gray {
-  color: gray;
-}
-
-.color-gray-light {
-  color: #b3a4a4;
-}
-
-.color-yellow-light {
-  color: #f7d5d5;
-}
-
-/* !Common Class */
-
-
-//#root {
-//  background-color: #222624;
-//}
-
-//svg path {
-//  fill: var(--primaryDarkcolor) !important;
-//}
-
-//.ck-button__label {
-//  color: var(--primaryDarkcolor) !important;
-//}
-
 .dark-theme-editor {
   .ck-editor__editable,
   .ck-sticky-panel__content,
@@ -187,4 +163,3 @@ textarea {
   border: 1px solid #cccccc;
   padding: 2px 8px;
 }
-

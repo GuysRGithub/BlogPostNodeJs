@@ -1,19 +1,17 @@
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../helpers/data_process_helper";
+import {ImageEditorFocusCallbackParams} from "./ImageEditorFocusCallbackParams";
+import {CSSProperties} from "react";
 
-interface Post {
-    _id: string,
-    title: string,
-    author: any,
-    content: string,
-    createdAt: string
+export interface ImageEditorProp {
+    imageSrc: string | null | undefined,
+    toggleActiveCallback?: ((params: ImageEditorFocusCallbackParams) => void) | undefined,
+    elementStyle?: CSSProperties | undefined,
+    caption?: string | null | undefined
 }
 
-export type PostsResponse = {
-    success: boolean,
-    doc: Array<Post>,
-}
-
-export type PostResponse = {
-    success: boolean,
-    doc: Post,
+export interface ImageEditorState {
+    imageSrc: string | null | undefined,
+    renderMedia: false,
+    toggleActiveCallback?: ((params: ImageEditorFocusCallbackParams) => void) | undefined,
+    elementStyle?: CSSProperties | undefined,
+    caption?: string | null | undefined
 }

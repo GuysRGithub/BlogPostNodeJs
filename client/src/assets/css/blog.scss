@@ -94,6 +94,11 @@
   margin: 1rem;
   position: relative;
   padding: 1rem 2rem;
+  display: initial;
+}
+
+.quote-container > * {
+  font-weight: normal;
 }
 
 .quote-container:before {
@@ -111,4 +116,8 @@
   right: 16px;
   left: 16px;
   transform: translate(0%, -50%);
+}
+
+.grid-custom-row {
+  grid-template-rows:  .75fr 0.25fr .75fr;
 }

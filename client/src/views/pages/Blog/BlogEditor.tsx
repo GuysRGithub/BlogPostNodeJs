@@ -1293,7 +1293,6 @@ class BlogEditor extends Component {
     load() {
         textField.document.designMode = "On";
         textField.document.body.spellcheck = false;
-
     }
 
     render() {

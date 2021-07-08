@@ -2,6 +2,10 @@
 
 import {execCommandStyle, ExecCommandStyle} from "../assets/ts/editor";
 
+export const containerTags = ["p", "h1", "h2", "h3", "h4", "h5", "h6"]
+// tags do not add container in editor
+export const tagsUnTouch = ["span", "input"]
+
 export async function boldSelection() {
     await styleElement('font-weight', 'bold')
 }
@@ -66,12 +70,12 @@ export function getFirstChildWithTag(tag: string, child: HTMLElement | null) {
 
 export function getFirstParentContainer(child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-    return getFirstParentWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
+    return getFirstParentWithTags(containerTags, child)
 }
 
 export function getFirstChildContainer(child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-    return getFirstChildWithTags(["p", "h1", "h2", "h3", "h4", "h5", "h6"], child)
+    return getFirstChildWithTags(containerTags, child)
 }
 
 export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | Node | null) {
@@ -113,4 +117,74 @@ export function removeAllChildNodes(parent: HTMLElement) {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
+}
+
+function rangeIntersectsNode(range: Range | null, node: Node) {
+    if (range == null) return false
+    let nodeRange;
+    if (range.intersectsNode) {
+        return range.intersectsNode(node);
+    } else {
+        nodeRange = node.ownerDocument?.createRange();
+        if (nodeRange == null) return false
+        try {
+            nodeRange.selectNode(node);
+        } catch (e) {
+            nodeRange.selectNodeContents(node);
+        }
+
+        return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) === -1 &&
+            range.compareBoundaryPoints(Range.START_TO_END, nodeRange) === 1;
+    }
+}
+
+export function getSelectedElementTags(win: Window) {
+    let sel, elmlist = [], treeWalker, containerElement;
+    let range: Range | null = null
+    sel = win.getSelection();
+    if (sel == null) return []
+    if (sel.rangeCount > 0) {
+        range = sel.getRangeAt(0);
+    }
+    if (range) {
+        containerElement = range.commonAncestorContainer;
+        if (containerElement.nodeType !== 1) {
+            containerElement = containerElement.parentNode;
+        }
+        if (containerElement == null) return
+        treeWalker = win.document.createTreeWalker(
+            containerElement,
+            NodeFilter.SHOW_ELEMENT,
+            // @ts-ignore
+            function (node) {
+                return rangeIntersectsNode(range, node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            },
+            false
+        );
+
+        elmlist = [treeWalker.currentNode];
+        while (treeWalker.nextNode()) {
+            elmlist.push(treeWalker.currentNode);
+        }
+
+        return elmlist
+    }
+}
+
+export function getContainerSelectedElements(window: Window) {
+    const selectedElements = new Set(getSelectedElementTags(window)?.filter(it => containerTags.includes(it.nodeName.toLowerCase())))
+    if (selectedElements == null) return selectedElements
+
+    let selection = window.getSelection()
+    if (selection == null) return selectedElements
+    if (selection.rangeCount == 0) return selectedElements;
+    let selectionElement = selection.anchorNode as HTMLElement | null
+    const container = getFirstParentContainer(selectionElement)
+    if (container) {
+        selectedElements.add(
+            container
+        )
+    }
+
+    return selectedElements
 }

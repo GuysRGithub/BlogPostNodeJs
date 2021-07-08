@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "../UI/Card";
-import Logo from "../Logo";
+import Logo from "../Logo/Logo";
 import NavBar from "../Navbar";
 
 const Hero = (props) => {

@@ -7,7 +7,7 @@ export const setCookie = (key, value) => {
 }
 
 export const removeCookie = (key) => {
-    if (window !== 'undefined') {
+    if (window !== undefined) {
         cookie.remove(key, {
             expires: 1
         })
@@ -15,19 +15,19 @@ export const removeCookie = (key) => {
 }
 
 export const getCookie = key => {
-    if (window !== 'undefiend') {
+    if (window !== undefined) {
         return cookie.get(key)
     }
 }
 
 export const setLocalStorage = (key, value) => {
-    if (window !== "undefiend") {
+    if (window !== undefined) {
         localStorage.setItem(key, JSON.stringify(value))
     }
 }
 
 export const removeLocalStorage = (key) => {
-    if (window !== "undefiend") {
+    if (window !== undefined) {
         localStorage.removeItem(key)
     }
 }
@@ -44,7 +44,7 @@ export const signout = next => {
 }
 
 export const isAuth = () => {
-    if (window !== 'undefiend') {
+    if (window !== undefined) {
         const cookieChecked = getCookie("token")
 
         if (cookieChecked) {
@@ -58,7 +58,7 @@ export const isAuth = () => {
 }
 
 export const updateUser = (response, next) => {
-    if (window !== "undefiend") {
+    if (window !== undefined) {
         let auth = JSON.parse(localStorage.getItem("user"))
         auth = response.data
         localStorage.setItem("user", JSON.stringify(auth))

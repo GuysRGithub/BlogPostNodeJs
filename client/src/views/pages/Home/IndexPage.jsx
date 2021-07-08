@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom"
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config";
 import {toast} from "react-toastify";
-import PostViewModel from "../../../view_models/PostViewModel";
-import {getCookie} from "../../../helpers/data_process_helper";
+import {Link} from "react-router-dom"
+import {extractFirstText, getCookie} from "../../../helpers/data_process_helper";
 import {getRandom} from "../../../helpers/asset_helper";
 import PageLayout from "../../layouts/PageLayout";
+
+import PostViewModel from "../../../view_models/PostViewModel";
+import ShowcasePost from "../../components/Shared/ShowcasePost";
+import Newsletter from "../../components/Shared/Newsletter";
+import NewsletterSvg from "../../components/Shared/NewsletterSvg";
 
 const jwt = require("jsonwebtoken");
 
@@ -40,7 +44,7 @@ export default function () {
                     <h5 className="font-josesans color-primary-dark">Latest posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
-                <div className="lg:grid-cols-3 md:grid-cols-2 lg:gap-8 xl:gap-16 grid">
+                <div className="lg:grid-cols-3 md:grid-cols-2 sm:gap-4 lg:gap-8 xl:gap-16 grid">
                     {posts.map((post) => (
                         <div key={post._id}>
                             <div>
@@ -50,7 +54,7 @@ export default function () {
                             </div>
                             <div className="pr-6">
                                 <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <p className="color-gray-primary font-bold italic fs-sm-2">{post.createdAt}</p>
                                 <div className="flex justify-between">
                                     <Link to={`/blogs/${post._id}`}>
                                         <div
@@ -74,24 +78,7 @@ export default function () {
             </section>
 
             {/* ////////////////////////////////          SHOW CASE POST 1            //////////////////////////////// */}
-            <section className="mt-24 px-16 xl:px-32">
-                <div className="flex align-items-center">
-                    <h1 className="p-8 m-8 shadow-md font-bold font-ubuntu">01</h1>
-                    <h1 className="font-bold mx-16 uppercase font-ubuntu w-full">{posts[0] && posts[0].title}</h1>
-                    <div className="mr-32">
-                        <p className="font-pt-serif">Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit.
-                            Assumenda commodi consequuntur cumque dicta dignissimos error explicabo, illo impedit, iste
-                            molestiae
-                        </p>
-                        <Link to={`/blogs/${posts[0] && posts[0]._id}`}>
-                            <div
-                                className="color-yellow-light mt-5 cursor-pointer font-bold font-roboto">Read
-                                More<i className="fa fa-arrow-right ml-2"/></div>
-                        </Link>
-                    </div>
-                </div>
-            </section>
+            {posts[0] && ShowcasePost(posts[0], 1)}
 
             {/*////////////////////////////////          POPULAR POSTS            ////////////////////////////////*/}
             <section className="entry-section mt-24 px-16 xl:px-32">
@@ -99,7 +86,7 @@ export default function () {
                     <h5 className="font-josesans color-primary-dark">Popular posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
-                <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-16 lg:gap-8 md:gap-8 grid">
+                <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-16 lg:gap-8 md:gap-4 grid">
                     {posts.map(post => (
                         <div>
                             <div>
@@ -109,7 +96,7 @@ export default function () {
                             </div>
                             <div className="pr-6 bg-white shadow-md px-3 py-5">
                                 <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <p className="color-gray-primary font-bold italic fs-sm-2">{post.createdAt}</p>
                                 <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
                                     More<i className="fa fa-arrow-right ml-2"/></div>
                             </div>
@@ -120,49 +107,7 @@ export default function () {
             </section>
 
             {/*////////////////////////////////          NEWSLETTER            ////////////////////////////////*/}
-            <section className="mt-24 px-16 xl:px-32">
-                <div className="relative">
-                    <img src={require("../../../assets/images/posts/newsletter.jpg").default} alt=""
-                         className="h-128 w-full object-cover"/>
-                    <div className="center-inner p-12 bg-white opacity-4-5">
-                        <h5 className="font-josesans color-primary-dark">Newsletter subscriber</h5>
-                        <p className="color-gray-fade-primary fs-sm-2 mt-2">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Commodi ipsa maiores nam nulla
-                            obcaecati, sapiente similique! Cupiditate dolorum earum nobis non odio odit praesentium,
-                            quibusdam reprehenderit tempora temporibus, totam vitae?
-                        </p>
-                        <div className="mt-2 flex">
-                            <input placeholder="Email"
-                                   className="focus:outline-none border-solid border-black border px-3 fs-1 color-primary-dark"/>
-                            <div
-                                className="border border-4 border-black border-solid p-3 ml-3 cursor-pointer">Subscribe
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-
-            {/* ////////////////////////////////          SHOW CASE POST 2            //////////////////////////////// */}
-            <section className="mt-24 px-16 xl:px-32">
-                <div className="flex align-items-center">
-                    <h1 className="p-8 m-8 shadow-md font-bold font-ubuntu">02</h1>
-                    <h1 className="font-bold mx-16 uppercase font-ubuntu w-full">{posts[1] && posts[1].title}</h1>
-                    <div className="mr-32">
-                        <p className="font-pt-serif">Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit.
-                            Assumenda commodi consequuntur cumque dicta dignissimos error explicabo, illo impedit, iste
-                            molestiae
-                        </p>
-                        <Link to={`/blogs/${posts[1] && posts[1]._id}`}>
-                            <div
-                                className="color-yellow-light mt-5 cursor-pointer font-bold font-roboto">Read
-                                More<i className="fa fa-arrow-right ml-2"/></div>
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
+            <NewsletterSvg/>
             {/*////////////////////////////////          TOP POSTS            ////////////////////////////////*/}
             <section className="mt-24 px-16 xl:px-32">
                 <div className="flex justify-between my-2">
@@ -233,6 +178,10 @@ export default function () {
                     </div>
                 </div>
             </section>
+
+            {/* ////////////////////////////////          SHOW CASE POST 2            //////////////////////////////// */}
+            {posts[1] && ShowcasePost(posts[1], 2)}
+
             {/*<div id="fucking"/>*/}
             {/*////////////////////////////////          POPULAR TRAVEL POSTS            ////////////////////////////////*/}
             <section className="entry-section mt-24 px-16 xl:px-32">
@@ -240,7 +189,7 @@ export default function () {
                     <h5 className="font-josesans color-primary-dark">Popular Travel Posts</h5>
                     <p className="color-gray-fade-primary">View all</p>
                 </div>
-                <div className="lg:grid-cols-4 md:grid-cols-2 grid-custom-row lg:gap-8 xl:gap-8 grid">
+                <div className="lg:grid-cols-4 md:grid-cols-2 grid-custom-row lg:gap-4 sm:gap-2 grid">
                     {posts.slice(0, 6).map((post, index) => (
                         <div key={post._id}
                              className={"rounded-md relative overflow-hidden " + (index === 0 || index === 5 ? 'col-span-2' : 'row-span-2')}>
@@ -251,7 +200,7 @@ export default function () {
                             </div>
                             <div className="pr-6 absolute transform m-5 bottom-0">
                                 <h6 className="mt-3 text-white font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-white-fade-primary italic fs-sm-2">{post.createdAt}</p>
+                                <p className="color-white-fade-primary font-bold italic fs-sm-2">{post.createdAt}</p>
                                 <div className="flex justify-between">
                                     <Link to={`/blogs/${post._id}`}>
                                         <div

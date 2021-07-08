@@ -396,20 +396,36 @@
   cursor: pointer;
 }
 
+.border-fade-gray {
+  border: 1px solid var(--primaryColorFade);
+}
+
+.border-fade-gray-wide {
+  border: 2px solid var(--primaryColorFade);
+}
+
 .border-dark-gray {
-  border: 1 pxl solid var(--pirmaryBorderDarkColor);
+  border: 1px solid var(--pirmaryBorderDarkColor);
+}
+
+.hover\:border-dark-gray:hover {
+  border: 2px solid var(--pirmaryBorderDarkColor);
+}
+
+.hover\:border-highlight:hover {
+  border: 2px solid var(--primaryColorHighlight);
 }
 
 .border-bottom-dark-gray {
-  border-bottom: 1 pxl solid var(--pirmaryBorderDarkColor);
+  border-bottom: 1px solid var(--pirmaryBorderDarkColor);
 }
 
 .border-top-dark-gray {
-  border-top: 1 pxl solid var(--pirmaryBorderDarkColor)
+  border-top: 1px solid var(--pirmaryBorderDarkColor)
 }
 
 .border-right-dark-gray {
-  border-right: 1 pxl solid var(--pirmaryBorderDarkColor)
+  border-right: 1px solid var(--primaryDarkcolor)
 }
 
 .border-left-dark-gray {
@@ -433,13 +449,11 @@
 }
 
 .font-pt-serif {
-  //font-family: 'PT Serif', serif;
   font-family: 'JoseSans', serif;
 }
 
 .font-josesans {
   font-family: 'JoseSans', serif;
-  //font-family: 'Lobster', cursive;
 }
 
 
@@ -666,10 +680,24 @@ h6 {
   margin-right: .5rem;
 }
 
+*[class*='child-my-1'] > * {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
+
 *[class*='child-my-2'] > * {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+*[class*='child-mt-1'] > * {
+  margin-top: .5rem;
+}
+
+*[class*='child-mt-2'] > * {
+  margin-top: 1rem;
+}
+
 
 *[class*='child-px-2'] > * {
   padding-left: 1rem;
@@ -691,7 +719,7 @@ h6 {
 
   * {
     position: absolute;
-    top:  50%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
@@ -819,17 +847,38 @@ h6 {
   color: var(--primaryColor);
 }
 
-.color-dark-primary {
-  color: #232732
+.color-primary-dark {
+  color: var(--primaryDarkcolor);
 }
 
 .color-gray-fade-primary {
-  color: #c1c5cc;
+  color: var(--primaryColorGrayFade);
+}
+
+.color-white-fade-primary {
+  color: #e1eaea;
 }
 
 .color-gray-primary {
-  color: #51545c
+  color: #51545c;
 }
+
+.color-fade {
+  color: #c0c2c9;
+}
+
+.color-gray {
+  color: #979ba7;
+}
+
+.color-gray-light {
+  color: #b3a4a4;
+}
+
+.color-yellow-light {
+  color: #f7d5d5;
+}
+
 
 .dark-theme {
   .border {
@@ -862,3 +911,18 @@ h6 {
   overflow: hidden;
 }
 
+.visibility-hidden {
+  visibility: hidden;
+}
+
+@media (min-width: 768px) {
+  .md\:flex-wrap {
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:flex-no-wrap {
+    flex-wrap: nowrap;
+  }
+}

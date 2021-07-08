@@ -25,7 +25,7 @@ const PostCard = ({postViewSeparate = {title: "Title", "createdAt": "Today", con
                     </div>
                 </header>
                 <div className="div m-5">
-                    <a href="single.html" className="image featured">
+                    <a href="" className="image featured">
                         <img className="post-feature-image-fixed-size"
                             src={postViewSeparate.src || defaultImage}
                             alt=""/></a>
