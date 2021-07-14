@@ -4,7 +4,7 @@
     Get Unique error field name
 */
 
-const UniquesMessage = (error) => {
+const uniquesMessage = (error) => {
   let output;
   try {
     let fieldName = error.message.split(".$")[1];
@@ -34,7 +34,7 @@ exports.errorHandler = (error) => {
     switch (error.code) {
       case 11000:
       case 11001:
-        message = UniquesMessage(error);
+        message = uniquesMessage(error);
         break;
       default:
         message = "Something went wrong";

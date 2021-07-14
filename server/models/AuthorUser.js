@@ -1,11 +1,15 @@
+// noinspection JSUnresolvedVariable
+
 const mongoose = require("mongoose")
-const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const saltRounds = 10
 const moment = require("moment")
-const secretKey = require("../config/config").key
+
+const bcrypt = require("bcrypt")
+const saltRounds = 10
+const secretKey = process.env.JWT_SECRET
 const crypto = require("crypto");
 
+// noinspection JSValidateTypes
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -16,10 +20,6 @@ const userSchema = mongoose.Schema({
         trim: true,
         unique: true
     },
-    // password: {
-    //     type: String,
-    //     minlength: 5
-    // },
     lastname: {
         type: String,
         maxlength: 50,

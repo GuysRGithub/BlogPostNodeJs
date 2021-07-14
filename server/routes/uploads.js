@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedFunction
+
 const express = require('express');
 const router = express.Router();
 const path = require("path")
@@ -5,7 +7,6 @@ const fs = require("fs")
 const shell = require('shelljs');
 const jwt = require("jsonwebtoken");
 
-const Profile = require("../models/Profile");
 const AuthorUser = require("../models/AuthorUser");
 const UserMediaLibrary = require("../models/UserMediaLibrary.js")
 
@@ -32,53 +33,38 @@ const filterImages = (req, file, cb) => {
     cb(null, true);
 }
 
-
-const upload = multer({storage: storage});
-const uploadSingle = multer({storage: storage, fileFilter: filterImages}).single("file");
-
-router.post('/', MultiPartyMiddleware, function (req, res, next) {
+router.post('/', MultiPartyMiddleware, function (req, res) {
+    // noinspection JSUnresolvedVariable
     let tempFile = req.files.upload
     let tempFilePath = tempFile.path
 
     const targetUrl = path.join(__dirname, "./uploads/images/" + tempFile.name)
 
+    // noinspection JSUnresolvedVariable
     if (path.extname(tempFile.originalFilename).toLowerCase() === ".png" || ".jpg") {
-        fs.rename(tempFilePath, targetUrl, err => {
-            // if (err) return console.log(err);
+        fs.rename(tempFilePath, targetUrl, () => {
             res.status(200).json({
                 uploaded: true,
-                url: require("../config/config").domain + `${tempFilePath}`
+                url: process.env.DOMAIN + `${tempFilePath}`
             })
         })
     }
-    console.log("Uploads")
 });
 
-router.post('/images', function (req, res, next) {
-
+router.post('/images', function (req, res) {
     const {token} = req.cookies;
-
-    console.log("WTF", req.body)
-
     let userMediaLibrary = null;
     if (token) {
         jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
             if (err) {
-                console.log("Error Upload Token Failed", err);
                 return res.status(401).json({
                     error: "Something went wrong when upload images, may be need to login",
                 });
             } else {
-
-                const {_id} = jwt.decode(token);
-
+                const {_id} = decoded;
                 const user = await AuthorUser.findById(_id).exec()
 
                 if (user == null) return
-
-                // const profile = new Profile({
-                //     author: user._id
-                // })
 
                 userMediaLibrary = await UserMediaLibrary.findOne({author: user._id}).exec()
 
@@ -87,14 +73,8 @@ router.post('/images', function (req, res, next) {
                 const imageUploadPathRelative = path.join("uploads", "media", user.name, "images").toString()
                 const imagesPathFull = path.join(path.resolve('./'), imageUploadPathRelative).toString()
 
-                console.log(imagesPathFull)
-
                 if (!fs.existsSync(imagesPathFull)) {
-                    console.log("Not exits")
                     shell.mkdir("-p", imagesPathFull)
-                    // fs.mkdir(imagesPath, function (e) {
-                    //     console.log(e)
-                    // })
                 }
                 // Upload
                 const mediaStorage = multer.diskStorage({
@@ -109,8 +89,6 @@ router.post('/images', function (req, res, next) {
                 const uploadPostImages = multer({storage: mediaStorage, fileFilter: filterImages}).array("post_images");
 
                 // req.files only available after upload using uploadPostImages
-                console.log("Files Images Upload", req.files)
-
                 uploadPostImages(req, res, (err) => {
                     if (err) {
                         console.log(err);

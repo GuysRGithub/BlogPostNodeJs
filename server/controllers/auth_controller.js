@@ -1,15 +1,16 @@
+// noinspection JSUnresolvedFunction
+
 const Profile = require("../models/Profile");
 const User = require("../models/AuthorUser");
 const UserMediaLibrary = require("../models/UserMediaLibrary.js")
+const {validationResult} = require("express-validator");
+const jwt = require("jsonwebtoken");
+const sgMail = require("@sendgrid/mail"); // Send email using sendgrid
 
 const {OAuth2Client} = require("google-auth-library");
 const fetch = require("node-fetch");
-const {validationResult} = require("express-validator");
-const jwt = require("jsonwebtoken");
+
 const {errorHandler} = require("../helpers/dbErrorHandling");
-// Send email using sendgrid
-const sgMail = require("@sendgrid/mail");
-const _ = require("lodash")
 sgMail.setApiKey(process.env.MAIL_KEY);
 
 exports.registerController = async (req, res) => {
@@ -87,17 +88,15 @@ exports.registerController = async (req, res) => {
 // Activation and save
 
 exports.activationController = async (req, res) => {
-    console.log("Activate User");
     const {token} = req.body;
     if (token) {
         jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, async (err, decoded) => {
             if (err) {
-                console.log("Error Activate", err);
                 return res.status(401).json({
                     error: "Expired Token, Please Sign Up Again",
                 });
             } else {
-                const {name, email, password} = jwt.decode(token);
+                const {name, email, password} = decoded;
 
                 const user = new User({
                     name: name,
@@ -125,9 +124,8 @@ exports.activationController = async (req, res) => {
 
                 }
 
-                user.save((err, user) => {
+                await user.save((err, user) => {
                     if (err) {
-                        console.log("Error", err)
                         return res.json({
                             error: errorHandler(err),
                         });
@@ -185,8 +183,6 @@ exports.loginController = (req, res) => {
                 });
             }
 
-            console.log(user.authenticate(password));
-
             if (!user.authenticate(password)) {
                 return res.status(400).json({
                     error: "Email or Password does not match",
@@ -203,7 +199,7 @@ exports.loginController = (req, res) => {
                 }
             );
 
-            const {_id, name, email, role} = user;
+            const {_id, name, email} = user;
 
             return res.json({
                 token,
@@ -211,7 +207,6 @@ exports.loginController = (req, res) => {
                     _id,
                     name,
                     email,
-                    role,
                 },
             });
         });
@@ -219,7 +214,6 @@ exports.loginController = (req, res) => {
 };
 
 exports.forgetController = (req, res) => {
-    console.log("Forget Password");
     const {email} = req.body;
     const errors = validationResult(req);
 
@@ -263,13 +257,13 @@ exports.forgetController = (req, res) => {
                 {
                     resetPasswordLink: token,
                 },
-                (err, success) => {
+                (err, _) => {
                     if (err) {
                         return res.status(400).json({
                             error: errorHandler(err),
                         });
                     } else {
-                        sgMail.send(emailData).then((sent) => {
+                        sgMail.send(emailData).then((_) => {
                             return res.json({
                                 message: `Email has been sent to ${email}`,
                             });
@@ -294,10 +288,9 @@ exports.resetController = (req, res) => {
         if (resetPasswordLink) {
             jwt.verify(resetPasswordLink, process.env.JWT_PASSWORD_RESET, function (
                 err,
-                decoded
+                _
             ) {
                 if (err) {
-                    console.log(err);
                     return res.status(400).json({
                         error: "Expired Link",
                     });
@@ -317,14 +310,12 @@ exports.resetController = (req, res) => {
 
                     user = _.extend(user, updatedFields);
 
-                    user.save((err, result) => {
+                    user.save((err, _) => {
                         if (err) {
-                            console.log("Save Error");
                             return res.status(400).json({
                                 error: "Error reset password",
                             });
                         }
-                        console.log("Save Success");
                         res.json({
                             message: "Great! Now you can login with new password",
                         });
@@ -339,14 +330,12 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 
 exports.googleLoginController = (req, res) => {
     const {tokenId} = req.body;
-    console.log('==========Google Req Body==========================');
-    console.log(req.body);
-    console.log('====================================');
     // Verify token
     if (!tokenId) return res.status(400).json({error: "Failed to login with Google"})
     client
         .verifyIdToken({idToken: tokenId, audience: process.env.GOOGLE_CLIENT})
         .then((response) => {
+            // noinspection JSUnresolvedVariable
             const {email_verified, name, email} = response.payload;
 
             if (email_verified) {
@@ -357,10 +346,10 @@ exports.googleLoginController = (req, res) => {
                             expiresIn: "7d",
                         });
 
-                        const {_id, email, name, role} = user;
+                        const {_id, email, name} = user;
                         return res.json({
                             token,
-                            user: {_id, email, name, role},
+                            user: {_id, email, name},
                         });
                     } else {
                         // If user not exits then create new user and save to database
@@ -370,9 +359,10 @@ exports.googleLoginController = (req, res) => {
                             email,
                             password,
                         });
+                        // noinspection JSIgnoredPromiseFromCall
                         user.save((err, doc) => {
                             if (err) {
-                                return status(400).json({
+                                return res.status(400).json({
                                     error: errorHandler(err),
                                 });
                             }
@@ -387,11 +377,11 @@ exports.googleLoginController = (req, res) => {
                                 }
                             );
 
-                            const {_id, email, name, role} = doc;
+                            const {_id, email, name} = doc;
 
                             return res.json({
                                 token,
-                                user: {_id, email, name, role},
+                                user: {_id, email, name},
                             });
                         });
                     }
@@ -410,17 +400,14 @@ exports.googleLoginController = (req, res) => {
 exports.facebookLoginController = (req, res) => {
     const {userId, accessToken} = req.body;
     const url = `https://graph.facebook.com/v2.11/${userId}?fields=id,name,email&access_token=${accessToken}`;
-    console.log('==========Facebook Req Body==========================');
-    console.log(req.body);
-    console.log('====================================');
     return fetch(url, {
         method: "GET",
     })
         .then((response) => response.json())
         .then((response) => {
             const {email, name} = response;
-            console.log("Response Facebook Login", response);
             User.findOne({email}).exec((err, doc) => {
+                let user;
                 if (doc) {
                     const token = jwt.sign(
                         {
@@ -432,15 +419,16 @@ exports.facebookLoginController = (req, res) => {
                         }
                     );
 
-                    const {_id, email, name, role} = doc;
+                    const {_id, email, name} = doc;
 
                     return res.json({
                         token,
-                        user: {_id, email, name, role},
+                        user: {_id, email, name},
                     });
                 } else {
                     let password = email + process.env.JWT_SECRET;
                     user = new User({name, email, password});
+                    // noinspection JSIgnoredPromiseFromCall
                     user.save((err, doc) => {
                         if (err) {
                             return res.status(400).json({
@@ -452,11 +440,11 @@ exports.facebookLoginController = (req, res) => {
                             expiresIn: "7d",
                         });
 
-                        const {_id, email, name, role} = doc;
+                        const {_id, email, name} = doc;
 
                         return res.json({
                             token,
-                            user: {_id, email, name, role},
+                            user: {_id, email, name},
                         });
                     });
                 }
