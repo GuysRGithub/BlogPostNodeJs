@@ -169,7 +169,7 @@ exports.loginController = (req, res) => {
 
     if (!errors.isEmpty()) {
         const firstError = errors.array().map((error) => error.msg)[0];
-        return res.status(400).json({
+        return res.status(401).json({
             error: firstError,
         });
     } else {
@@ -178,13 +178,13 @@ exports.loginController = (req, res) => {
             email,
         }).exec((err, user) => {
             if (err || !user) {
-                return res.status(400).json({
+                return res.status(401).json({
                     error: "User with that email does not exits. Please sign up.",
                 });
             }
 
             if (!user.authenticate(password)) {
-                return res.status(400).json({
+                return res.status(401).json({
                     error: "Email or Password does not match",
                 });
             }

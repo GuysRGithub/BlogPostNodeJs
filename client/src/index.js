@@ -7,7 +7,7 @@ import {BrowserRouter} from "react-router-dom";
 import App from './App';
 import {applyMiddleware, createStore} from "redux";
 import ReduxThunk from "redux-thunk"
-import Reducer from "./_reducers/index"
+import Reducer from "./reducers/index"
 import React from 'react';
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
 require("datejs")

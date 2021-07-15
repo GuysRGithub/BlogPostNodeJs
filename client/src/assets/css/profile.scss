@@ -7,3 +7,24 @@
     background-color: var(--primaryInputDarkBgColor);
   }
 }
+
+#nav ul li a {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  align-items: center;
+}
+#nav ul li {
+  margin: 16px 0;
+}
+
+#nav ul li a span {
+  font-family: JoseSans, sans-serif;
+  font-weight: lighter;
+  font-size: 1.25rem;
+  text-align: end;
+}
+
+#nav ul li a i {
+  margin-left: 2rem;
+}

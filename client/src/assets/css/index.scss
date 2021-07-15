@@ -397,3 +397,9 @@ input::placeholder {
   font-size: 1rem;
   color: #d9dfe2 !important;
 }
+
+.layout {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}

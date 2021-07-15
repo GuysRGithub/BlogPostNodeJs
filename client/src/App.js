@@ -6,22 +6,19 @@ import "../src/assets/js/index"
 import {ToastContainer} from "react-toastify";
 
 import Auth from "./hocs/auth.js"
-import NewPost from "./views/pages/Post/NewPost.jsx";
-import PostIndex from "./views/pages/Post/PostIndex.jsx";
-import {Profile} from "./views/pages/Profile/Profile.jsx";
-import {Register} from "./views/pages/Auth/Register.jsx";
-import {Login} from "./views/pages/Auth/Login.jsx";
-import Activate from "./views/pages/Auth/Activate.jsx";
-import {ForgetPassword} from "./views/pages/Auth/ForgetPassword.jsx";
-import ResetPassword from "./views/pages/Auth/Reset.jsx";
-import MediaLibrary from "./views/components/Upload/MediaLibrary.jsx";
-import BlogEditor from "./views/pages/Blog/BlogEditor";
+import {Profile} from "./views/pages/profile/Profile.jsx";
+import {Register} from "./views/pages/auth/Register.jsx";
+import {Login} from "./views/pages/auth/Login.jsx";
+import Activate from "./views/pages/auth/Activate.jsx";
+import {ForgetPassword} from "./views/pages/auth/ForgetPassword.jsx";
+import ResetPassword from "./views/pages/auth/Reset.jsx";
+import MediaLibrary from "./views/components/shared/MediaLibrary.jsx";
+import BlogEditor from "./views/pages/blog/BlogEditor";
 
 // Javascript script
-import IndexPage from "./views/pages/Home/IndexPage";
-import BlogIndex from "./views/pages/Blog/BlogIndex";
-import BlogShow from "./views/pages/Blog/BlogShow.tsx";
-import ShowPost from "./views/pages/Post/ShowPost";
+import IndexPage from "./views/pages/home/IndexPage";
+import BlogIndex from "./views/pages/blog/BlogIndex";
+import BlogShow from "./views/pages/blog/BlogShow.tsx";
 
 function App() {
     return (
@@ -38,10 +35,6 @@ function App() {
                     <Route path="/users/passwords/forget" component={ForgetPassword}/>
                     <Route path="/users/passwords/reset/:token" component={ResetPassword}/>
                     <Route exact path={"/users/profile"} component={Profile}/>
-
-                    <Route exact path={"/blogs/posts/index"} component={PostIndex}/>
-                    <Route exact path={"/blogs/posts/new"} component={NewPost}/>
-                    <Route exact path={"/blogs/posts/:postId"} component={ShowPost}/>
 
                     <Route exact path={"/blogs/new"} component={Auth(BlogEditor, true)} />
                     <Route exact path={"/blogs/edit/:blogId"} component={Auth(BlogEditor, true)} />

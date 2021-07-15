@@ -1,15 +1,13 @@
 import React from "react";
-import Sidebar from "../components/Sidebar/index.jsx";
-import "./LayoutStyle.css"
-import HeaderLight from "../components/Shared/HeaderLight";
-import FooterLight from "../components/Shared/FooterLight";
+import HeaderLight from "../components/shared/Header";
+import Footer from "../components/shared/Footer";
 
 const Layout = (props) => {
     return (
         <React.Fragment>
             <HeaderLight/>
             {props.children}
-            <FooterLight/>
+            <Footer/>
             {/*<Sidebar/>*/}
         </React.Fragment>
     );

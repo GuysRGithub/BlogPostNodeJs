@@ -1,7 +1,7 @@
 
 import React, {useEffect} from "react";
 import {useDispatch} from "react-redux"
-import {auth} from "../_actions/user_actions";
+import {auth} from "../actions/user_actions";
 
 // null   Anyone Can go inside
 // true   only logged in user can go inside

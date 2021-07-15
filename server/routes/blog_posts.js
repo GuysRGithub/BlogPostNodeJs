@@ -20,7 +20,7 @@ router.post("/savePost", (req, res) => {
                     Post.updateOne({_id: blogId}, {title: req.body.title, content: req.body.content}, function (err, _) {
                         if (err) {
                             return res.status(401).json({
-                                error: "Blog not found!",
+                                error: "blog not found!",
                             });
                         } else {
                             return res.status(200).json({success: true})
