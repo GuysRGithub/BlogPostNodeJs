@@ -104,29 +104,84 @@ export const Login = (props) => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
+        <div className="min-h-screen bg-gray-100 text-gray-900 flex md:flex-wrap lg:flex-no-wrap justify-center sm:p-0 md:p-4 lg:p-16 rounded-lg">
             {isAuth() ? <Redirect to="/"/> : null}
-            <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
-                <div className="mt-12 flex flex-col items-center">
-                    <h1 className="text-2xl xl:text-3xl font-extrabold font-josesans">Sign In</h1>
+            <div className="xl:w-5/12 lg:w-6/12 w-9/12 m-0 sm:m-0 md:m-8 lg:m-0 bg-white shadow flex flex-col justify-center items-center py-12">
+                <div className="lg:w-6/12 sm:w-8/12 w-11/12 flex flex-col items-center max-w-xs">
+                    <h1 className="text-2xl xl:text-3xl font-extrabold font-josesans">Sign In For Blogs</h1>
+                    <div className="w-full flex-1 mt-8 text-indigo-500 flex flex-col items-center">
+                        <GoogleLogin
+                            clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
+                            onSuccess={responseGoogle}
+                            onFailure={responseGoogle}
+                            autoLoad={false}
+                            cookiePolicy={"single_host_origin"}
+                            render={renderProps =>
+                                <div className="w-full flex justify-center">
+                                    <button
+                                        onClick={renderProps.onClick}
+                                        disabled={renderProps.disabled}
+                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                        <i className="fab fa-google mr-3 duration-500"/>Sign In With Google
+                                    </button>
+                                </div>
+                            }
+                        >
+                        </GoogleLogin>
+
+                        <FacebookLogin
+                            appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`} // Facebook App ID
+                            autoLoad={false} // when open login page it will go to login with facebook if set autoLoad = true
+                            callback={responseFacebook}
+                            render={renderProps =>
+                                <div className="w-full flex justify-center">
+                                    <button
+                                        onClick={renderProps.onClick}
+                                        disabled={renderProps.disabled}
+                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                        <i className="fab fa-facebook mr-3 duration-500"/>Sign In With Facebook
+                                    </button>
+                                </div>
+                            }
+                        >
+                        </FacebookLogin>
+
+                        <Link to="/register" className="no-style w-100">
+                            <div className="w-full flex justify-center">
+                                <button
+                                    className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                    <i className="fa fa-user-plus mr-3 duration-500"/>Sign Up
+                                </button>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+                <div className="my-5 border-b text-center flex w-8/12">
+                    <span className="border-b border-solid flex-grow"/>
+                    <div
+                        className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
+                        Or sign with email
+                    </div>
+                    <span className="border-b border-solid flex-grow"/>
+                </div>
+                <div className="lg:w-6/12 sm:w-8/12 flex flex-col items-center w-11/12">
                     <form
-                        className="w-full flex-1 mt-8 text-indigo-500"
-                        onSubmit={handleSubmit}
-                    >
-                        <div className="mx-auto max-w-xs relative">
+                        className="w-full my-2 text-indigo-500"
+                        onSubmit={handleSubmit}>
+                        <div className="max-w-xs relative mx-auto">
                             <input
                                 type="email"
-                                placeholder="example@gmail.com"
+                                placeholder="Email"
                                 onChange={handleChange("email")}
                                 value={email}
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white my-2"
+                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:border focus:shadow-md my-2"
                             />
                             <input
                                 type="password"
                                 placeholder="Password"
                                 onChange={handleChange("password")}
                                 value={password}
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white my-2"
+                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:shadow-md my-2"
                             />
 
                             <div className="w-full d-flex justify-content-center">
@@ -136,67 +191,12 @@ export const Login = (props) => {
                                 </button>
                             </div>
                         </div>
-                        <div className="my-5 border-b-text-center">
-                            <div
-                                className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                                Or sign with email or social login
-                            </div>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <div>
-
-                            </div>
-                            <GoogleLogin
-                                clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
-                                onSuccess={responseGoogle}
-                                onFailure={responseGoogle}
-                                autoLoad={false}
-                                cookiePolicy={"single_host_origin"}
-                                render={(renderProps) => (
-                                    <div className="w-full d-flex justify-content-center">
-                                        <button type="submit"
-                                                className="d-flex d-inline-block p-5 w-100 mt-5 f6 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800">
-                                            <i className="fab fa-google mr-3 duration-500"/>Sign In With Google
-                                        </button>
-                                    </div>
-                                )}
-                            >
-                            </GoogleLogin>
-
-                            <FacebookLogin
-                                appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`} // Facebook App ID
-                                autoLoad={false} // when open login page it will go to login with facebook if set autoLoad = true
-                                callback={responseFacebook}
-                                render={renderProps =>
-                                    <div className="w-full d-flex justify-content-center">
-                                        <button
-                                            onClick={renderProps.onClick}
-                                            disabled={renderProps.disabled}
-                                            className="d-flex d-inline-block w-100 f6 p-5 mt-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800">
-                                            <i className="fab fa-facebook mr-3 duration-500"/>Sign In With Facebook
-                                        </button>
-                                    </div>
-                                }
-                            >
-                            </FacebookLogin>
-
-                            <Link to="/register" className="no-style w-100">
-                                <div className="w-full d-flex justify-content-center">
-                                    <button
-                                        className="d-flex d-inline-block f6 my-5 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100">
-                                        <i className="fa fa-user-plus mr-3 duration-500"/>Sign Up
-                                    </button>
-                                </div>
-                            </Link>
-                        </div>
                     </form>
                 </div>
             </div>
             <div className="flex-1 bg-indigo-100 text-center hidden lg:flex">
-                <div
-                    className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-                    style={{backgroundImage: `url(${authSvg})`}}
-                >
+                <div className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+                     style={{backgroundImage: `url(${authSvg})`}}>
                 </div>
             </div>
         </div>
