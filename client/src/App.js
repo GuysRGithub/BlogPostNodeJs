@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css"
 import "../src/assets/js/index"
 import {ToastContainer} from "react-toastify";
 
-import Auth from "./hocs/auth.js"
+import Auth from "./helpers/auth.js"
 import {Profile} from "./views/pages/profile/Profile.jsx";
 import {Register} from "./views/pages/auth/Register.jsx";
 import {Login} from "./views/pages/auth/Login.jsx";
@@ -19,6 +19,7 @@ import BlogEditor from "./views/pages/blog/BlogEditor";
 import IndexPage from "./views/pages/home/IndexPage";
 import BlogIndex from "./views/pages/blog/BlogIndex";
 import BlogShow from "./views/pages/blog/BlogShow.tsx";
+import {UpdateUser} from "./views/pages/auth/UpdateUser";
 
 function App() {
     return (
@@ -29,11 +30,12 @@ function App() {
                     <Route exact path={"/"} component={IndexPage}/>
 
                     {/* Authentication  Page */}
-                    <Route exact path={"/register"} component={Auth(Register, false)}/>
-                    <Route exact path={"/login"} component={Auth(Login, false)}/>
-                    <Route path="/users/activate/:token" component={Activate} />
-                    <Route path="/users/passwords/forget" component={ForgetPassword}/>
-                    <Route path="/users/passwords/reset/:token" component={ResetPassword}/>
+                    <Route exact path={"/users/register"} component={Auth(Register, false)}/>
+                    <Route exact path={"/users/login"} component={Auth(Login, false)}/>
+                    <Route exact path={"/users/private"} component={Auth(UpdateUser, true)}/>
+                    <Route exact path={"/users/activate/:token"} component={Activate} />
+                    <Route exact path={"/users/passwords/forget"} component={ForgetPassword}/>
+                    <Route exact path={"/users/passwords/reset/:token"} component={ResetPassword}/>
                     <Route exact path={"/users/profile"} component={Profile}/>
 
                     <Route exact path={"/blogs/new"} component={Auth(BlogEditor, true)} />

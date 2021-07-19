@@ -51,11 +51,6 @@ body {
   color: #24292e;
 }
 
-p {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-}
-
 a {
   //color: #c7a84e;
   text-decoration: none !important;
@@ -148,15 +143,4 @@ input.error {
     padding-bottom: 10px;
     font-weight: bold;
   }
-}
-
-input[type="number"],
-input[type="text"],
-input[type="email"],
-input[type="text"],
-input[type="tel"],
-textarea {
-  box-shadow: inset 0 0 10px 0 rgba(255, 255, 255, 0.56);
-  border: 1px solid #cccccc;
-  padding: 2px 8px;
 }

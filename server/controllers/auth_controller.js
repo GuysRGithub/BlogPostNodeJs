@@ -6,19 +6,17 @@ const UserMediaLibrary = require("../models/UserMediaLibrary.js")
 const {validationResult} = require("express-validator");
 const jwt = require("jsonwebtoken");
 const sgMail = require("@sendgrid/mail"); // Send email using sendgrid
+sgMail.setApiKey(process.env.MAIL_KEY);
 
 const {OAuth2Client} = require("google-auth-library");
 const fetch = require("node-fetch");
-
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 const {errorHandler} = require("../helpers/dbErrorHandling");
-sgMail.setApiKey(process.env.MAIL_KEY);
 
 exports.registerController = async (req, res) => {
-    console.log("Register Post", req.body);
     const {name, email, password} = req.body;
     const errors = validationResult(req);
 
-    console.log("Error", errors);
     if (!errors.isEmpty()) {
         const firstError = errors.array().map((error) => error.msg)[0];
         return res.status(400).json({
@@ -84,8 +82,6 @@ exports.registerController = async (req, res) => {
             });
     }
 };
-
-// Activation and save
 
 exports.activationController = async (req, res) => {
     const {token} = req.body;
@@ -192,6 +188,8 @@ exports.loginController = (req, res) => {
             const token = jwt.sign(
                 {
                     _id: user._id,
+                    name: user.name,
+                    email: user.email,
                 },
                 process.env.JWT_SECRET,
                 {
@@ -325,8 +323,6 @@ exports.resetController = (req, res) => {
         }
     }
 };
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 
 exports.googleLoginController = (req, res) => {
     const {tokenId} = req.body;

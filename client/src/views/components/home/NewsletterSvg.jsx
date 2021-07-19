@@ -19,8 +19,8 @@ const NewsletterSvg = function () {
                     <div className="mt-8 flex justify-center">
                         <input placeholder="Email"
                                className="focus:outline-none border border-fade-gray-wide hover:border-highlight px-3 fs-1 color-primary-dark"/>
-                        <div className="border border-fade-gray-wide hover:border-highlight py-2 px-3 inline-flex h-full">
-                            <p className="color-yellow-light cursor-pointer fs-sm-2 font-bold font-roboto">Subscribe</p>
+                        <div className="border border-fade-gray-wide hover:border-highlight px-3">
+                            <p className="color-yellow-light cursor-pointer fs-sm-2 font-bold font-roboto py-2">Subscribe</p>
                         </div>
                     </div>
                 </div>

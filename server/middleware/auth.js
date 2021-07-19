@@ -19,19 +19,19 @@ let auth = (req, res, next) => {
 
     jwt.verify(token, config.jwtSecretKey, (err, decoded) => {
         if (err || decoded == null) return
-        const {_id} = decoded;
+        const {_id, name, email} = decoded;
         AuthorUser.findById(_id, (err, user) => {
             if (err) throw err;
-            if (!user) {
+            if (!user || user.name !== name || user.email !== email) {
                 return res.json({
                     isAuthenticated: false,
                     error: true
                 })
+            } else {
+                req.token = token
+                req.user = user
+                next()
             }
-
-            req.token = token
-            req.user = user
-            next()
         })
     })
 

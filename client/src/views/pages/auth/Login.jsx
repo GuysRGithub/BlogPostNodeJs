@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import authSvg from "../../../assets/images/svg/login.svg";
 import {toast} from "react-toastify";
 import Axios from "axios";
 import {authenticate, isAuth} from "../../../helpers/auth";
 import {Link, Redirect} from "react-router-dom";
 import {GoogleLogin} from "react-google-login";
+import authSvg from "../../../assets/images/svg/login.svg";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props"
 import {
     USER_FACEBOOK_LOGIN_SERVER_URL,
@@ -104,9 +104,9 @@ export const Login = (props) => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 text-gray-900 flex md:flex-wrap lg:flex-no-wrap justify-center sm:p-0 md:p-4 lg:p-16 rounded-lg">
+        <div className="min-h-screen bg-gray-100 text-gray-900 flex md:flex-wrap lg:flex-no-wrap justify-center py-16 lg:p-16 rounded-lg">
             {isAuth() ? <Redirect to="/"/> : null}
-            <div className="xl:w-5/12 lg:w-6/12 w-9/12 m-0 sm:m-0 md:m-8 lg:m-0 bg-white shadow flex flex-col justify-center items-center py-12">
+            <div className="xl:w-5/12 lg:w-6/12 w-9/12 m-0 bg-white shadow flex flex-col justify-center items-center py-12">
                 <div className="lg:w-6/12 sm:w-8/12 w-11/12 flex flex-col items-center max-w-xs">
                     <h1 className="text-2xl xl:text-3xl font-extrabold font-josesans">Sign In For Blogs</h1>
                     <div className="w-full flex-1 mt-8 text-indigo-500 flex flex-col items-center">
@@ -121,7 +121,7 @@ export const Login = (props) => {
                                     <button
                                         onClick={renderProps.onClick}
                                         disabled={renderProps.disabled}
-                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold">
                                         <i className="fab fa-google mr-3 duration-500"/>Sign In With Google
                                     </button>
                                 </div>
@@ -138,7 +138,7 @@ export const Login = (props) => {
                                     <button
                                         onClick={renderProps.onClick}
                                         disabled={renderProps.disabled}
-                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                        className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold">
                                         <i className="fab fa-facebook mr-3 duration-500"/>Sign In With Facebook
                                     </button>
                                 </div>
@@ -146,10 +146,10 @@ export const Login = (props) => {
                         >
                         </FacebookLogin>
 
-                        <Link to="/register" className="no-style w-100">
+                        <Link to="/users/register" className="no-style w-100">
                             <div className="w-full flex justify-center">
                                 <button
-                                    className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-weight-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold font-josesans">
+                                    className="flex inline-block f6 my-2 p-5 font-roboto outline-none-imp font-bold align-items-center duration-500 text-gray-800 flex justify-center w-100 bg-indigo-200 hover:bg-indigo-400 rounded-md font-extrabold">
                                     <i className="fa fa-user-plus mr-3 duration-500"/>Sign Up
                                 </button>
                             </div>

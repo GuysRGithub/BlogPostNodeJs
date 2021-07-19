@@ -90,19 +90,6 @@ const BlogIndex = () => {
                     </section>
                 </div>
 
-                {/*<section className="w-8/12 mx-5">*/}
-                {/*    {Posts.length > 0 && (*/}
-                {/*        <div>*/}
-                {/*            {Posts.map((post) => (<div>{HtmlParser(post.content)}</div>))}*/}
-                {/*        </div>*/}
-                {/*        //     <div className="grid grid-cols-2 gap-8 mx-auto">*/}
-                {/*        //         /!*{Posts.map((post) => (*!/*/}
-                {/*        //         /!*    PostCardGrid({postViewSeparate: post})*!/*/}
-                {/*        //         /!*))}*!/*/}
-                {/*        //     </div>*/}
-                {/*    )}*/}
-
-                {/*</section>*/}
                 <section className="xl:w-3/12 md:w-100">
                     <div>
                         <h5 className="fw-8 font-pt-serif pb-4 border-white border-solid border-b-2">Trending

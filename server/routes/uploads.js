@@ -121,13 +121,6 @@ router.post('/images', function (req, res) {
             message: "error happening please try again",
         });
     }
-
-    // let tempFile = req.files.upload
-    // let tempFilePath = tempFile.path
-    //
-    // const targetUrl = path.join(__dirname, "./uploads/images/" + tempFile.name)
-
-
 });
 
 module.exports = router;
