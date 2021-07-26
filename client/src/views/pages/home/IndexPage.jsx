@@ -9,6 +9,8 @@ import PageLayout from "../../layouts/PageLayout";
 import ShowcasePost from "../../components/home/ShowcasePost";
 import NewsletterSvg from "../../components/home/NewsletterSvg";
 import PostViewModel from "../../../view_models/PostViewModel";
+import PostVerticalWide from "../../components/shared/PostVerticalWide";
+import PostVertical from "../../components/shared/PostVertical";
 
 const jwt = require("jsonwebtoken");
 
@@ -46,31 +48,7 @@ export default function () {
                 <div className="lg:grid-cols-3 md:grid-cols-2 sm:gap-4 lg:gap-8 xl:gap-16 grid">
                     {posts.map((post) => (
                         <div key={post._id}>
-                            <div>
-                                <img className="img-post-fixed-height"
-                                     src={post.src || require("../../../assets/images/posts/affection-baby-baby-girl-beautiful-377058.jpg").default}
-                                     alt=""/>
-                            </div>
-                            <div className="pr-6">
-                                <h6 className="mt-3 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-gray-primary font-bold italic fs-sm-2">{post.createdAt}</p>
-                                <div className="flex justify-between">
-                                    <Link to={`/blogs/${post._id}`}>
-                                        <div
-                                            className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
-                                            More<i className="fa fa-arrow-right ml-2"/></div>
-                                    </Link>
-
-                                    {post.authorId === userId && (
-                                        <Link to={`/blogs/edit/${post._id}`}>
-                                            <div
-                                                className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Edit<i
-                                                className="fa fa-arrow-right ml-2"/></div>
-                                        </Link>
-                                    )}
-
-                                </div>
-                            </div>
+                            <PostVerticalWide post={post} userId={userId}/>
                         </div>
                     ))}
                 </div>
@@ -88,17 +66,7 @@ export default function () {
                 <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-16 lg:gap-8 md:gap-4 grid">
                     {posts.map(post => (
                         <div key={post._id}>
-                            <div>
-                                <img className="img-post-fixed-height-card"
-                                     src={post.src || require("../../../assets/images/posts/GNispE-ssZQyBTMJbGDDsMhq.jpg").default}
-                                     alt=""/>
-                            </div>
-                            <div className="pr-6 bg-white shadow-md px-3 py-5">
-                                <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-gray-primary font-bold italic fs-sm-2">{post.createdAt}</p>
-                                <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
-                                    More<i className="fa fa-arrow-right ml-2"/></div>
-                            </div>
+                           <PostVertical post={post} userId={userId} />
                         </div>
                     ))}
 

@@ -403,3 +403,15 @@ input::placeholder {
   justify-content: space-between;
   margin: 20px 0;
 }
+
+.max-line-2 {
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.CodeMirror {
+  height: 100% !important
+}

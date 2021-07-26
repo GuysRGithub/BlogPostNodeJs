@@ -5,13 +5,13 @@ import {toast} from "react-toastify";
 import HtmlParser from "react-html-parser";
 import PageLayout from "../../layouts/PageLayout";
 import SideCardOverlay from "../../components/shared/SideCardOverlay";
-import {Link} from "react-router-dom";
 import {getRandom} from "../../../helpers/asset_helper";
 import {style2object} from "../../../helpers/data_process_helper";
 import PostViewModel from "../../../view_models/PostViewModel";
 import {PostResponse, PostsResponse} from "../../../interface/PostsResponse";
 import ImageEditor from "../../components/editor/ImageEditor";
 import ReactDOM from "react-dom";
+import PostVerticalWide from "../../components/shared/PostVerticalWide";
 
 const BlogShow = (props: PropsWithChildren<any>) => {
     const blogId = props.match.params.blogId;
@@ -94,13 +94,10 @@ const BlogShow = (props: PropsWithChildren<any>) => {
                         <h5 className="fw-8 font-pt-serif pb-4 border-white border-solid border-b-2">Follow Us</h5>
                         <div>
                             <ul className="icons d-flex content-between justify-content-between">
-                                <li><a href="#" className="icon brands fa-twitter"><span
-                                    className="label">Twitter</span></a>
-                                </li>
+                                <li><a href="#" className="icon fab brands fa-twitter"/></li>
                                 <li><a href="#" className="icon fab brands fa-facebook-f"/></li>
                                 <li><a href="#" className="icon fab brands fa-github"/></li>
-                                <li><a href="#" className="fab brands fa-dribbble"/>
-                                </li>
+                                <li><a href="#" className="fab brands fa-dribbble"/></li>
                                 <li><a href="#" className="fab solid fa-instagram"/></li>
                                 <li><a href="#" className="fab solid fa-youtube"/></li>
                                 <li><a href="#" className="fab solid fa-linkedin-in"/></li>
@@ -113,10 +110,10 @@ const BlogShow = (props: PropsWithChildren<any>) => {
                             Articles</h5>
                         {Posts.slice(Posts.length - numPostSide).map((post) => (
                             <div className="d-flex mt-5">
-                                <img className="img-post-thumbnail" alt=""
+                                <img className="img-post-thumbnail flex-shrink-0" alt=""
                                      src={post.src || require("../../../assets/images/posts/photographer-865295_1920.jpg").default}/>
-                                <div className="flex-grow-1 ml-3">
-                                    <h6 className="fw-6 font-pt-serif fs-1">
+                                <div className="flex-grow-1 ml-3 flex flex-col justify-between">
+                                    <h6 className="fw-6 font-pt-serif fs-1 max-line-2">
                                         {post.title}
                                     </h6>
                                     <p className="fs-sm-2 fw-5 font-pt-serif color-fade">Lifestyle, Travel</p>
@@ -136,19 +133,7 @@ const BlogShow = (props: PropsWithChildren<any>) => {
                 <div className="grid-cols-3 gap-16 grid">
                     {getRandom(Posts, 3).map((post: PostViewModel) => (
                         <div key={post._id}>
-                            <div>
-                                <img className="img-post-fixed-height"
-                                     src={post.src || require("../../../assets/images/posts/affection-baby-baby-girl-beautiful-377058.jpg").default}
-                                     alt=""/>
-                            </div>
-                            <div className="pr-6">
-                                <h6 className="mt-lg-5 color-primary-dark font-bold font-josesans letter-space-2 word-space-6">{post.title}</h6>
-                                <p className="color-gray-fade-primary italic fs-sm-2">{post.createdAt}</p>
-                                <Link to={`/blogs/${post._id}`}>
-                                    <div className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto">Read
-                                        More<i className="fa fa-arrow-right ml-2"/></div>
-                                </Link>
-                            </div>
+                            <PostVerticalWide post={post} />
                         </div>
                     ))}
                 </div>

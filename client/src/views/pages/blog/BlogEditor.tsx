@@ -23,7 +23,6 @@ import {savePost} from "../../../actions/user_actions";
 
 import {State} from "react-toastify/dist/hooks/toastContainerReducer";
 import ReactDOM from 'react-dom';
-
 import ImageEditor from "../../components/editor/ImageEditor";
 import {ImageEditorFocusCallbackParams} from "../../../interface/ImageEditorFocusCallbackParams";
 import {PostResponse} from "../../../interface/PostsResponse";
@@ -32,6 +31,10 @@ import {connect} from "react-redux"
 import Axios from "axios";
 import {BLOG_SERVER_URL} from "../../../config/config";
 import {style2object} from "../../../helpers/data_process_helper";
+import 'codemirror/mode/xml/xml';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/dracula.css';
+import HtmlEditor from "../../components/editor/HtmlEditor";
 
 declare var textField: Window
 
@@ -54,6 +57,8 @@ class BlogEditor extends Component {
     private mapFontSize: number[] = [];
     private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
     private currentImageEditor: ImageEditor | null = null;
+    private htmlEditor = React.createRef<HtmlEditor>();
+    private showCode = false;
     private readonly blogId: string | null = null
 
     constructor(props: PropsWithChildren<any>) {
@@ -1279,6 +1284,44 @@ class BlogEditor extends Component {
 
     }
 
+    handleToggleCode() {
+        let iconCode = document.getElementById("editor-icon-toggle-code")
+        if (iconCode == null) return;
+        if (textField.document.body.children.length <= 0) return;
+        const htmlText = textField.document.body.innerHTML;
+
+        iconCode.classList.toggle("active")
+        this.showCode = !this.showCode;
+
+        /*      //////////////////////          IF NOT SHOW CODE UN HIDE ALL ELEMENTS AND HIDE html editor            ///////////////////////     */
+        if (!this.showCode) {
+            for (let i = 0; i < textField.document.body.children.length; i++) {
+                (textField.document.body.children[i] as HTMLElement).style['display'] = '';
+            }
+            if (this.htmlEditor.current != null) {
+                this.htmlEditor.current.toggleVisible(false)
+            }
+            return;
+        }
+
+        /*      //////////////////////          HIDE ALL CHILDREN             ///////////////////////     */
+        for (let i = 0; i < textField.document.body.children.length; i++) {
+            (textField.document.body.children[i] as HTMLElement).style['display'] = 'None';
+        }
+
+        /*      //////////////////////          IF ADDED CODE JUST NEED TO SHOW  IT             ///////////////////////     */
+        if (this.htmlEditor.current != null) {
+            this.htmlEditor.current.toggleVisible(true)
+            return;
+        }
+
+        const htmlEditor = <HtmlEditor value={htmlText} ref={this.htmlEditor}/>
+        const fragment = textField.document.createDocumentFragment()
+        ReactDOM.render(htmlEditor, fragment)
+        textField.document.body.appendChild(fragment)
+
+    }
+
     toggleActiveCallback = (callbackParams: ImageEditorFocusCallbackParams) => {
         if (callbackParams.focus) {
             this.currentImageEditor = callbackParams.ref
@@ -1382,6 +1425,12 @@ class BlogEditor extends Component {
         function listItemsOrderedSelection(event: React.MouseEvent<HTMLElement>) {
             onIconEditorClicked(event)
             scope.handleListElement(true)
+        }
+
+        function toggleCode(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+
+            scope.handleToggleCode()
         }
 
         /************************************************************************************************
@@ -1615,6 +1664,12 @@ class BlogEditor extends Component {
                             </div>
                             {/*</div>*/}
 
+                            <div className="center-element-inner editor-icon tooltip"
+                                 id="editor-icon-toggle-code"
+                                 onClick={toggleCode}>
+                                <span className="tooltip-text">Toggle code</span>
+                                <i className="fas fa-code"/>
+                            </div>
 
                             <div className="center-element-inner editor-icon tooltip">
                                 <span className="tooltip-text">Undo</span>
@@ -1650,6 +1705,7 @@ class BlogEditor extends Component {
                     padding: "3rem",
                     display: "none"
                 }}/>
+
             </div>
         )
     }
