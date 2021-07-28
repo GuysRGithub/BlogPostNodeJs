@@ -21,11 +21,9 @@ import MediaLibrary from "../../components/shared/MediaLibrary";
 import PopupLink from "../../components/editor/Popup";
 import {savePost} from "../../../actions/user_actions";
 
-import {State} from "react-toastify/dist/hooks/toastContainerReducer";
 import ReactDOM from 'react-dom';
-import ImageEditor from "../../components/editor/ImageEditor";
-import {ImageEditorFocusCallbackParams} from "../../../interface/ImageEditorFocusCallbackParams";
-import {PostResponse} from "../../../interface/PostsResponse";
+import ImageEditor, {ImageEditorFocusCallbackParams} from "../../components/editor/ImageEditor";
+import {PostResponse} from "../../../interface/response_posts";
 import {toast} from "react-toastify";
 import {connect} from "react-redux"
 import Axios from "axios";
@@ -42,8 +40,13 @@ const FONT_FAMILY_KEY = "FONT_FAMILY_KEY_EDITOR"
 const FONT_SIZE_KEY = "FONT_SIZE_KEY_EDITOR"
 const TAG_KEY = "TAG_KEY_EDITOR"
 
+interface State {
+    disableEditor: boolean,
+    showCode: boolean,
+}
+
 // noinspection DuplicatedCode
-class BlogEditor extends Component {
+class BlogEditor extends Component<PropsWithChildren<any>, State> {
     private mapTag = [
         {"key": "Normal Text", "value": "p"},
         {"key": "Heading 1", "value": "h1"},
@@ -58,12 +61,12 @@ class BlogEditor extends Component {
     private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
     private currentImageEditor: ImageEditor | null = null;
     private htmlEditor = React.createRef<HtmlEditor>();
-    private showCode = false;
     private readonly blogId: string | null = null
 
     constructor(props: PropsWithChildren<any>) {
         super(props);
         this.blogId = props.match.params.blogId;
+        this.state = {disableEditor: false, showCode: false}
         this.handleIFrameKeyPress = this.handleIFrameKeyPress.bind(this)
         this.handleIFrameKeyDown = this.handleIFrameKeyDown.bind(this)
         this.handleSelectionChange = this.handleSelectionChange.bind(this)
@@ -181,28 +184,7 @@ class BlogEditor extends Component {
                 .then(response => {
                     if (response.data.success) {
                         const content = response.data.doc.content
-                        /*      //////////////////////          MUST NEED TO USE textField.document because it is contextual             ///////////////////////     */
-                        const fragment = textField.document.createRange().createContextualFragment(content)
-                        const attrs = fragment.querySelectorAll("figure")
-                        attrs.forEach(att => {
-                            for (let i = 0; i < (att?.attributes?.length || 2); i++) {
-                                if (att?.attributes[i].nodeName == "style") {
-                                    const src = att.querySelector("img")?.src
-                                    const figcaption = att.querySelector("figcaption")
-                                    const props = {
-                                        imageSrc: src,
-                                        elementStyle: style2object(att?.attributes[i].nodeValue),
-                                        toggleActiveCallback: this.toggleActiveCallback,
-                                        caption: figcaption?.innerHTML
-                                    }
-                                    const imageElement = <ImageEditor {...props}/>
-                                    ReactDOM.render(imageElement, att.parentElement)
-                                }
-                            }
-                        })
-
-                        textField.document.body.appendChild(fragment)
-
+                        this.renderContent(content);
                     } else {
                         toast.error("Something went wrong when get ShowPost")
                     }
@@ -236,6 +218,8 @@ class BlogEditor extends Component {
     }
 
     handleIFrameKeyPress(evt: KeyboardEvent) {
+        if (this.state.disableEditor) return;
+
         const charCode = evt.key.toLowerCase();
         // @ts-ignore
         const editorState = this.props.state;
@@ -447,6 +431,7 @@ class BlogEditor extends Component {
     }
 
     handleIFrameKeyDown(evt: KeyboardEvent) {
+        if (this.state.disableEditor) return;
         const selection = textField.window.getSelection()
         if (selection == null) return;
 
@@ -490,25 +475,27 @@ class BlogEditor extends Component {
             return;
         }
 
-        if (charCode === "backspace") {
-            const container = getFirstParentContainer(rootSelection)
-            if (container?.previousSibling) {
-                const element = container.previousSibling
-                if (element.childNodes.length == 0) return;
-                const startNode = element.childNodes[0]
-                const newRange = document.createRange()
-                newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
-                newRange.collapse(true)
-                selection.removeAllRanges()
-                selection.addRange(newRange)
-            }
-            container?.remove()
-            evt.preventDefault()
-        }
+        /*      //////////////////////          IF WANT TO PLACE CURSOR IN BEGINNING OF PREVIOUS WHEN AFTER DELETE ELEMENT             ///////////////////////     */
+        // if (charCode === "backspace") {
+        //     const container = getFirstParentContainer(rootSelection)
+        //     if (container?.previousSibling) {
+        //         const element = container.previousSibling
+        //         if (element.childNodes.length == 0) return;
+        //         const startNode = element.childNodes[0]
+        //         const newRange = document.createRange()
+        //         newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
+        //         newRange.collapse(true)
+        //         selection.removeAllRanges()
+        //         selection.addRange(newRange)
+        //     }
+        //     container?.remove()
+        //     evt.preventDefault()
+        // }
 
     }
 
     handleSelectionChange() {
+        if (this.state.disableEditor) return;
         let selection = textField.window.getSelection()
 
         if (selection == null) return
@@ -1291,13 +1278,19 @@ class BlogEditor extends Component {
         const htmlText = textField.document.body.innerHTML;
 
         iconCode.classList.toggle("active")
-        this.showCode = !this.showCode;
+        const showCode = !this.state.showCode
+        this.setState({showCode: showCode})
+        this.setState({disableEditor: showCode})
 
         /*      //////////////////////          IF NOT SHOW CODE UN HIDE ALL ELEMENTS AND HIDE html editor            ///////////////////////     */
-        if (!this.showCode) {
-            for (let i = 0; i < textField.document.body.children.length; i++) {
-                (textField.document.body.children[i] as HTMLElement).style['display'] = '';
+        if (!showCode) {
+            const code = this.htmlEditor?.current?.getCode()
+            if (code) {
+                this.renderContent(code)
             }
+            // for (let i = 0; i < textField.document.body.children.length; i++) {
+            //     (textField.document.body.children[i] as HTMLElement).style['display'] = '';
+            // }
             if (this.htmlEditor.current != null) {
                 this.htmlEditor.current.toggleVisible(false)
             }
@@ -1328,6 +1321,30 @@ class BlogEditor extends Component {
         } else {
             this.currentImageEditor = null
         }
+    }
+
+    private renderContent(content: string) {
+        /*      //////////////////////          MUST NEED TO USE textField.document because it is contextual             ///////////////////////     */
+        const fragment = textField.document.createRange().createContextualFragment(content)
+        const attrs = fragment.querySelectorAll("figure")
+        attrs.forEach(att => {
+            for (let i = 0; i < (att?.attributes?.length || 2); i++) {
+                if (att?.attributes[i].nodeName == "style") {
+                    const src = att.querySelector("img")?.src
+                    const figcaption = att.querySelector("figcaption")
+                    const props = {
+                        imageSrc: src,
+                        elementStyle: style2object(att?.attributes[i].nodeValue),
+                        toggleActiveCallback: this.toggleActiveCallback,
+                        caption: figcaption?.innerHTML
+                    }
+                    const imageElement = <ImageEditor {...props}/>
+                    ReactDOM.render(imageElement, att.parentElement)
+                }
+            }
+        })
+
+        textField.document.body.appendChild(fragment)
     }
 
     /************************************************************************************************
@@ -1451,19 +1468,20 @@ class BlogEditor extends Component {
                     container.remove()
                 }
             })
-
             const popup = <PopupLink text={selectionNode?.nodeValue ?? ""}
-                                     onApply={function (text: string, link: string) {
-                                         container.remove()
+                                     onApply={(text: string, link: string) => {
                                          // textField.document.getElementById("popup-add-link")?.remove()
                                          const a = document.createElement("a")
                                          a.title = text
                                          a.href = link
                                          a.appendChild(document.createTextNode(text))
-                                         textField.document.body.appendChild(a)
+                                         // textField.document.body.appendChild(a)
+                                         container.parentNode?.insertBefore(a, container)
+                                         container.remove()
                                          if (selectionNode?.nodeType === Node.TEXT_NODE) {
                                              selectionNode?.remove()
                                          }
+                                         scope.setState({disableEditor: false})
                                      }}/>
 
             if (constraint == null) {
@@ -1474,6 +1492,8 @@ class BlogEditor extends Component {
 
             constraint.appendChild(container)
             ReactDOM.render(popup, container)
+
+            scope.setState({disableEditor: true})
         }
 
         function pickImage() {
