@@ -8,7 +8,6 @@ import PostViewModel from "../../../view_models/PostViewModel.js";
 import {Redirect} from "react-router-dom";
 import {toast} from "react-toastify";
 import Footer from "../../components/shared/Footer";
-import Newsletter from "../../components/home/Newsletter";
 
 export const Profile = () => {
 
@@ -110,28 +109,35 @@ export const Profile = () => {
                 {/* Main */}
                 <div id="main" className="w-4/5">
                     {/* Intro */}
-                    <section id="top" className="relative h-screen flex justify-center items-center mb-8 shadow-md">
-                        <div className="text-center text-white">
-                            <div className="">
-                                <img src={require("../../../assets/images/profile/tropical-5074304_640.jpg").default}
-                                     alt=""
-                                     className="absolute top-0 left-0 w-full max-h-full z-neg-10"/>
-                            </div>
-                            <header className="w-8/12 text-center mx-auto">
-                                <h2 className="font-josesans">{Profile.introduction}</h2>
+                    <section id="top" className="relative h-4/5 flex justify-center items-center mb-8 shadow-md">
+                        <div className="text-left mx-16">
+                            {/*<div className="">*/}
+                            {/*    <img src={require("../../../assets/images/profile/tropical-5074304_640.jpg").default}*/}
+                            {/*         alt=""*/}
+                            {/*         className="absolute top-0 left-0 w-full max-h-full z-neg-10"/>*/}
+                            {/*</div>*/}
+                            <header className="">
+                                <h2 className="font-josesans fs-5 font-bold">{Profile.introduction}</h2>
                             </header>
+                            <div className="mt-8">
+                                <p className="fs-2 my-8 color-gray-fade-primary">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab asperiores assumenda
+                                    aut consequatur deleniti dolore ea eveniet iste libero modi molestias neque possimus
+                                    praesentium, quos reiciendis rem ut vel veniam.
+                                </p>
+                            </div>
                             <footer>
-                                {/*<div*/}
-                                {/*    className="color-yellow-light mt-3 cursor-pointer font-bold font-roboto border inline-block px-5 py-2">*/}
-                                {/*    <a href="">Read More</a>*/}
-                                {/*</div>*/}
+                                <div
+                                    className="color-yellow-light mt-8 cursor-pointer font-bold font-roboto border inline-block px-5 py-2">
+                                    <a href="">Learn more</a>
+                                </div>
                             </footer>
                         </div>
                     </section>
                     {/* Portfolio */}
                     <section id="portfolio"
                              className="flex justify-center items-center text-center px-16 py-16 shadow-md">
-                        <div className="container">
+                        <div className="text-left">
                             <header>
                                 <h2 className="font-josesans fs-5 font-bold">Portfolio</h2>
                             </header>
@@ -141,68 +147,28 @@ export const Profile = () => {
                                 </p>
                             </div>
                             <div className="flex">
-                                <div className="w-4/12 pr-4 col-12-mobile">
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/mockup-3684376_640.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Ipsum Feugiat</h3>
-                                        </header>
-                                    </article>
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/pic03.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Rhoncus Semper</h3>
-                                        </header>
-                                    </article>
-                                </div>
-                                <div className="w-4/12 pr-4 col-12-mobile">
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/photography-3749383_640.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Magna Nullam</h3>
-                                        </header>
-                                    </article>
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/pic05.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Natoque Vitae</h3>
-                                        </header>
-                                    </article>
-                                </div>
-                                <div className="w-4/12 pr-4 col-12-mobile">
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/sunset-4509879_1280.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Dolor Penatibus</h3>
-                                        </header>
-                                    </article>
-                                    <article className="py-4">
-                                        <a href="#" className="image fit"><img
-                                            src={require("../../../assets/images/profile/tropical-5074304_640.jpg").default}
-                                            alt=""/></a>
-                                        <header>
-                                            <h3>Orci Convallis</h3>
-                                        </header>
-                                    </article>
-                                </div>
+                                {[...Array(3).keys()].map(i => (
+                                    <div className="md:w-4/12 pr-4 col-12-mobile w-full">
+                                        {Posts.slice(i * 2, i * 2 + 2).map(post => (
+                                            <article className="py-4 mt-4 bg-white shadow-md">
+                                                <a href="#" className="image fit"><img
+                                                    src={post.src || require("../../../assets/images/profile/mockup-3684376_640.jpg").default}
+                                                    alt=""/></a>
+                                                <header>
+                                                    <h5 className="font-josesans text-center fs-2 mt-4">{post.title}</h5>
+                                                </header>
+                                            </article>
+                                        ))}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>
                     {/* About Me */}
                     <section id="about" className="flex justify-center items-center text-center px-16 py-16 shadow-md">
-                        <div>
+                        <div className="text-left">
                             <header>
-                                <h2 className="font-josesans font-bold fs-5">About Me</h2>
+                                <h2 className="font-josesans text-left font-bold fs-5">About Me</h2>
                             </header>
                             <div className="my-8">
                                 <a href="#">
@@ -217,7 +183,7 @@ export const Profile = () => {
                     {/* Contact */}
                     <section id="contact"
                              className="flex justify-center items-center text-center px-16 py-16 shadow-md">
-                        <div className="container">
+                        <div className="text-left">
                             <header>
                                 <h2 className="font-josesans font-bold fs-5">Contact</h2>
                             </header>
@@ -225,14 +191,59 @@ export const Profile = () => {
                                 Elementum sem parturient nulla quam placerat viverra
                                 mauris non cum elit tempus ullamcorper dolor. Libero rutrum ut lacinia
                                 donec curae mus. Eleifend id porttitor ac ultricies lobortis sem nunc
-                                orci ridiculus faucibus a consectetur. Porttitor curae mauris urna mi dolor.</p>
-                            <Newsletter/>
+                                orci ridiculus faucibus a consectetur. Porttitor curae mauris urna mi dolor.
+                            </p>
+                            <div className="flex">
+                                <div className="w-8/12 flex-shrink-0">
+                                    <div className="flex">
+                                        <input
+                                            type="text"
+                                            placeholder="Name"
+                                            className="w-full px-8 mr-4 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:border focus:shadow-md my-2"
+                                        />
+                                        <input
+                                            type="email"
+                                            placeholder="Email"
+                                            className="w-full px-8 ml-4 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:border focus:shadow-md my-2"
+                                        />
+                                    </div>
+                                    <div>
+                                    <textarea
+                                        placeholder="Message"
+                                        className="w-full h-48 px-8 py-4 rounded-lg font-medium bg-gray-100 border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:border focus:shadow-md my-2"
+                                    />
+                                    </div>
+                                </div>
+                                <div className="ml-8">
+                                    <div className="">
+                                        <p className="fs-2 color-gray-fade-primary">
+                                            <i className="fas fa-home fa-1x mt-2 mr-4"/>
+                                            1234 Somewhere Rd.
+                                            Nashville, TN 00000
+                                            United States
+                                        </p>
+                                    </div>
+                                    <div className="mt-8">
+                                        <p className="fs-2 color-gray-fade-primary">
+                                            <i className="fas fa-phone fa-1x mt-2 mr-4"/>
+                                            000-000-0000
+                                        </p>
+                                    </div>
+                                    <div className="mt-8">
+                                        <p className="fs-2 color-gray-fade-primary">
+                                            <i className="fas fa-mail-bulk fa-1x mt-2 mr-4"/>
+                                            hello@untitled.tld
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </section>
                     {/* Posts */}
                     <section id="posts" className="px-16 py-16 shadow-md">
-                        <h2 className="font-josesans font-bold fs-5">Posts</h2>
-                        {Posts.length > 0 && (<div>
+                        <h2 className="font-josesans font-bold fs-5">Popular Posts</h2>
+                        {Posts.length > 0 && (<div className="grid grid-cols-2 gap-8">
                                 {Posts.map((post) => (<div className="myl-10">
                                         <PostCardHorizontal post={post}/>
                                     </div>
