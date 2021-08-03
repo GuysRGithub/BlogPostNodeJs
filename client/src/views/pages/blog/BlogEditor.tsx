@@ -4,8 +4,8 @@ import {
     getContainerSelectedElements,
     getFirstChildContainer,
     getFirstChildWithTag,
-    getFirstParentContainer,
-    getFirstParentWithTag, getSelectedElementTags, tagsUnTouch
+    getFirstParentContainer, getFirstParentTextNode,
+    getFirstParentWithTag, getSelectedElementTags, hasParentWithTag, removeAllText, removeParent, tagsUnTouch
 } from "../../../utils/editor_utils";
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
@@ -88,8 +88,8 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
 
         if (textFieldDoc.addEventListener) {
             textFieldDoc.addEventListener("keypress", this.handleIFrameKeyPress, false);
+            // textFieldDoc.addEventListener("keydown", this.handleIFrameKeyDown, false)
             textFieldDoc.addEventListener("selectionchange", this.handleSelectionChange, false);
-            textFieldDoc.addEventListener("keydown", this.handleIFrameKeyDown, false)
             /************************************************************************************************
              * Hide Popup Selection when click outside
              ************************************************************************************************/
@@ -193,7 +193,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             return
         }
 
-        textField.document.body.innerHTML = "<p contenteditable='true'><span><br></span></p>"
+        textField.document.body.innerHTML = "<p contenteditable='true'></p>"
     }
 
     handleImageChosen(imageSrc: string | null) {
@@ -221,24 +221,24 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         if (this.state.disableEditor) return;
 
         const charCode = evt.key.toLowerCase();
-        // @ts-ignore
         const editorState = this.props.state;
-        // @ts-ignore
         const dispatch = this.props.dispatch;
+        const useCurrentStyle = editorState.useCurrentStyle;
         const selection = textField.window.getSelection()
         if (selection == null) return;
         if (selection.rangeCount == 0) return;
         const range = selection.getRangeAt(0)
         if (range == null) return;
+        if (charCode === 'enter') return;
 
         let rootSelection = selection.anchorNode as HTMLElement | null
-        const tagNewElement = editorState.tagNewElement
+        const tagNewElement = useCurrentStyle ? editorState.tagNewElement : "p"
 
         ////////////////////////////////          PREVENT BROWSER AUTO CREATE NEW ELEMENT            ////////////////////////////////
-        if ((rootSelection?.textContent?.trim()?.length || 0) == 0 && charCode == "enter") {
+        if ((rootSelection?.textContent?.trim()?.length || 0) == 0 && charCode === "enter") {
             evt.preventDefault()
             const span = document.createElement('span')
-            const element = document.createElement("p")
+            const element = document.createElement(tagNewElement)
             const parentSelection = getFirstParentContainer(rootSelection)
 
             span.innerHTML = "<br>"
@@ -269,122 +269,106 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             return;
         }
 
-        // If body then insert <p> element
         const tagName = (rootSelection as HTMLElement)?.tagName?.toLowerCase()
-        if (rootSelection != null
-            && (rootSelection as HTMLElement).tagName
-            && !containerTags.includes(tagName)
-            && !tagsUnTouch.includes(tagName)) {
-            evt.preventDefault()
-            //////////////////////////////////////////////////
-            let element = document.createElement(tagNewElement)
-            const span = document.createElement('span')
-            // Apply style and set not changed style
-            this.applyEditorStyleElement(span)
+        // If tagName not in container and unTouch tag then insert new element
+        // if (rootSelection != null
+        //     && (rootSelection as HTMLElement).tagName
+        //     && !containerTags.includes(tagName)
+        //     && !tagsUnTouch.includes(tagName)) {
+        //     evt.preventDefault()
+        //     //////////////////////////////////////////////////
+        //     let element = document.createElement(tagNewElement)
+        //     const span = document.createElement('span')
+        //     // Apply style only if use current style and set not changed style
+        //     if (useCurrentStyle) {
+        //         this.applyEditorStyleElement(span)
+        //     }
+        //     dispatch(setStyleNotChangeEditor())
+        //
+        //     span.innerText = charCode
+        //     element.appendChild(span)
+        //     ////////////////////////////////          CAREFULLY            ////////////////////////////////
+        //     element.style['white-space'] = 'normal'
+        //     element.contentEditable = 'true'
+        //     span.style['white-space'] = 'normal'
+        //
+        //     rootSelection.appendChild(element)
+        //
+        //     if (element.childNodes.length == 0) return;
+        //     const startNode = element.childNodes[0]
+        //     const newRange = document.createRange()
+        //     newRange.setStart(startNode, 1)
+        //     newRange.collapse(true)
+        //     selection.removeAllRanges()
+        //     selection.addRange(newRange)
+        //
+        //     return;
+        // }
 
-            dispatch(setStyleNotChangeEditor())
-
-            span.innerText = charCode
-            element.appendChild(span)
-            ////////////////////////////////          CAREFULLY            ////////////////////////////////
-            element.style['white-space'] = 'normal'
-            element.contentEditable = 'true'
-            span.style['white-space'] = 'normal'
-
-            rootSelection.appendChild(element)
-
-            if (element.childNodes.length == 0) return;
-            const startNode = element.childNodes[0]
-            const newRange = document.createRange()
-            newRange.setStart(startNode, 1)
-            newRange.collapse(true)
-            selection.removeAllRanges()
-            selection.addRange(newRange)
-
-            return;
-        }
-
-        // Char code is enter
-        if (editorState.isStyleChanged || charCode === 'enter') {
+        if (charCode === 'enter') {
+            console.log("Log", 'enter')
             evt.preventDefault()
             let selection = textField.window.getSelection()
             if (selection == null) return
-
-            // Get parent node of selection node
             const parentNode = getFirstParentContainer(selection.anchorNode)
-            // Get range selection
             const range = selection.getRangeAt(0)
             let element;
-            // If is enter (break) then insert container (p or div)
-            if (charCode === 'enter') {
-                // Get the text of selection element
-                let currentContent = range.commonAncestorContainer.textContent
-                // Get the string after cursor of element
-                let remainStr = currentContent?.slice(range.startOffset).toString().trim() ?? "";
-                if (currentContent && currentContent.toString().trim().length > 0) {
+            let currentContent = range.commonAncestorContainer.textContent
+            let strAfterCursor = currentContent?.slice(range.startOffset).toString() ?? "";
+            let strBeforeCursor = currentContent?.slice(0, range.startOffset).toString() ?? "";
 
-                }
-                ///////////////////////////////////////////////////////////////////////////////
-                if (parentNode != null) {
-                    element = document.createElement("p")
-                    element.contentEditable = "true"
-                    element.style.cssText = document.defaultView?.getComputedStyle(parentNode, "").cssText ?? parentNode.style.cssText;
+            if (currentContent && currentContent.toString().length > 0) {
 
-                    let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                    if (selectionNode == null) return;
-                    const newContent = currentContent?.replace(remainStr, "") ?? ""
-                    ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
-                    if (newContent?.trim().length == 0) {
-                        selectionNode.innerHTML = "<br>"
-                    } else {
-                        selectionNode.innerText = newContent
-                    }
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+            if (parentNode != null) {
+                element = document.createElement("p")
+                element.contentEditable = "true"
+                element.style.cssText = document.defaultView?.getComputedStyle(parentNode, "").cssText ?? parentNode.style.cssText;
 
-                    /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
-                    /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
-                    const span = getFirstChildWithTag("span", parentNode)?.cloneNode(false) as HTMLElement | null
-                    if (span != null) {
-                        if (remainStr.length == 0) {
-                            span.innerHTML = "<br>"
-                        } else {
-                            span.innerText = remainStr
-                        }
-                        element.appendChild(span)
-                    } else {
-                        element.innerText = remainStr
-                    }
-
+                let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+                if (selectionNode == null) return;
+                ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+                if (strBeforeCursor?.trim().length == 0) {
+                    selectionNode.innerHTML = "<br>"
                 } else {
-                    element = document.createElement("p")
-                    const span = document.createElement('span')
-
-                    this.applyEditorStyleElement(span, true);
-                    /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
-                    span.innerHTML = '<br>'
-                    /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
-                    if (remainStr) {
-                        span.innerText += remainStr
-                        let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                        if (selectionNode == null) return;
-                        const newContent = currentContent?.replace(remainStr, "") ?? ""
-                        ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
-                        if (newContent?.trim().length == 0) {
-                            selectionNode.innerHTML = "<br>"
-                        } else {
-                            selectionNode.innerText = newContent
-                        }
-                    }
-                    element.appendChild(span)
+                    selectionNode.innerText = strBeforeCursor
                 }
+
+                /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
+                /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
+                const span = document.createElement("span")
+                if (strAfterCursor.length == 0) {
+                    span.innerHTML = "<br>"
+                } else {
+                    span.innerText = strAfterCursor
+                }
+                element.appendChild(span)
 
             } else {
-                element = document.createElement("span")
-                element.innerText = charCode
+                element = document.createElement("p")
+                const span = document.createElement('span')
+
+                if (useCurrentStyle) {
+                    this.applyEditorStyleElement(span, true);
+                }
+                /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
+                span.innerHTML = '<br>'
+                /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
+                if (strAfterCursor) {
+                    span.innerText += strAfterCursor
+                    let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+                    if (selectionNode == null) return;
+                    ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+                    if (strBeforeCursor?.length == 0) {
+                        selectionNode.innerHTML = "<br>"
+                    } else {
+                        selectionNode.innerText = strBeforeCursor
+                    }
+                }
+                element.appendChild(span)
             }
 
-            // If has style changed then need to apply style to it
-            this.applyEditorStyleElement(element)
-            //  If have container then need to append element inside container instead fragment to not break the paragraph
             if (parentNode != null && parentNode.nodeName?.toLowerCase() === 'p' && editorState.isStyleChanged && element.tagName.toLowerCase() !== "p") {
                 // If have empty span child then use this as element (no need to append new element)
                 if (parentNode.children && parentNode.children[0] && parentNode.children[0].tagName.toLowerCase() == "span" && (parentNode.children[0] as HTMLElement).innerText.trim().length == 0) {
@@ -392,7 +376,9 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                     newElement.innerText = element.innerText;
                     // Not render so cannot get css Text
                     // newElement.style.cssText = document.defaultView?.getComputedStyle(element, "").cssText ?? newElement.style.cssText;
-                    this.applyEditorStyleElement(newElement, true)
+                    if (useCurrentStyle) {
+                        this.applyEditorStyleElement(newElement, true)
+                    }
                     element = newElement;
                 } else {
                     parentNode.appendChild(element)
@@ -412,7 +398,6 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                 }
             }
 
-            // Keep white space to can set start selection in this node
             element.style['white-space'] = 'normal'
             if (element.childNodes.length == 0) return;
             const startNode = element.childNodes[0]
@@ -422,11 +407,139 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             selection.removeAllRanges()
             selection.addRange(newRange)
 
-            dispatch(setStyleNotChangeEditor())
-
             return;
-
         }
+
+        // Char code is enter
+        // if (editorState.isStyleChanged || charCode === 'enter') {
+        //     console.log("skjfksjsfkk", useCurrentStyle)
+        //     evt.preventDefault()
+        //     let selection = textField.window.getSelection()
+        //     if (selection == null) return
+        //
+        //     // Get parent node of selection node
+        //     const parentNode = getFirstParentContainer(selection.anchorNode)
+        //     // Get range selection
+        //     const range = selection.getRangeAt(0)
+        //     let element;
+        //     // If is enter (break) then insert container (p or div)
+        //     if (charCode === 'enter') {
+        //         // Get the text of selection element
+        //         let currentContent = range.commonAncestorContainer.textContent
+        //         // Get the string after cursor of element
+        //         let remainStr = currentContent?.slice(range.startOffset).toString().trim() ?? "";
+        //         if (currentContent && currentContent.toString().trim().length > 0) {
+        //
+        //         }
+        //         ///////////////////////////////////////////////////////////////////////////////
+        //         if (parentNode != null) {
+        //             element = document.createElement("p")
+        //             element.contentEditable = "true"
+        //             element.style.cssText = document.defaultView?.getComputedStyle(parentNode, "").cssText ?? parentNode.style.cssText;
+        //
+        //             let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+        //             if (selectionNode == null) return;
+        //             const newContent = currentContent?.replace(remainStr, "") ?? ""
+        //             ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+        //             if (newContent?.trim().length == 0) {
+        //                 selectionNode.innerHTML = "<br>"
+        //             } else {
+        //                 selectionNode.innerText = newContent
+        //             }
+        //
+        //             /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
+        //             /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
+        //             const span = getFirstChildWithTag("span", parentNode)?.cloneNode(false) as HTMLElement | null
+        //             if (span != null) {
+        //                 if (remainStr.length == 0) {
+        //                     span.innerHTML = "<br>"
+        //                 } else {
+        //                     span.innerText = remainStr
+        //                 }
+        //                 element.appendChild(span)
+        //             } else {
+        //                 element.innerText = remainStr
+        //             }
+        //
+        //         } else {
+        //             element = document.createElement("p")
+        //             const span = document.createElement('span')
+        //
+        //             if (useCurrentStyle) {
+        //                 this.applyEditorStyleElement(span, true);
+        //             }
+        //             /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
+        //             span.innerHTML = '<br>'
+        //             /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
+        //             if (remainStr) {
+        //                 span.innerText += remainStr
+        //                 let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+        //                 if (selectionNode == null) return;
+        //                 const newContent = currentContent?.replace(remainStr, "") ?? ""
+        //                 ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+        //                 if (newContent?.trim().length == 0) {
+        //                     selectionNode.innerHTML = "<br>"
+        //                 } else {
+        //                     selectionNode.innerText = newContent
+        //                 }
+        //             }
+        //             element.appendChild(span)
+        //         }
+        //
+        //     } else {
+        //         element = document.createElement("span")
+        //         element.innerText = charCode
+        //     }
+        //
+        //     // If has style changed then need to apply style to it
+        //     if (useCurrentStyle) {
+        //         this.applyEditorStyleElement(element)
+        //     }
+        //     //  If have container then need to append element inside container instead fragment to not break the paragraph
+        //     if (parentNode != null && parentNode.nodeName?.toLowerCase() === 'p' && editorState.isStyleChanged && element.tagName.toLowerCase() !== "p") {
+        //         // If have empty span child then use this as element (no need to append new element)
+        //         if (parentNode.children && parentNode.children[0] && parentNode.children[0].tagName.toLowerCase() == "span" && (parentNode.children[0] as HTMLElement).innerText.trim().length == 0) {
+        //             const newElement = parentNode.children[0] as HTMLElement;
+        //             newElement.innerText = element.innerText;
+        //             // Not render so cannot get css Text
+        //             // newElement.style.cssText = document.defaultView?.getComputedStyle(element, "").cssText ?? newElement.style.cssText;
+        //             if (useCurrentStyle) {
+        //                 this.applyEditorStyleElement(newElement, true)
+        //             }
+        //             element = newElement;
+        //         } else {
+        //             parentNode.appendChild(element)
+        //         }
+        //     } else {
+        //         // Loop through to get the root <p> element
+        //         const parent = getFirstParentContainer(selection.anchorNode)
+        //         if (parent != null) {
+        //             if (parent.nextSibling) {
+        //                 textField.document.body.insertBefore(element, parent.nextSibling)
+        //             } else {
+        //                 ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
+        //                 textField.document.body.appendChild(element)
+        //             }
+        //         } else {
+        //             textField.document.body.appendChild(element)
+        //         }
+        //     }
+        //
+        //     // Keep white space to can set start selection in this node
+        //     element.style['white-space'] = 'normal'
+        //     if (element.childNodes.length == 0) return;
+        //     const startNode = element.childNodes[0]
+        //     const newRange = document.createRange()
+        //     newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
+        //     newRange.collapse(true)
+        //     selection.removeAllRanges()
+        //     selection.addRange(newRange)
+        //
+        //     dispatch(setStyleNotChangeEditor())
+        //
+        //     return;
+        //
+        // }
 
     }
 
@@ -459,6 +572,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
 
         /*      //////////////////////          KEEP ELEMENT EVEN AFTER DELETE ALL INNER TEXT             ///////////////////////     */
         if (rootSelection?.nodeType == Node.TEXT_NODE && charCode === "backspace") {
+            /*      //////////////////////          KEEP br when have only one char left             ///////////////////////     */
             if (rootSelection?.textContent?.length == 1) {
                 rootSelection.textContent = ""
                 getFirstParentWithTag("span", rootSelection)?.appendChild(document.createElement("br"))
@@ -472,25 +586,34 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                 return;
             }
 
-            return;
         }
 
         /*      //////////////////////          IF WANT TO PLACE CURSOR IN BEGINNING OF PREVIOUS WHEN AFTER DELETE ELEMENT             ///////////////////////     */
-        // if (charCode === "backspace") {
-        //     const container = getFirstParentContainer(rootSelection)
-        //     if (container?.previousSibling) {
-        //         const element = container.previousSibling
-        //         if (element.childNodes.length == 0) return;
-        //         const startNode = element.childNodes[0]
-        //         const newRange = document.createRange()
-        //         newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
-        //         newRange.collapse(true)
-        //         selection.removeAllRanges()
-        //         selection.addRange(newRange)
-        //     }
-        //     container?.remove()
-        //     evt.preventDefault()
-        // }
+        if (charCode === "backspace") {
+            let remainStr = rootSelection?.textContent?.slice(0, selection?.getRangeAt(0).startOffset).toString()
+            if (remainStr?.length !== 0) return;
+            const container = getFirstParentContainer(rootSelection)
+
+            if (container?.previousSibling) {
+                const previousSibling = container.previousSibling
+                const preChildCount = previousSibling.childNodes.length
+                while (container?.childNodes.length > 0) {
+                    previousSibling.appendChild(container.childNodes[0]);
+                }
+
+                if (previousSibling.childNodes.length == 0) return;
+                const startNode = previousSibling.childNodes[0]
+                const newRange = document.createRange()
+                newRange.setStart(startNode, preChildCount) // 0 or 1 (start or end of text)
+                newRange.collapse(true)
+                selection.removeAllRanges()
+                selection.addRange(newRange)
+            }
+            container?.remove()
+            evt.preventDefault()
+
+            return;
+        }
 
     }
 
@@ -514,82 +637,57 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
     toggleActiveBold(element: HTMLElement) {
         let iconBold = document.getElementById("editor-icon-bold")
         if (iconBold == null) return;
-        if (element.style == null) return;
-        const container = getFirstParentContainer(element);
-        if (container == null) return;
-        if (container.style['font-weight'] === 'bold') {
-            if (iconBold.classList.contains("active")) return;
-            iconBold.classList.toggle("active")
-        } else {
-            if (iconBold.classList.contains("active")) {
-                iconBold.classList.toggle("active")
-            }
-        }
-
-        for (let i = 0; i < container.children.length; i++) {
-            let child = container.children[i] as HTMLElement | null
-            if (child == null) return;
-            if (child.style['font-weight'] === 'bold') {
-                if (iconBold.classList.contains("active")) return;
-                iconBold.classList.toggle("active")
-            }
-        }
-
+        this.toggleActiveIconStyle(iconBold, element, ["strong"], "font-weight")
     }
 
     toggleActiveItalic(element: HTMLElement) {
         let iconItalic = document.getElementById("editor-icon-italic")
         if (iconItalic == null) return;
-        if (element.style == null) return;
-        const container = getFirstParentContainer(element);
-        if (container == null) return;
-
-        if (container.style['font-style'] === 'italic') {
-            if (iconItalic.classList.contains("active")) return;
-            iconItalic.classList.toggle("active")
-        } else {
-            if (iconItalic.classList.contains("active")) {
-                iconItalic.classList.toggle("active")
-            }
-        }
-
-        for (let i = 0; i < container.children.length; i++) {
-            let child = container.children[i] as HTMLElement | null
-            if (child == null) return;
-            if (child.style['font-style'] === 'italic') {
-                if (iconItalic.classList.contains("active")) return;
-                iconItalic.classList.toggle("active")
-            }
-        }
+        this.toggleActiveIconStyle(iconItalic, element, ["i"], "font-style")
     }
 
     toggleActiveUnderline(element: HTMLElement) {
-
         let iconUnderline = document.getElementById("editor-icon-underline")
         if (iconUnderline == null) return;
+        this.toggleActiveIconStyle(iconUnderline, element, ["u"], "text-decoration")
+    }
+
+    toggleStrikeIcon(element: HTMLElement) {
+        let iconStrike = document.getElementById("editor-icon-strike")
+        if (iconStrike == null) return;
+        this.toggleActiveIconStyle(iconStrike, element, ["strike"])
+    }
+
+    toggleActiveIconStyle(icon: HTMLElement, element: HTMLElement, tags: Array<String>, style: string | null = null) {
         if (element.style == null) return;
         const container = getFirstParentContainer(element);
         if (container == null) return;
 
+        let selection = textField.window.getSelection()
+        if (selection && selection.anchorNode && hasParentWithTag(tags, selection.anchorNode)) {
+            if (icon.classList.contains("active")) return;
+            icon.classList.toggle("active")
+            return;
+        }
+
         if (container.style['text-decoration'] === 'underline') {
-            if (iconUnderline.classList.contains("active")) return;
-            iconUnderline.classList.toggle("active")
+            if (icon.classList.contains("active")) return;
+            icon.classList.toggle("active")
         } else {
-            if (iconUnderline.classList.contains("active")) {
-                iconUnderline.classList.toggle("active")
+            if (icon.classList.contains("active")) {
+                icon.classList.toggle("active")
             }
         }
 
-
+        if (style == null) return;
         for (let i = 0; i < container.children.length; i++) {
             let child = container.children[i] as HTMLElement | null
             if (child == null) return;
-            if (child.style['text-decoration'] === 'underline') {
-                if (iconUnderline.classList.contains("active")) return;
-                iconUnderline.classList.toggle("active")
+            if (child.style[style] === 'underline') {
+                if (icon.classList.contains("active")) return;
+                icon.classList.toggle("active")
             }
         }
-
     }
 
     toggleActiveAlignLeft(element: HTMLElement) {
@@ -666,31 +764,6 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                 iconAlignJustify.classList.toggle("active")
             }
         }
-    }
-
-    toggleStrikeIcon(element: HTMLElement) {
-
-        let iconStrike = document.getElementById("editor-icon-strike")
-        const elementAlign = getFirstParentContainer(element)
-
-        if (iconStrike == null) return;
-        if (elementAlign == null) return;
-
-        let strikeElement = getFirstParentWithTag("strike", element) ?? getFirstChildWithTag("strike", element)
-
-        /*      //////////////////////          DOES NOT HAVE STRIKE             ///////////////////////     */
-        if (strikeElement == null) {
-            if (iconStrike.classList.contains("active")) {
-                iconStrike.classList.toggle("active")
-            }
-
-            return;
-        }
-
-        /*      //////////////////////          HAVE STRIKE             ///////////////////////     */
-        if (iconStrike.classList.contains("active")) return;
-        iconStrike.classList.toggle("active")
-
     }
 
     toggleQuoteIcon(element: HTMLElement) {
@@ -1305,6 +1378,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         /*      //////////////////////          IF ADDED CODE JUST NEED TO SHOW  IT             ///////////////////////     */
         if (this.htmlEditor.current != null) {
             this.htmlEditor.current.toggleVisible(true)
+            this.htmlEditor.current.setCode(textField.document.body.innerHTML)
             return;
         }
 
@@ -1313,6 +1387,38 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         ReactDOM.render(htmlEditor, fragment)
         textField.document.body.appendChild(fragment)
 
+    }
+
+    handleToggleUseStyle() {
+
+    }
+
+    handleToggleWrapTextContent(wrapperTag: string) {
+        /************************************************************************************************
+         * CHANGE FONT WEIGHT OF SPAN ELEMENT
+         * CAREFULLY USE GET PARENT CONTAINER OR CHILD CONTAINER DEPEND ON TYPE OF SELECTION
+         ************************************************************************************************/
+
+        let selection = textField.window.getSelection()
+        if (selection == null || selection.anchorNode == null) return
+        let selectionElement = getFirstParentTextNode(selection.anchorNode)
+        let container = getFirstParentContainer(selection.anchorNode)
+        if (selectionElement == null || selectionElement.textContent == null || container == null) return;
+
+        const wrapperBefore =
+            container.querySelector(wrapperTag)
+        if (wrapperBefore) {
+            removeParent(wrapperBefore)
+            return;
+        }
+
+        getContainerSelectedElements(textField.window).forEach(element => {
+            const wrapper = document.createElement(wrapperTag)
+            while (element?.childNodes.length > 0) {
+                wrapper.appendChild(element.childNodes[0]);
+            }
+            element.appendChild(wrapper)
+        })
     }
 
     toggleActiveCallback = (callbackParams: ImageEditorFocusCallbackParams) => {
@@ -1372,14 +1478,17 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             onIconEditorClicked(event)
             dispatch(toggleBold())
 
-            scope.handleIconToggleSelection('font-weight', 'bold')
+            // scope.handleIconToggleSelection('font-weight', 'bold')
+            scope.handleToggleWrapTextContent("strong")
 
         }
 
         async function italicSelection(event: React.MouseEvent<HTMLElement>) {
             onIconEditorClicked(event)
             dispatch(toggleItalic())
-            scope.handleIconToggleSelection('font-style', 'italic')
+
+            // scope.handleIconToggleSelection('font-style', 'italic')
+            scope.handleToggleWrapTextContent("i")
 
         }
 
@@ -1387,7 +1496,8 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             onIconEditorClicked(event)
             dispatch(toggleUnderline())
 
-            scope.handleIconToggleSelection('text-decoration', 'underline')
+            // scope.handleIconToggleSelection('text-decoration', 'underline')
+            scope.handleToggleWrapTextContent("u")
 
         }
 
@@ -1424,7 +1534,8 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             onIconEditorClicked(event)
             // dispatch(toggleAlignCenter())
 
-            scope.handleStrikeSelection()
+            // scope.handleStrikeSelection()
+            scope.handleToggleWrapTextContent("strike")
         }
 
         function quoteSelection(event: React.MouseEvent<HTMLElement>) {
@@ -1445,6 +1556,12 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         }
 
         function toggleCode(event: React.MouseEvent<HTMLElement>) {
+            onIconEditorClicked(event)
+
+            scope.handleToggleCode()
+        }
+
+        function toggleUseCurrentStyle(event: React.MouseEvent<HTMLElement>) {
             onIconEditorClicked(event)
 
             scope.handleToggleCode()
@@ -1698,6 +1815,13 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                             <div className="center-element-inner editor-icon tooltip">
                                 <span className="tooltip-text">Redo</span>
                                 <i className="fa fa-undo-alt"/>
+                            </div>
+
+                            <div className="center-element-inner editor-icon tooltip"
+                                 id="editor-icon-toggle-code"
+                                 onClick={toggleUseCurrentStyle}>
+                                <span className="tooltip-text">Use current style for next element</span>
+                                <i className="fas fa-check"/>
                             </div>
                         </div>
 

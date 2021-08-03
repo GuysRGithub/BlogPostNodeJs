@@ -42,6 +42,22 @@ export function getFirstParentWithTags(tag: Array<String>, child: HTMLElement | 
     return selectionNode
 }
 
+export function getFirstParentTextNode(child: HTMLElement | Node | null) {
+    let selectionNode: HTMLElement | null = child as HTMLElement | null
+    while (selectionNode != null && selectionNode?.nodeType == Node.TEXT_NODE) {
+        selectionNode = selectionNode.parentElement
+    }
+    return selectionNode
+}
+
+export function getFurthestParentOfOnlyTextNode(child: HTMLElement | Node | null) {
+    let selectionNode: HTMLElement | null = child as HTMLElement | null
+    while (selectionNode != null && selectionNode?.childNodes.length == 1) {
+        selectionNode = selectionNode.parentElement
+    }
+    return selectionNode
+}
+
 export function getFirstChildWithTags(tag: Array<String>, child: HTMLElement | Node | null) {
     // let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
     let selectionNode: HTMLElement | null = child as HTMLElement | null
@@ -142,4 +158,41 @@ export function getContainerSelectedElements(window: Window) {
     }
 
     return selectedElements
+}
+
+export function removeAllText(element: Node) {
+
+    // loop through all the nodes of the element
+    const nodes = element.childNodes;
+
+    for(let i = 0; i < nodes.length; i++) {
+
+        const node = nodes[i];
+        // if it's a text node, remove it
+        if(node.nodeType == Node.TEXT_NODE) {
+            node.parentNode?.removeChild(node);
+            i--; // have to update our incrementor since we just removed a node from childNodes
+
+        } else
+            // if it's an element, repeat this process
+        if(node.nodeType == Node.ELEMENT_NODE) {
+            removeAllText(node);
+        }
+    }
+}
+
+export function removeParent(element: Node) {
+    const fragment = document.createDocumentFragment();
+    while(element.firstChild) {
+        fragment.appendChild(element.firstChild);
+    }
+    element.parentNode?.replaceChild(fragment, element);
+}
+
+export function hasParentWithTag(tag: Array<String>, child: HTMLElement | Node | null) {
+    let selectionNode: HTMLElement | null = child as HTMLElement | null
+    while (selectionNode != null && !tag.includes(selectionNode.tagName?.toLowerCase())) {
+        selectionNode = selectionNode.parentElement
+    }
+    return tag.includes(selectionNode?.tagName?.toLowerCase() ?? "")
 }
