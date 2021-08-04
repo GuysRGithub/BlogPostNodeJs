@@ -5,7 +5,7 @@ import {
     getFirstChildContainer,
     getFirstChildWithTag,
     getFirstParentContainer, getFirstParentTextNode,
-    getFirstParentWithTag, getSelectedElementTags, hasParentWithTag, removeAllText, removeParent, tagsUnTouch
+    getFirstParentWithTag, getSelectedElementTags, hasParentWithTag, removeParent, tagsUnTouch
 } from "../../../utils/editor_utils";
 import setStyleNotChangeEditor, {
     changeFontFamilyElement,
@@ -45,7 +45,7 @@ interface State {
     showCode: boolean,
 }
 
-// noinspection DuplicatedCode
+// noinspection DuplicatedCode,JSUnusedGlobalSymbols
 class BlogEditor extends Component<PropsWithChildren<any>, State> {
     private mapTag = [
         {"key": "Normal Text", "value": "p"},
@@ -270,40 +270,31 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         }
 
         const tagName = (rootSelection as HTMLElement)?.tagName?.toLowerCase()
-        // If tagName not in container and unTouch tag then insert new element
-        // if (rootSelection != null
-        //     && (rootSelection as HTMLElement).tagName
-        //     && !containerTags.includes(tagName)
-        //     && !tagsUnTouch.includes(tagName)) {
-        //     evt.preventDefault()
-        //     //////////////////////////////////////////////////
-        //     let element = document.createElement(tagNewElement)
-        //     const span = document.createElement('span')
-        //     // Apply style only if use current style and set not changed style
-        //     if (useCurrentStyle) {
-        //         this.applyEditorStyleElement(span)
-        //     }
-        //     dispatch(setStyleNotChangeEditor())
-        //
-        //     span.innerText = charCode
-        //     element.appendChild(span)
-        //     ////////////////////////////////          CAREFULLY            ////////////////////////////////
-        //     element.style['white-space'] = 'normal'
-        //     element.contentEditable = 'true'
-        //     span.style['white-space'] = 'normal'
-        //
-        //     rootSelection.appendChild(element)
-        //
-        //     if (element.childNodes.length == 0) return;
-        //     const startNode = element.childNodes[0]
-        //     const newRange = document.createRange()
-        //     newRange.setStart(startNode, 1)
-        //     newRange.collapse(true)
-        //     selection.removeAllRanges()
-        //     selection.addRange(newRange)
-        //
-        //     return;
-        // }
+        // When root selection is not container and un touch tags (input,...) (can be body) and not text node then insert new element
+        if (rootSelection != null
+            && rootSelection.tagName
+            && !containerTags.includes(tagName)
+            && !tagsUnTouch.includes(tagName)) {
+            evt.preventDefault()
+            //////////////////////////////////////////////////
+            let element = document.createElement(tagNewElement)
+            element.innerText = charCode
+            ////////////////////////////////          CAREFULLY            ////////////////////////////////
+            element.style['white-space'] = 'normal'
+            element.contentEditable = 'true'
+
+            rootSelection.appendChild(element)
+
+            if (element.childNodes.length == 0) return;
+            const startNode = element.childNodes[0]
+            const newRange = document.createRange()
+            newRange.setStart(startNode, 1)
+            newRange.collapse(true)
+            selection.removeAllRanges()
+            selection.addRange(newRange)
+
+            return;
+        }
 
         if (charCode === 'enter') {
             console.log("Log", 'enter')
@@ -831,6 +822,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
     }
 
     updateFontSizeOptions(element: HTMLElement) {
+        const firstParent = getFirstParentTextNode(element)
+        if (firstParent) {
+            if (!firstParent.style['font-size']) return;
+            const inputFontSize = document.getElementById("input-select-font-size")
+            if (inputFontSize == null) return;
+            inputFontSize.innerText = firstParent.style['font-size']
+            return;
+        }
+
         const span = getFirstParentWithTag("span", element)
         if (span == null) return
         if (!span.style['font-size']) return;
@@ -840,6 +840,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
     }
 
     updateFontOptions(element: HTMLElement) {
+        const firstParent = getFirstParentTextNode(element)
+        if (firstParent) {
+            if (!firstParent.style['font-family']) return;
+            const inputFontSize = document.getElementById("input-select-font-family")
+            if (inputFontSize == null) return;
+            inputFontSize.innerText = firstParent.style['font-family']
+            return;
+        }
+
         const span = getFirstParentWithTag("span", element)
         if (span == null) return
         if (!span.style['font-family']) return;
@@ -899,6 +908,20 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
+    }
+
+    /************************************************************************************************
+     * ADD FONT FAMILY STYLE FOR CONTAINER
+     ************************************************************************************************/
+    handleFontFamilyClicked(value: string) {
+        this.handleIconToggleSelection('font-family', `${value}`, "p", true)
+    }
+
+    /************************************************************************************************
+     * STYLE FONT SIZE FOR CONTAINER ELEMENT
+     ************************************************************************************************/
+    handleFontSizeClicked(value: string) {
+        this.handleIconToggleSelection('font-size', `${value}px`, "p", true)
     }
 
     /************************************************************************************************
@@ -1104,89 +1127,6 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         /************************************************************************************************
          *****************   !END CHANGE THE TAG OF CURRENT SELECT ELEMENT COMMENT    *******************
          ************************************************************************************************/
-    }
-
-    /************************************************************************************************
-     * ADD FONT FAMILY STYLE FOR CONTAINER
-     ************************************************************************************************/
-    handleFontFamilyClicked(value: string) {
-        /************************************************************************************************
-         * CHANGE FONT FAMILY OF SPAN ELEMENT
-         ************************************************************************************************/
-        let selection = textField.window.getSelection()
-        if (selection == null) return
-        if (selection.rangeCount == 0) return;
-        const range =
-            selection.getRangeAt(0)
-        const content =
-            range.cloneContents();
-        let selectionNode = selection.anchorNode as HTMLElement | null
-
-        /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
-        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
-            const span = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
-            if (span == null) return;
-            span.style['font-family'] = value
-            /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
-        } else {
-            // remove select content
-            range.extractContents()
-            content.childNodes.forEach(contentElement => {
-                const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
-                if (parent == null) return;
-                /************************************************************************************************
-                 * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
-                 * CHOOSE CAREFULLY...
-                 ************************************************************************************************/
-                /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
-                    element.style['font-family'] = value
-                })
-            })
-
-            selection.getRangeAt(0).insertNode(content)
-        }
-    }
-
-    /************************************************************************************************
-     * STYLE FONT SIZE FOR CONTAINER ELEMENT
-     ************************************************************************************************/
-    handleFontSizeClicked(value: string) {
-        /************************************************************************************************
-         * CHANGE FONT FAMILY OF SPAN ELEMENT
-         ************************************************************************************************/
-        let selection = textField.window.getSelection()
-        if (selection == null) return
-        if (selection.rangeCount == 0) return;
-        const range =
-            selection.getRangeAt(0)
-        const content =
-            range.cloneContents();
-        let selectionNode = selection.anchorNode as HTMLElement | null
-
-        /*      //////////////////////          ONLY SELECT ONE ELEMENT             ///////////////////////     */
-        if (content.children.length <= 1 || content.nodeType == Node.TEXT_NODE) {
-            const span = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
-            if (span == null) return;
-            span.style['font-size'] = `${value}px`
-            /*      //////////////////////          SELECT TWO OR MORE ELEMENTS             ///////////////////////     */
-        } else {
-            ////////////////////////////////          REMOVE SELECTION            ////////////////////////////////
-            range.extractContents()
-            content.childNodes.forEach(contentElement => {
-                const parent = getFirstChildContainer(contentElement as HTMLElement) ?? getFirstParentContainer(contentElement as HTMLElement)
-                if (parent == null) return;
-                /************************************************************************************************
-                 * CAN USE TWO CASE (MODIFY EXITS AND REPLACE WITH NEW)
-                 * CHOOSE CAREFULLY...
-                 ************************************************************************************************/
-                /*      //////////////////////          MODIFY CHILD CASE             ///////////////////////     */
-                parent.querySelectorAll("span").forEach((element: HTMLElement) => {
-                    element.style['font-size'] = `${value}px`
-                })
-            })
-            selection.getRangeAt(0).insertNode(content)
-        }
     }
 
     /************************************************************************************************
