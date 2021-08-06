@@ -1,5 +1,6 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
+import {isAuth} from "../../../helpers/auth";
 
 function Navbar() {
     return (
@@ -24,6 +25,16 @@ function Navbar() {
                     <li className="color-gray-fade-primary font-bold">
                         <Link to="/blogs/posts/index">Testimonial</Link>
                     </li>
+
+                    {isAuth() ?
+                        <li className="color-gray-fade-primary font-bold">
+                            <Link to="/users/logout">Logout</Link>
+                        </li>
+                        :
+                        <li className="color-gray-fade-primary font-bold">
+                            <Link to="/users/login">Login</Link>
+                        </li>
+                    }
                 </ul>
             </nav>
         </header>

@@ -20,36 +20,33 @@ interface State {
 export class HtmlEditor extends Component<Prop, State> {
     constructor(props: Prop) {
         super(props);
+        this.state = {
+            code: hBeautify(this.props.value ?? "", {indent_size: 2}),
+            visible: true
+        };
     }
-
-    state = {
-        code: this.props.value ?? "",
-        visible: true
-    };
 
     updateCode = (e: string) => {
         this.setState({code: e});
-        console.log("object");
     };
 
     autoFormatSelection = () => {
         let code = this.state.code;
-        // console.log(code);
         let formattedHTML = hBeautify(code, {indent_size: 2});
-        console.log(formattedHTML);
         this.setState({code: formattedHTML});
     };
 
-    public getValue = () => {
+    public getCode = () => {
         return this.state.code;
+    }
+
+    public setCode = (code: string) => {
+        let formattedHTML = hBeautify(code, {indent_size: 2});
+        this.setState({code: formattedHTML})
     }
 
     public toggleVisible = (visible: boolean) => {
         this.setState({visible: visible})
-    }
-
-    componentDidMount() {
-        this.autoFormatSelection()
     }
 
     render() {

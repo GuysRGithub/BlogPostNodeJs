@@ -108,13 +108,10 @@ const BlogIndex = () => {
                         <h5 className="fw-8 font-pt-serif pb-4 border-white border-solid border-b-2">Follow Us</h5>
                         <div>
                             <ul className="icons d-flex content-between justify-content-between">
-                                <li><a href="#" className="icon brands fa-twitter"><span
-                                    className="label">Twitter</span></a>
-                                </li>
+                                <li><a href="#" className="icon brands fab fa-twitter"/></li>
                                 <li><a href="#" className="icon fab brands fa-facebook-f"/></li>
                                 <li><a href="#" className="icon fab brands fa-github"/></li>
-                                <li><a href="#" className="fab brands fa-dribbble"/>
-                                </li>
+                                <li><a href="#" className="fab brands fa-dribbble"/></li>
                                 <li><a href="#" className="fab solid fa-instagram"/></li>
                                 <li><a href="#" className="fab solid fa-youtube"/></li>
                                 <li><a href="#" className="fab solid fa-linkedin-in"/></li>

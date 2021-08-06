@@ -8,7 +8,7 @@ import {
     TOGGLE_ALIGN_CENTER_EDITOR,
     TOGGLE_ALIGN_RIGHT_EDITOR,
     CHANGE_TAG_NEW_ELEMENT_EDITOR,
-    CHANGE_FONT_SIZE_ELEMENT_EDITOR, CHANGE_FONT_FAMILY_ELEMENT_EDITOR
+    CHANGE_FONT_SIZE_ELEMENT_EDITOR, CHANGE_FONT_FAMILY_ELEMENT_EDITOR, TOGGLE_USE_CURRENT_STYLE
 } from "../actions/types";
 
 const defaultState = {
@@ -22,6 +22,7 @@ const defaultState = {
     tagNewElement: "p",
     fontSize: 16,
     fontFamily: "",
+    useCurrentStyle: false
 }
 
 export default function (state = defaultState, action) {
@@ -48,6 +49,8 @@ export default function (state = defaultState, action) {
             return {...state, fontSize: action.value}
         case CHANGE_FONT_FAMILY_ELEMENT_EDITOR:
             return {...state, fontFamily: action.value}
+        case TOGGLE_USE_CURRENT_STYLE:
+            return {...state, useCurrentStyle: !state.useCurrentStyle}
         default:
             return state
     }

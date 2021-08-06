@@ -8,7 +8,7 @@ import SideCardOverlay from "../../components/shared/SideCardOverlay";
 import {getRandom} from "../../../helpers/asset_helper";
 import {style2object} from "../../../helpers/data_process_helper";
 import PostViewModel from "../../../view_models/PostViewModel";
-import {PostResponse, PostsResponse} from "../../../interface/PostsResponse";
+import {PostResponse, PostsResponse} from "../../../interface/response_posts";
 import ImageEditor from "../../components/editor/ImageEditor";
 import ReactDOM from "react-dom";
 import PostVerticalWide from "../../components/shared/PostVerticalWide";

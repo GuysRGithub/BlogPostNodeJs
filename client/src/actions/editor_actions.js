@@ -11,7 +11,7 @@ import {
     TOGGLE_ALIGN_JUSTIFY_EDITOR,
     CHANGE_TAG_NEW_ELEMENT_EDITOR,
     CHANGE_FONT_SIZE_ELEMENT_EDITOR,
-    CHANGE_FONT_FAMILY_ELEMENT_EDITOR
+    CHANGE_FONT_FAMILY_ELEMENT_EDITOR, TOGGLE_USE_CURRENT_STYLE
 } from "./types";
 
 export function toggleBold() {
@@ -62,6 +62,12 @@ export function toggleAlignRight() {
 export function toggleAlignJustify() {
     return {
         type: TOGGLE_ALIGN_JUSTIFY_EDITOR
+    }
+}
+
+export function toggleUseCurrentStyle() {
+    return {
+        type: TOGGLE_USE_CURRENT_STYLE
     }
 }
 

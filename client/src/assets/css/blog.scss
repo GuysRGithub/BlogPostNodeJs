@@ -73,13 +73,15 @@
 .img-square-size-default {
   width: 300px;
   height: 300px;
-  object-fit: cover;
 }
 
 .img-square-size-small {
   width: 250px;
   height: 250px;
-  object-fit: cover;
+}
+
+.img-square-width-small {
+  width: 250px  ;
 }
 
 .dark-shadow {

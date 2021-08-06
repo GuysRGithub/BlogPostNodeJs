@@ -1,9 +1,29 @@
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import ReactDOM from 'react-dom';
-import {ImageEditorFocusCallbackParams} from "../../../interface/ImageEditorFocusCallbackParams";
-import {ImageEditorProp, ImageEditorState} from "../../../interface/ImageEditorProp";
 import MediaLibrary from "../shared/MediaLibrary";
 import HtmlParser from "react-html-parser";
+
+export interface ImageEditorFocusCallbackParams {
+    focus: boolean,
+    ref: ImageEditor
+}
+
+interface ImageEditorProp {
+    imageSrc: string | null | undefined,
+    toggleActiveCallback?: ((params: ImageEditorFocusCallbackParams) => void) | undefined,
+    elementStyle?: CSSProperties | undefined,
+    caption?: string | null | undefined,
+    showCaption?: boolean | undefined
+}
+
+interface ImageEditorState {
+    imageSrc: string | null | undefined,
+    renderMedia: false,
+    toggleActiveCallback?: ((params: ImageEditorFocusCallbackParams) => void) | undefined,
+    elementStyle?: CSSProperties | undefined,
+    caption?: string | null | undefined,
+    showCaption?: boolean | undefined
+}
 
 class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
 
@@ -24,7 +44,8 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
             renderMedia: false,
             toggleActiveCallback: props.toggleActiveCallback,
             elementStyle: props.elementStyle,
-            caption: props.caption
+            caption: props.caption,
+            showCaption: props.showCaption ?? true,
         }
 
         this.onImageChosenCallback = this.onImageChosenCallback.bind(this)
@@ -71,6 +92,11 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
 
     private handleAlign = (e: React.MouseEvent<HTMLElement>) => {
         this.setState({elementStyle: this.mapAlignStyle[e.currentTarget.getAttribute("data-value") ?? "center"]})
+    }
+
+    private handleToggleCaption = (e: React.MouseEvent<HTMLElement>) => {
+        this.setState({showCaption: !this.state.showCaption})
+        e.currentTarget.classList.toggle("active")
     }
 
     private readonly focusElement = (e: React.MouseEvent<HTMLElement>) => {
@@ -132,6 +158,7 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
     render() {
         return (<>
                 <figure className="image-editor-element cursor-default"
+                        contentEditable="false"
                         style={this.state["elementStyle"]}
                         onClick={this.focusElement}
                         ref={ref => this.figure = ref}
@@ -160,6 +187,11 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
                             <span className="tooltip-text">Replace Image</span>
                             <i className="fa fa-image"/>
                         </div>
+                        <div className="center-element-inner editor-icon tooltip active"
+                             onClick={this.handleToggleCaption}>
+                            <span className="tooltip-text">Toggle Caption</span>
+                            <i className="fas fa-closed-captioning"/>
+                        </div>
                         <div className="center-element-inner editor-icon tooltip"
                              onClick={this.handleRemove}>
                             <span className="tooltip-text">Remove</span>
@@ -179,17 +211,16 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
                     <div className="image-editor-insert-paragraph-before">
                         <i className="fas fa-level-up-alt"/>
                     </div>
-                    <figcaption
+                    {this.state.showCaption && (<figcaption
                         className="figcaption cursor-text w-100"
                         contentEditable="false"
                         style={this.state['elementStyle']}
-                        ref={ref => this.caption = ref}
-                    >
+                        ref={ref => this.caption = ref}>
                         {HtmlParser(this.state.caption ?? "")}
                         {/*<p contentEditable="true">*/}
                         {/*    <span>{this.state.caption}</span>*/}
                         {/*</p>*/}
-                    </figcaption>
+                    </figcaption>)}
                 </figure>
 
             </>

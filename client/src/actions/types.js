@@ -15,6 +15,7 @@ export const TOGGLE_ALIGN_LEFT_EDITOR = "toggle_align_left_editor";
 export const TOGGLE_ALIGN_RIGHT_EDITOR = "toggle_align_right_editor";
 export const TOGGLE_ALIGN_CENTER_EDITOR = "toggle_align_center_editor";
 export const TOGGLE_ALIGN_JUSTIFY_EDITOR = "toggle_align_justify_editor";
+export const TOGGLE_USE_CURRENT_STYLE = "toggle_use_current_style";
 export const CHANGE_TAG_NEW_ELEMENT_EDITOR = "change_tag_new_element_editor"
 export const CHANGE_FONT_SIZE_ELEMENT_EDITOR = "change_font_size_element_editor"
 export const CHANGE_FONT_FAMILY_ELEMENT_EDITOR = "change_font_family_element_editor"
