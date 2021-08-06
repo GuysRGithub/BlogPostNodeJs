@@ -7,7 +7,7 @@ import {
     getFirstParentContainer, getFirstParentTextNode,
     getFirstParentWithTag, getSelectedElementTags, hasParentWithTag, removeParent, tagsUnTouch
 } from "../../../utils/editor_utils";
-import setStyleNotChangeEditor, {
+import {
     changeFontFamilyElement,
     changeFontSizeElement,
     changeTagNewElement,
@@ -35,6 +35,7 @@ import 'codemirror/theme/dracula.css';
 import HtmlEditor from "../../components/editor/HtmlEditor";
 
 declare var textField: Window
+declare var codeField: Window
 
 const FONT_FAMILY_KEY = "FONT_FAMILY_KEY_EDITOR"
 const FONT_SIZE_KEY = "FONT_SIZE_KEY_EDITOR"
@@ -61,6 +62,8 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
     private mapFont = ["JoseSans", "Ubuntu", "Roboto", "Raleway", "Rubik"]
     private currentImageEditor: ImageEditor | null = null;
     private htmlEditor = React.createRef<HtmlEditor>();
+    private iFrameTextField: HTMLElement | null = null;
+    private iFrameCodeField: HTMLElement | null = null;
     private readonly blogId: string | null = null
 
     constructor(props: PropsWithChildren<any>) {
@@ -81,11 +84,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
 
     componentDidMount() {
 
+        this.iFrameCodeField = document.getElementById("codeField")
+        this.iFrameTextField = document.getElementById("textField")
         // @ts-ignore
         let dispatch = this.props.dispatch;
         let textFieldDoc = textField.document;
         const scope = this;
 
+        codeField.document.head.innerHTML = document.head.innerHTML
+        textFieldDoc.head.innerHTML = document.head.innerHTML
         if (textFieldDoc.addEventListener) {
             textFieldDoc.addEventListener("keypress", this.handleIFrameKeyPress, false);
             // textFieldDoc.addEventListener("keydown", this.handleIFrameKeyDown, false)
@@ -101,33 +108,27 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                     dropdown.classList.remove("show")
                 }
             })
-            textFieldDoc.head.innerHTML = document.head.innerHTML
             /*      //////////////////////          HANDLE PASTE             ///////////////////////     */
             textFieldDoc.addEventListener("paste", function (event) {
                 // @ts-ignore
                 let paste = (event.clipboardData || textField.window.clipboardData).getData('text');
                 const selection = textField.window.getSelection();
+                selection?.deleteFromDocument();
                 if (!selection?.rangeCount) return false;
-                if (getFirstParentContainer(selection?.anchorNode as HTMLElement | null) == null) {
-                    // @ts-ignore
+                const parentElement = getFirstParentContainer(selection?.anchorNode as HTMLElement | null)
+                if (parentElement == null) {
                     const editorState = scope.props.state
                     const tagNewElement = editorState.tagNewElement
                     const container = document.createElement(tagNewElement)
-                    const span = document.createElement("span")
-                    span.appendChild(document.createTextNode(paste))
-                    container.appendChild(span)
+                    container.appendChild(document.createTextNode(paste))
                     selection.getRangeAt(0).insertNode(container)
                     selection.getRangeAt(0).selectNodeContents(container)
                     event.preventDefault()
-                    return
+                    return true;
+                } else {
+                    selection.getRangeAt(0).insertNode(document.createTextNode(paste))
+                    event.preventDefault()
                 }
-                const span = getFirstParentWithTag("span", selection.anchorNode as HTMLElement | null)
-                if (span == null) return
-                selection.deleteFromDocument();
-                selection.getRangeAt(0).selectNodeContents(span)
-                selection.getRangeAt(0).insertNode(document.createTextNode(paste));
-                // span.appendChild(document.createTextNode(paste));
-                event.preventDefault()
             })
         } else {
             textFieldDoc.onkeypress = this.handleIFrameKeyPress;
@@ -978,6 +979,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
          ************************************************************************************************/
     }
 
+    handleIntentElement(increase: boolean = true) {
+        const selectedElements = getContainerSelectedElements(textField.window)
+        selectedElements.forEach(it => {
+            const element = it as HTMLElement
+            const x = parseInt(element.style.marginLeft || "0")
+            element.style['margin-left'] = `${x + (increase ? 1 : -1)}em`
+        })
+    }
+
     /************************************************************************************************
      * LIST/UN LIST ELEMENT(S)
      ************************************************************************************************/
@@ -1288,7 +1298,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         let iconCode = document.getElementById("editor-icon-toggle-code")
         if (iconCode == null) return;
         if (textField.document.body.children.length <= 0) return;
-        const htmlText = textField.document.body.innerHTML;
+        const htmlText = String(textField.document.body.innerHTML);
 
         iconCode.classList.toggle("active")
         const showCode = !this.state.showCode
@@ -1297,23 +1307,26 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
 
         /*      //////////////////////          IF NOT SHOW CODE UN HIDE ALL ELEMENTS AND HIDE html editor            ///////////////////////     */
         if (!showCode) {
+            this.iFrameTextField && (this.iFrameTextField.style['display'] = 'inherit');
+            this.iFrameCodeField && (this.iFrameCodeField.style['display'] = 'none');
             const code = this.htmlEditor?.current?.getCode()
+            console.log("skjfksf", code)
             if (code) {
                 this.renderContent(code)
             }
-            // for (let i = 0; i < textField.document.body.children.length; i++) {
-            //     (textField.document.body.children[i] as HTMLElement).style['display'] = '';
-            // }
-            if (this.htmlEditor.current != null) {
-                this.htmlEditor.current.toggleVisible(false)
-            }
+
             return;
         }
 
         /*      //////////////////////          HIDE ALL CHILDREN             ///////////////////////     */
-        for (let i = 0; i < textField.document.body.children.length; i++) {
-            (textField.document.body.children[i] as HTMLElement).style['display'] = 'None';
-        }
+        // for (let i = 0; i < textField.document.body.children.length; i++) {
+        //     (textField.document.body.children[i] as HTMLElement).style['display'] = 'None';
+        //     // textField.document.body.style['display'] = 'None';
+        //
+        // }
+
+        this.iFrameTextField && (this.iFrameTextField.style['display'] = 'none');
+        this.iFrameCodeField && (this.iFrameCodeField.style['display'] = 'inherit');
 
         /*      //////////////////////          IF ADDED CODE JUST NEED TO SHOW  IT             ///////////////////////     */
         if (this.htmlEditor.current != null) {
@@ -1323,9 +1336,14 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         }
 
         const htmlEditor = <HtmlEditor value={htmlText} ref={this.htmlEditor}/>
-        const fragment = textField.document.createDocumentFragment()
+        const fragment = codeField.document.createDocumentFragment()
         ReactDOM.render(htmlEditor, fragment)
-        textField.document.body.appendChild(fragment)
+        codeField.document.body.appendChild(fragment)
+
+        // const x = <HtmlEditor value={htmlText} ref={this.htmlEditor}/>
+        // const f = codeField.document.createDocumentFragment()
+        // ReactDOM.render(x, f)
+        // codeField.document.body.appendChild(f)
 
     }
 
@@ -1390,6 +1408,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             }
         })
 
+        textField.document.body.innerHTML = ""
         textField.document.body.appendChild(fragment)
     }
 
@@ -1483,6 +1502,14 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             // dispatch(toggleAlignCenter())
 
             scope.handleQuoteElement()
+        }
+
+        function indentSelection() {
+            scope.handleIntentElement()
+        }
+
+        function dedentSelection() {
+            scope.handleIntentElement(false)
         }
 
         function listItemsSelection(event: React.MouseEvent<HTMLElement>) {
@@ -1697,13 +1724,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                                 <i className="fa fa-quote-left"/>
                             </div>
 
-                            <div className="center-element-inner editor-icon tooltip">
-                                <span className="tooltip-text">Dedent Text</span>
-                                <i className="fa fa-indent"/>
-                            </div>
-                            <div className="center-element-inner editor-icon tooltip">
+                            <div className="center-element-inner editor-icon tooltip"
+                                 onClick={indentSelection}>
                                 <span className="tooltip-text">Indent Text</span>
                                 <i className="fa fa-indent"/>
+                            </div>
+                            <div className="center-element-inner editor-icon tooltip"
+                                 onClick={dedentSelection}>
+                                <span className="tooltip-text">Dedent Text</span>
+                                <i className="fa fa-outdent"/>
                             </div>
                             {/*</div>*/}
 
@@ -1771,6 +1800,15 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                             spellCheck="false"
                             onLoad={this.load}
                             style={{width: "80%", minHeight: "75vh"}}>
+                        <style>
+                        </style>
+
+                    </iframe>
+
+                    <iframe name="codeField" id="codeField"
+                            className="mx-auto mt-12 bg-white shadow rounded-md px-8 py-4"
+                            spellCheck="false"
+                            style={{width: "80%", minHeight: "75vh", display: "none"}}>
                         <style>
                         </style>
 
