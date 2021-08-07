@@ -230,23 +230,19 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         if (selection.rangeCount == 0) return;
         const range = selection.getRangeAt(0)
         if (range == null) return;
-        if (charCode === 'enter') return;
 
         let rootSelection = selection.anchorNode as HTMLElement | null
         const tagNewElement = useCurrentStyle ? editorState.tagNewElement : "p"
 
         ////////////////////////////////          PREVENT BROWSER AUTO CREATE NEW ELEMENT            ////////////////////////////////
-        if ((rootSelection?.textContent?.trim()?.length || 0) == 0 && charCode === "enter") {
+        if ((rootSelection?.textContent?.slice(range.startOffset)?.length || 0) == 0 && charCode === "enter") {
             evt.preventDefault()
-            const span = document.createElement('span')
             const element = document.createElement(tagNewElement)
             const parentSelection = getFirstParentContainer(rootSelection)
 
-            span.innerHTML = "<br>"
-            span.style['white-space'] = 'normal'
-            element.innerHTML = ""
+            element.innerHTML = "<br>"
+            element.style['white-space'] = 'normal'
             element.contentEditable = "true"
-            element.appendChild(span)
 
             if (parentSelection?.nextSibling) {
                 textField.document.body.insertBefore(element, parentSelection?.nextSibling)
@@ -261,7 +257,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             if (startNode.nodeType == Node.TEXT_NODE) {
                 newRange.setStart(startNode, startNode.innerText.length) // 0 or 1 (start or end of text)
             } else {
-                newRange.setStart(startNode, 1)
+                newRange.setStart(startNode, 0)
             }
             newRange.collapse(true)
             selection.removeAllRanges()
@@ -962,16 +958,18 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
         if (selectionNode == null) return;
 
         let parent = getFirstParentContainer(selectionNode) ?? getFirstChildContainer(selectionNode)
+        if (parent == null) return;
         /*      //////////////////////          HAVE QUOTE BLOCK             ///////////////////////     */
-        if (parent?.classList.contains("quote-container")) {
-            parent?.classList.remove("quote-container", "fa")
+        if (parent.classList.contains("quote-container")) {
+            parent.classList.remove("quote-container", "fa")
             return;
         }
 
-        const spanElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
-
-        if (spanElement == null || spanElement.parentElement == null) return;
-        spanElement.parentElement.classList.add("quote-container", "fa")
+        // const spanElement = getFirstParentWithTag("span", selectionNode) ?? getFirstChildWithTag("span", selectionNode)
+        //
+        // if (spanElement == null || spanElement.parentElement == null) return;
+        // spanElement.parentElement.classList.add("quote-container", "fa")
+        parent.classList.add("quote-container", "fa")
 
         this.handleUpdateUI(selectionNode)
         /************************************************************************************************
