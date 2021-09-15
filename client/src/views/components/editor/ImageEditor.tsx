@@ -155,6 +155,18 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
         this.figure?.remove()
     }
 
+    insertParagraphBefore = () => {
+        this.figure?.parentElement?.insertBefore(document.createElement("p"), this.figure)
+    }
+
+    insertParagraphAfter = () => {
+        const element = document.createElement("p")
+        element.contentEditable = "true"
+        element.style['white-space'] = 'normal'
+        element.innerHTML = "<br>"
+        this.figure?.parentElement?.insertBefore(element, this.figure?.nextSibling)
+    }
+
     render() {
         return (<>
                 <figure className="image-editor-element cursor-default"
@@ -205,12 +217,16 @@ class ImageEditor extends React.Component<ImageEditorProp, ImageEditorState> {
                             style={this.state['elementStyle']}
                         />
                     </div>
-                    <div className="image-editor-insert-paragraph-after">
-                        <i className="fas fa-level-down-alt"/>
-                    </div>
-                    <div className="image-editor-insert-paragraph-before">
+
+                    <div className="image-editor-insert-paragraph-before"
+                         onClick={this.insertParagraphBefore}>
                         <i className="fas fa-level-up-alt"/>
                     </div>
+                    <div className="image-editor-insert-paragraph-after"
+                         onClick={this.insertParagraphAfter}>
+                        <i className="fas fa-level-down-alt"/>
+                    </div>
+
                     {this.state.showCaption && (<figcaption
                         className="figcaption cursor-text w-100"
                         contentEditable="false"
