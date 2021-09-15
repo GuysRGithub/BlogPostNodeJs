@@ -1312,7 +1312,6 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             this.iFrameTextField && (this.iFrameTextField.style['display'] = 'inherit');
             this.iFrameCodeField && (this.iFrameCodeField.style['display'] = 'none');
             const code = this.htmlEditor?.current?.getCode()
-            console.log("skjfksf", code)
             if (code) {
                 this.renderContent(code)
             }
@@ -1405,7 +1404,8 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                         caption: figcaption?.innerHTML
                     }
                     const imageElement = <ImageEditor {...props}/>
-                    ReactDOM.render(imageElement, att.parentElement)
+                    ReactDOM.render(imageElement, att)
+                    att.replaceWith(att.childNodes[0])
                 }
             }
         })
