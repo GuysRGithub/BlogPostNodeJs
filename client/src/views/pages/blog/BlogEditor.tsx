@@ -126,6 +126,10 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                     event.preventDefault()
                     return true;
                 } else {
+                    const selectionNode = selection.getRangeAt(0).commonAncestorContainer
+                    if (selectionNode.nodeName.toLowerCase() === "br") {
+                        selectionNode.parentNode?.removeChild(selectionNode)
+                    }
                     selection.getRangeAt(0).insertNode(document.createTextNode(paste))
                     event.preventDefault()
                 }
@@ -293,110 +297,110 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
             return;
         }
 
-        if (charCode === 'enter') {
-            console.log("Log", 'enter')
-            evt.preventDefault()
-            let selection = textField.window.getSelection()
-            if (selection == null) return
-            const parentNode = getFirstParentContainer(selection.anchorNode)
-            const range = selection.getRangeAt(0)
-            let element;
-            let currentContent = range.commonAncestorContainer.textContent
-            let strAfterCursor = currentContent?.slice(range.startOffset).toString() ?? "";
-            let strBeforeCursor = currentContent?.slice(0, range.startOffset).toString() ?? "";
-
-            if (currentContent && currentContent.toString().length > 0) {
-
-            }
-            ///////////////////////////////////////////////////////////////////////////////
-            if (parentNode != null) {
-                element = document.createElement("p")
-                element.contentEditable = "true"
-                element.style.cssText = document.defaultView?.getComputedStyle(parentNode, "").cssText ?? parentNode.style.cssText;
-
-                let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                if (selectionNode == null) return;
-                ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
-                if (strBeforeCursor?.trim().length == 0) {
-                    selectionNode.innerHTML = "<br>"
-                } else {
-                    selectionNode.innerText = strBeforeCursor
-                }
-
-                /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
-                /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
-                const span = document.createElement("span")
-                if (strAfterCursor.length == 0) {
-                    span.innerHTML = "<br>"
-                } else {
-                    span.innerText = strAfterCursor
-                }
-                element.appendChild(span)
-
-            } else {
-                element = document.createElement("p")
-                const span = document.createElement('span')
-
-                if (useCurrentStyle) {
-                    this.applyEditorStyleElement(span, true);
-                }
-                /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
-                span.innerHTML = '<br>'
-                /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
-                if (strAfterCursor) {
-                    span.innerText += strAfterCursor
-                    let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
-                    if (selectionNode == null) return;
-                    ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
-                    if (strBeforeCursor?.length == 0) {
-                        selectionNode.innerHTML = "<br>"
-                    } else {
-                        selectionNode.innerText = strBeforeCursor
-                    }
-                }
-                element.appendChild(span)
-            }
-
-            if (parentNode != null && parentNode.nodeName?.toLowerCase() === 'p' && editorState.isStyleChanged && element.tagName.toLowerCase() !== "p") {
-                // If have empty span child then use this as element (no need to append new element)
-                if (parentNode.children && parentNode.children[0] && parentNode.children[0].tagName.toLowerCase() == "span" && (parentNode.children[0] as HTMLElement).innerText.trim().length == 0) {
-                    const newElement = parentNode.children[0] as HTMLElement;
-                    newElement.innerText = element.innerText;
-                    // Not render so cannot get css Text
-                    // newElement.style.cssText = document.defaultView?.getComputedStyle(element, "").cssText ?? newElement.style.cssText;
-                    if (useCurrentStyle) {
-                        this.applyEditorStyleElement(newElement, true)
-                    }
-                    element = newElement;
-                } else {
-                    parentNode.appendChild(element)
-                }
-            } else {
-                // Loop through to get the root <p> element
-                const parent = getFirstParentContainer(selection.anchorNode)
-                if (parent != null) {
-                    if (parent.nextSibling) {
-                        textField.document.body.insertBefore(element, parent.nextSibling)
-                    } else {
-                        ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
-                        textField.document.body.appendChild(element)
-                    }
-                } else {
-                    textField.document.body.appendChild(element)
-                }
-            }
-
-            element.style['white-space'] = 'normal'
-            if (element.childNodes.length == 0) return;
-            const startNode = element.childNodes[0]
-            const newRange = document.createRange()
-            newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
-            newRange.collapse(true)
-            selection.removeAllRanges()
-            selection.addRange(newRange)
-
-            return;
-        }
+        // if (charCode === 'enter') {
+        //     console.log("Log", 'enter')
+        //     evt.preventDefault()
+        //     let selection = textField.window.getSelection()
+        //     if (selection == null) return
+        //     const parentNode = getFirstParentContainer(selection.anchorNode)
+        //     const range = selection.getRangeAt(0)
+        //     let element;
+        //     let currentContent = range.commonAncestorContainer.textContent
+        //     let strAfterCursor = currentContent?.slice(range.startOffset).toString() ?? "";
+        //     let strBeforeCursor = currentContent?.slice(0, range.startOffset).toString() ?? "";
+        //
+        //     if (currentContent && currentContent.toString().length > 0) {
+        //
+        //     }
+        //     ///////////////////////////////////////////////////////////////////////////////
+        //     if (parentNode != null) {
+        //         element = document.createElement("p")
+        //         element.contentEditable = "true"
+        //         element.style.cssText = document.defaultView?.getComputedStyle(parentNode, "").cssText ?? parentNode.style.cssText;
+        //
+        //         let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+        //         if (selectionNode == null) return;
+        //         ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+        //         if (strBeforeCursor?.trim().length == 0) {
+        //             selectionNode.innerHTML = "<br>"
+        //         } else {
+        //             selectionNode.innerText = strBeforeCursor
+        //         }
+        //
+        //         /*      //////////////////////          EXTRACT REMAIN TEXT FOR NEW ELEMENT             ///////////////////////     */
+        //         /*      //////////////////////          FIND SPAN TO COPY STYLE OF SPAN INSTEAD REMOVE IT             ///////////////////////     */
+        //         const span = document.createElement("span")
+        //         if (strAfterCursor.length == 0) {
+        //             span.innerHTML = "<br>"
+        //         } else {
+        //             span.innerText = strAfterCursor
+        //         }
+        //         element.appendChild(span)
+        //
+        //     } else {
+        //         element = document.createElement("p")
+        //         const span = document.createElement('span')
+        //
+        //         if (useCurrentStyle) {
+        //             this.applyEditorStyleElement(span, true);
+        //         }
+        //         /*      //////////////////////          ADD BREAK FOR SELECT AND EDIT IN IT             ///////////////////////     */
+        //         span.innerHTML = '<br>'
+        //         /*      //////////////////////          ADD REMAIN STRING TO NEW SPAN AND REMOVE TAKEN STRING FROM SELECTION              ///////////////////////     */
+        //         if (strAfterCursor) {
+        //             span.innerText += strAfterCursor
+        //             let selectionNode = selection.anchorNode?.parentNode as HTMLElement | null
+        //             if (selectionNode == null) return;
+        //             ////////////////////////////////          WHEN NEW CONTENT (AFTER REMOVE REMAIN) IS EMPTY IT MEAN MOVE EVERY DOWN            ////////////////////////////////
+        //             if (strBeforeCursor?.length == 0) {
+        //                 selectionNode.innerHTML = "<br>"
+        //             } else {
+        //                 selectionNode.innerText = strBeforeCursor
+        //             }
+        //         }
+        //         element.appendChild(span)
+        //     }
+        //
+        //     if (parentNode != null && parentNode.nodeName?.toLowerCase() === 'p' && editorState.isStyleChanged && element.tagName.toLowerCase() !== "p") {
+        //         // If have empty span child then use this as element (no need to append new element)
+        //         if (parentNode.children && parentNode.children[0] && parentNode.children[0].tagName.toLowerCase() == "span" && (parentNode.children[0] as HTMLElement).innerText.trim().length == 0) {
+        //             const newElement = parentNode.children[0] as HTMLElement;
+        //             newElement.innerText = element.innerText;
+        //             // Not render so cannot get css Text
+        //             // newElement.style.cssText = document.defaultView?.getComputedStyle(element, "").cssText ?? newElement.style.cssText;
+        //             if (useCurrentStyle) {
+        //                 this.applyEditorStyleElement(newElement, true)
+        //             }
+        //             element = newElement;
+        //         } else {
+        //             parentNode.appendChild(element)
+        //         }
+        //     } else {
+        //         // Loop through to get the root <p> element
+        //         const parent = getFirstParentContainer(selection.anchorNode)
+        //         if (parent != null) {
+        //             if (parent.nextSibling) {
+        //                 textField.document.body.insertBefore(element, parent.nextSibling)
+        //             } else {
+        //                 ////////////////////////////////          NO NEED TO SET SELECTION AFTER TEXT (ENTER BEFORE THE ELEMENT WILL KEEP EDITING AS IT IS)            ////////////////////////////////
+        //                 textField.document.body.appendChild(element)
+        //             }
+        //         } else {
+        //             textField.document.body.appendChild(element)
+        //         }
+        //     }
+        //
+        //     element.style['white-space'] = 'normal'
+        //     if (element.childNodes.length == 0) return;
+        //     const startNode = element.childNodes[0]
+        //     const newRange = document.createRange()
+        //     newRange.setStart(startNode, 0) // 0 or 1 (start or end of text)
+        //     newRange.collapse(true)
+        //     selection.removeAllRanges()
+        //     selection.addRange(newRange)
+        //
+        //     return;
+        // }
 
         // Char code is enter
         // if (editorState.isStyleChanged || charCode === 'enter') {
