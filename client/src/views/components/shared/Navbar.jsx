@@ -20,12 +20,14 @@ function Navbar() {
                         <Link to="/blogs/index">Blog</Link>
                     </li>
                     <li className="color-gray-fade-primary font-bold">
+                        <Link to="/blogs/new">New Post</Link>
+                    </li>
+                    <li className="color-gray-fade-primary font-bold">
                         <a href="#">Features</a><span className="arrow-icon" aria-hidden="true"/>
                     </li>
                     <li className="color-gray-fade-primary font-bold">
                         <Link to="/blogs/posts/index">Testimonial</Link>
                     </li>
-
                     {isAuth() ?
                         <li className="color-gray-fade-primary font-bold">
                             <Link to="/users/logout">Logout</Link>

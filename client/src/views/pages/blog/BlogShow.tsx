@@ -6,15 +6,18 @@ import HtmlParser from "react-html-parser";
 import PageLayout from "../../layouts/PageLayout";
 import SideCardOverlay from "../../components/shared/SideCardOverlay";
 import {getRandom} from "../../../helpers/asset_helper";
-import {style2object} from "../../../helpers/data_process_helper";
+import {getCookie} from "../../../helpers/data_process_helper";
+import PostVerticalWide from "../../components/shared/PostVerticalWide";
+import {Link} from "react-router-dom";
 import PostViewModel from "../../../view_models/PostViewModel";
 import {PostResponse, PostsResponse} from "../../../interface/response_posts";
-import ImageEditor from "../../components/editor/ImageEditor";
-import ReactDOM from "react-dom";
-import PostVerticalWide from "../../components/shared/PostVerticalWide";
+
+const jwt = require("jsonwebtoken");
 
 const BlogShow = (props: PropsWithChildren<any>) => {
     const blogId = props.match.params.blogId;
+    const userId = jwt.decode(getCookie("token"))?.["_id"];
+
     const [Posts, setPosts] = useState<PostViewModel[]>([]);
     const [Post, setPost] = useState<PostViewModel | undefined>(undefined);
 
@@ -51,27 +54,6 @@ const BlogShow = (props: PropsWithChildren<any>) => {
             })
     }, [blogId]);
 
-    const x = (content: string) => {
-        const fragment = document.createRange().createContextualFragment(content ?? Post?.content)
-        const attrs = fragment.querySelectorAll("figure")
-        attrs.forEach(att => {
-            for (let i = 0; i < (att?.attributes?.length || 2); i++) {
-                if (att?.attributes[i].nodeName == "style") {
-                    const src = att.querySelectorAll("img")?.[0].src
-                    const props = {
-                        imageSrc: src,
-                        style: style2object(att?.attributes[i].nodeValue)
-                    }
-                    const imageElement = <ImageEditor {...props}/>
-                    ReactDOM.render(imageElement, att.parentElement)
-                }
-            }
-        })
-
-        let a = document.getElementById("fucking")
-        a?.appendChild(fragment)
-    }
-
     return (
         <PageLayout>
             <div className="d-flex content-around justify-content-around my-16 px-32">
@@ -79,9 +61,18 @@ const BlogShow = (props: PropsWithChildren<any>) => {
                     {Post && (
                         <div id="fucking">
                             {HtmlParser(Post.content)}
+                            {Post?.authorId === userId && (
+                                <div className="mt-3 border border-fade-gray-wide hover:border-highlight py-2 px-3 inline-block">
+                                    <Link to={`/blogs/edit/${Post?._id}`}>
+                                        <div className="color-yellow-light cursor-pointer font-bold font-roboto">Edit<i
+                                            className="fa fa-arrow-right ml-2"/></div>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     )}
                 </section>
+
                 <section className="w-3/12">
                     <div>
                         <h5 className="fw-8 font-pt-serif pb-4 border-white border-solid border-b-2">Trending
