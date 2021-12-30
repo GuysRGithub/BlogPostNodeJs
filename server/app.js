@@ -19,7 +19,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const app = express();
 
-let mode = "localhost"
+let mode = "production"
 if (mode === "localhost") {
     // Connection URL
     let url = 'mongodb://127.0.0.1:27017/BlogFullStack';
