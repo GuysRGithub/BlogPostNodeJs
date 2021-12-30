@@ -1789,7 +1789,7 @@ class BlogEditor extends Component<PropsWithChildren<any>, State> {
                             </div>
 
                             <div className="center-element-inner editor-icon tooltip"
-                                 id="editor-icon-toggle-code"
+                                 id="editor-icon-continue-style"
                                  onClick={toggleUseCurrentStyle}>
                                 <span className="tooltip-text">Use current style for next element</span>
                                 <i className="fas fa-check"/>

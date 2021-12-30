@@ -96,7 +96,7 @@
   margin: 1rem;
   position: relative;
   padding: 1rem 2rem;
-  display: initial;
+  display: inline-block;
 }
 
 .quote-container > * {
@@ -122,4 +122,8 @@
 
 .grid-custom-row {
   grid-template-rows:  .75fr 0.25fr .75fr;
+}
+
+.fa::before {
+  font-family: "Font Awesome 5 Free", serif !important;
 }
