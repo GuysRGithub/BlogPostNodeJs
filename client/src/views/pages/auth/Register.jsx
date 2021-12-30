@@ -119,7 +119,7 @@ export const Register = () => {
                     </div>
                     <span className="border-b border-solid flex-grow"/>
                 </div>
-                <Link to="/login" className="no-style w-9/12 sm:w-full max-w-xs">
+                <Link to="/users/login" className="no-style w-9/12 sm:w-full max-w-xs">
                     <div className="w-full flex justify-center">
                         <button
                             className="flex inline-block font-roboto outline-none-imp align-items-center duration-500 mt-2 tracking-wide font-bold bg-indigo-200 w-full p-5 rounded-lg hover:bg-indigo-300 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">

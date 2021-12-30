@@ -31,7 +31,7 @@ function Activate(props) {
       .then((res) => {
         setFormData({ ...FormData, show: false });
         toast.success(res.data.message);
-        props.history.push("/login")
+        props.history.push("/users/login")
       })
       .catch((err) => {
         console.log(err);
@@ -56,7 +56,7 @@ function Activate(props) {
               <div className="mx-auto max-w-xs relative">
                 <button
                   type="submit"
-                  className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                  className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full p-5 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                 >
                   Activate your account
                 </button>
@@ -68,7 +68,7 @@ function Activate(props) {
               </div>
               <div className="flex flex-col items-center">
                 <a
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3
+                  className="w-full max-w-xs font-bold shadow-sm rounded-lg p-5
            bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5"
                   href="/register"
                   target="_self"

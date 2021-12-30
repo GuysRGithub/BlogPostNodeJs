@@ -1,7 +1,7 @@
 import {UPLOAD_SERVER_URL, USER_SERVER_URL, ASSETS_PATH, BLOG_SERVER_URL, REACT_APP_SERVER_URL} from "./config.js"
 
 export const USER_REGISTER_SERVER_URL = `${USER_SERVER_URL}/register`
-export const USER_ACTIVATE_SERVER_URL = `${USER_SERVER_URL}/activate`
+export const USER_ACTIVATE_SERVER_URL = `${USER_SERVER_URL}/activation`
 export const USER_LOGIN_SERVER_URL = `${USER_SERVER_URL}/login`
 export const USER_UPDATE_SERVER_URL = `${USER_SERVER_URL}/update`
 export const USER_LOGOUT_SERVER_URL = `${USER_SERVER_URL}/logout`
