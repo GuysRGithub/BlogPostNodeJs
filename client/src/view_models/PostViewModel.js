@@ -1,4 +1,4 @@
-import {getSrcFromPostContent, removePostImageFromPostContent} from "../helpers/data_process_helper.js";
+import {getSrcFromPostContent, removePostImageFromPostContent} from "../helpers/data_process_helper.ts";
 class PostViewModel {
     constructor(post) {
         const date = new Date(parseInt(post._id.toString().substring(0, 8), 16) * 1000);

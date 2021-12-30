@@ -1,7 +1,7 @@
 import React from 'react'
 import PostViewModel from "../../../view_models/PostViewModel";
 import {Link} from "react-router-dom";
-import {extractFirstText} from "../../../helpers/data_process_helper.js";
+import {extractFirstText} from "../../../helpers/data_process_helper";
 
 const ShowcasePost = (post: PostViewModel, numbering: number = 1) => {
     return (

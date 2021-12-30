@@ -34,7 +34,7 @@ if (mode === "localhost") {
             return
         }
         console.log("Connected correctly to mongo server");
-    });
+    }).then(_ => {});
 } else {
     mongoose.connect(process.env.MONGO_URI,
         {
