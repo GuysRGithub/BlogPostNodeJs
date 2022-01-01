@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import Axios from "axios";
-import {REACT_APP_SERVER_URL, UPLOAD_SERVER_URL} from "../../../config/config.js";
+import {UPLOAD_SERVER_URL} from "../../../config/config.js";
 import {USER_GET_MEDIA_SERVER_URL} from "../../../config/router_path";
 import {toast} from "react-toastify";
 
@@ -159,7 +159,7 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                                 {Images.map((image, index) => (
                                     <div key={`${image}_container`}
                                          onClick={() => {
-                                             const imagePath = `${REACT_APP_SERVER_URL}${image}`
+                                             const imagePath = `${process.env.REACT_APP_SERVER_URL}${image}`
                                              if (ImageSelectedPath === imagePath) {
                                                  setImageSelectedPath("")
                                              } else {
@@ -169,12 +169,12 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                                          className="relative mb-2">
                                         <img
                                             // style={{minWidth: "300px", width: "300px", height: "240px"}}
-                                            src={`${REACT_APP_SERVER_URL}${image}`}
+                                            src={`${process.env.REACT_APP_SERVER_URL}${image}`}
                                             alt={`ProductImg-${index}`}
                                             key={`${image}_${index}`}
                                         />
                                         <i className={`absolute top-0 left-0 ml-1 mt-1 fa fa-sm fa-check-circle
-                                         // ${ImageSelectedPath === (REACT_APP_SERVER_URL + image) ? "text-blue-600" : "text-gray-600"}`}
+                                         // ${ImageSelectedPath === (process.env.REACT_APP_SERVER_URL + image) ? "text-blue-600" : "text-gray-600"}`}
                                         />
                                     </div>
 
@@ -281,7 +281,7 @@ function MediaLibrary({onImageChosenCallback, ...props}) {
                                         <div key={`${image}_container`} className="h-48 relative">
                                             <img
                                                 // style={{minWidth: "300px", width: "300px", height: "240px"}}
-                                                src={`${REACT_APP_SERVER_URL}${image}`}
+                                                src={`${process.env.REACT_APP_SERVER_URL}${image}`}
                                                 alt={`ProductImg-${index}`}
                                                 key={`${image}_${index}`}
                                                 className="object-cover h-full w-full rounded-md"

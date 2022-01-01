@@ -3,7 +3,6 @@
 import React, {useState} from "react";
 import DropZone from "react-dropzone";
 import Axios from "axios";
-import {REACT_APP_SERVER_URL} from "../../../config/config.js";
 
 function FileUpload(props) {
     const [Images, setImages] = useState([]);
@@ -81,7 +80,7 @@ function FileUpload(props) {
                     <div onClick={() => onDeleteImage(image)}>
                         <img
                             style={{minWidth: "300px", width: "300px", height: "240px"}}
-                            src={`${REACT_APP_SERVER_URL}${image}`}
+                            src={`${process.env.REACT_APP_SERVER_URL}${image}`}
                             alt={`ProductImg-${index}`}
                             key={`${image}_${index}`}
                         />
