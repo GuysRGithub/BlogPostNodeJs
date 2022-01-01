@@ -20,7 +20,7 @@ const path = require("path");
 const app = express();
 
 let mode = "localhost"
-if (mode === "localhost") {
+if (mode === "localhost" && process.env.NODE_ENV !== "production") {
     // Connection URL
     let url = 'mongodb://127.0.0.1:27017/BlogFullStack';
     // Use connect method to connect to the Server
