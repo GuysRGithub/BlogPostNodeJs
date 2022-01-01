@@ -1,4 +1,4 @@
-import {UPLOAD_SERVER_URL, USER_SERVER_URL, ASSETS_PATH, BLOG_SERVER_URL, REACT_APP_SERVER_URL} from "./config.js"
+import {USER_SERVER_URL} from "./config.js"
 
 export const USER_REGISTER_SERVER_URL = `${USER_SERVER_URL}/register`
 export const USER_ACTIVATE_SERVER_URL = `${USER_SERVER_URL}/activation`
