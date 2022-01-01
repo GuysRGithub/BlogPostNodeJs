@@ -19,11 +19,12 @@ const mongoose = require("mongoose");
 const path = require("path");
 const app = express();
 
-let mode = "production"
+let mode = "localhost"
 if (mode === "localhost") {
     // Connection URL
     let url = 'mongodb://127.0.0.1:27017/BlogFullStack';
     // Use connect method to connect to the Server
+    // noinspection JSIgnoredPromiseFromCall
     mongoose.connect(url, {
         useNewUrlParser: true, useUnifiedTopology: true,
         useCreateIndex: true,
@@ -34,7 +35,7 @@ if (mode === "localhost") {
             return
         }
         console.log("Connected correctly to mongo server");
-    }).then(_ => {});
+    });
 } else {
     mongoose.connect(process.env.MONGO_URI,
         {
